@@ -226,31 +226,96 @@ describe('cache', () => {
     await expect(network.commands.get('/other')).rejects.toBeInstanceOf(OfflineError);
   });
 
-  it('keeps cached responses in Storage, so a reload can use them', async () => {
+  /** Reads the raw records of a Storage database, as the backend has them. */
+  async function rawRecords(database: string): Promise<Array<{ key: string; payload: string }>> {
+    const open = indexedDB.open(database);
+    const db = await new Promise<IDBDatabase>(
+      (resolve) => (open.onsuccess = () => resolve(open.result)),
+    );
+    const name = db.objectStoreNames[0]!;
+    const all = db.transaction(name, 'readonly').objectStore(name).getAll();
+    const rows = await new Promise<unknown[]>(
+      (resolve) => (all.onsuccess = () => resolve(all.result)),
+    );
+    db.close();
+    return rows as Array<{ key: string; payload: string }>;
+  }
+
+  const storage = (database: string, encryption: boolean) =>
+    createStorage({
+      domain: 'shop',
+      database,
+      hosts: ['virtual'],
+      keys: encryption ? { source: { kind: 'device' }, database: `${database}-keys` } : null,
+      quota: false,
+    }) as SubsystemDefinition;
+
+  it('keeps cached responses in Storage, encrypted by default, so a reload can use them', async () => {
     const database = `net-${Date.now()}`;
-    const storage = () =>
-      createStorage({
-        domain: 'shop',
-        database,
-        hosts: ['virtual'],
-        keys: null,
-        quota: false,
-      }) as SubsystemDefinition;
-    const { fetch } = server(() => Response.json({ cached: true }));
-    const first = await start({ fetch }, [storage()]);
+    const { fetch } = server(() => Response.json({ cached: 'secret' }));
+    const first = await start({ fetch }, [storage(database, true)]);
     await first.platform.settle();
     await first.network.commands.get('/settings', { cache: 'cache-first' });
+    const [row] = await rawRecords(database);
+    expect(row!.key).toContain(':network.cache.e:');
+    expect(row!.payload.startsWith('e:')).toBe(true);
+    expect(row!.payload).not.toContain('secret');
     await first.platform.stop();
     platforms.splice(0);
 
     const { fetch: down, calls } = server(() => new Response('down', { status: 500 }));
-    const second = await start({ fetch: down }, [storage()]);
+    const second = await start({ fetch: down }, [storage(database, true)]);
     await second.platform.settle();
-    const response = await second.network.commands.get<{ cached: boolean }>('/settings', {
+    const response = await second.network.commands.get<{ cached: string }>('/settings', {
       cache: 'cache-first',
     });
-    expect(response).toMatchObject({ fromCache: true, data: { cached: true } });
+    expect(response).toMatchObject({ fromCache: true, data: { cached: 'secret' } });
     expect(calls).toHaveLength(0);
+  });
+
+  it('lets a call site choose compression, no encryption, or memory only', async () => {
+    const database = `net-choice-${Date.now()}`;
+    const { fetch } = server((r) =>
+      Response.json({ path: new URL(r.url).pathname, filler: 'x'.repeat(500) }),
+    );
+    const { network, platform } = await start({ fetch, persistCache: { encrypt: false } }, [
+      storage(database, true),
+    ]);
+    await platform.settle();
+    await network.commands.get('/plain', { cache: 'cache-first' });
+    await network.commands.get('/both', {
+      cache: 'cache-first',
+      cachePersist: { encrypt: true, compress: true },
+    });
+    await network.commands.get('/packed', {
+      cache: 'cache-first',
+      cachePersist: { encrypt: false, compress: true },
+    });
+    await network.commands.get('/memory', { cache: 'cache-first', cachePersist: false });
+    const rows = await rawRecords(database);
+    const byPath = (path: string) => rows.find((r) => r.key.endsWith(path));
+    expect(byPath('/plain')).toMatchObject({ key: expect.stringContaining(':network.cache:') });
+    expect(byPath('/plain')!.payload.startsWith(':')).toBe(true);
+    expect(byPath('/both')!.key).toContain(':network.cache.ez:');
+    expect(byPath('/both')!.payload.startsWith('ze:')).toBe(true);
+    expect(byPath('/packed')!.key).toContain(':network.cache.z:');
+    expect(byPath('/packed')!.payload.startsWith('z:')).toBe(true);
+    expect(byPath('/memory')).toBeUndefined();
+    expect(await network.commands.invalidate()).toBe(4);
+    expect((await rawRecords(database)).filter((r) => r.key.includes('network.cache'))).toEqual([]);
+  });
+
+  it('never stores a response in plain text when encryption is not possible', async () => {
+    const database = `net-nokeys-${Date.now()}`;
+    const { fetch } = server(() => Response.json({ cached: 'secret' }));
+    const { network, platform } = await start({ fetch }, [storage(database, false)]);
+    await platform.settle();
+    const first = await network.commands.get('/settings', { cache: 'cache-first' });
+    expect(first.fromCache).toBe(false);
+    expect((await network.commands.get('/settings', { cache: 'cache-first' })).fromCache).toBe(
+      true,
+    ); // memory
+    expect(await rawRecords(database)).toEqual([]);
   });
 });
 

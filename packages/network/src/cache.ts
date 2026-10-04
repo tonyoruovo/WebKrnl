@@ -3,14 +3,16 @@
  * @summary The response cache of the Network: memory first, Storage when it runs.
  * @description
  * Entries are kept by method and full URL. The memory part is a small LRU.
- * When Storage runs, the Network gives the cache a collection
- * (`network.cache`), and entries are also kept there, so they survive a
- * reload (docs/ARCHITECTURE.md §19.1).
+ * When Storage runs, entries are also kept there, so they survive a reload.
+ * Each persistence choice (encrypted, compressed, both, neither) has its own
+ * collection, because Storage sets those steps for each collection
+ * (docs/ARCHITECTURE.md §19.1).
  *
  * ```text
- *   get(key)  memory hit --> entry
- *             memory miss --> collection.get(key) --> back into memory
- *   set(key)  memory (LRU, evicts the oldest) + collection.set(key)
+ *   get(key, persist)  memory hit --> entry
+ *                      memory miss --> the collection of `persist` --> back into memory
+ *   set(key, persist)  memory (LRU, evicts the oldest) + the collection of `persist`
+ *   collections        network.cache  network.cache.e  network.cache.z  network.cache.ez
  *   ```
  *
  * @example
@@ -22,6 +24,8 @@
  *
  * @author MathAid
  */
+
+import type { CachePersistence } from './types';
 
 /**
  * @summary One cached response.
@@ -117,7 +121,41 @@ export interface CacheCollection {
 }
 
 /**
- * @summary The response cache: an LRU in memory, and a Storage collection when one is bound.
+ * @summary Opens the Storage collection for one persistence choice.
+ * @public
+ */
+export type CacheCollectionFactory = (definition: {
+  readonly name: string;
+  readonly encrypt: boolean;
+  readonly compress: boolean;
+}) => CacheCollection;
+
+/**
+ * @summary Returns the name of the collection for one persistence choice.
+ * @example
+ * Example 1: Encrypted and compressed
+ * ```ts
+ * cacheCollectionName({ encrypt: true, compress: true }); // 'network.cache.ez'
+ * ```
+ * @example
+ * Example 2: Neither
+ * ```ts
+ * cacheCollectionName({ encrypt: false, compress: false }); // 'network.cache'
+ * ```
+ * @param {object} persist The choice.
+ * @returns {string} The name.
+ * @public
+ */
+export function cacheCollectionName(persist: {
+  readonly encrypt: boolean;
+  readonly compress: boolean;
+}): string {
+  const flags = `${persist.encrypt ? 'e' : ''}${persist.compress ? 'z' : ''}`;
+  return flags ? `network.cache.${flags}` : 'network.cache';
+}
+
+/**
+ * @summary The response cache: an LRU in memory, and Storage collections when they are bound.
  * @example
  * Example 1: Memory only
  * ```ts
@@ -126,13 +164,14 @@ export interface CacheCollection {
  * @example
  * Example 2: With Storage
  * ```ts
- * cache.bind(storage.commands.collection({ name: 'network.cache', maxEntries: 500 }));
+ * cache.bind((definition) => storage.commands.collection({ ...definition, maxEntries: 500 }));
  * ```
  * @public
  */
 export class ResponseCache {
   readonly #entries = new Map<string, CacheEntry>();
-  #collection: CacheCollection | null = null;
+  #open: CacheCollectionFactory | null = null;
+  readonly #collections = new Map<string, CacheCollection>();
 
   /**
    * @summary Makes a cache.
@@ -146,17 +185,27 @@ export class ResponseCache {
   ) {}
 
   /**
-   * @summary Binds a Storage collection, or unbinds it with `null`.
+   * @summary Binds the factory of Storage collections, or unbinds it with `null`.
    * @example
    * Binding when Storage starts
    * ```ts
-   * cache.bind(collection);
+   * cache.bind((definition) => storage.commands.collection(definition));
    * ```
-   * @param {CacheCollection | null} collection The collection.
+   * @param {CacheCollectionFactory | null} open Opens a collection for a persistence choice.
    * @returns {void}
    */
-  bind(collection: CacheCollection | null): void {
-    this.#collection = collection;
+  bind(open: CacheCollectionFactory | null): void {
+    this.#open = open;
+    this.#collections.clear();
+  }
+
+  #collection(persist: CachePersistence): CacheCollection | null {
+    if (persist === false || !this.#open) return null;
+    const choice = { encrypt: persist.encrypt ?? true, compress: persist.compress ?? false };
+    const name = cacheCollectionName(choice);
+    let collection = this.#collections.get(name);
+    if (!collection) this.#collections.set(name, (collection = this.#open({ name, ...choice })));
+    return collection;
   }
 
   /**
@@ -175,16 +224,17 @@ export class ResponseCache {
   }
 
   /**
-   * @summary Reads an entry, fresh or not.
+   * @summary Reads an entry, fresh or not: from memory, else from the collection of the persistence choice.
    * @example
    * Reading
    * ```ts
-   * const entry = await cache.get(key);
+   * const entry = await cache.get(key, { encrypt: true });
    * ```
    * @param {string} key The key.
+   * @param {CachePersistence} [persist] The persistence choice. The default is encrypted.
    * @returns {Promise<CacheEntry | undefined>} The entry, or `undefined`.
    */
-  async get(key: string): Promise<CacheEntry | undefined> {
+  async get(key: string, persist: CachePersistence = {}): Promise<CacheEntry | undefined> {
     const hit = this.#entries.get(key);
     if (hit) {
       // Most recently used goes last.
@@ -192,29 +242,35 @@ export class ResponseCache {
       this.#entries.set(key, hit);
       return hit;
     }
-    const stored = await this.#collection?.get(key).catch(() => undefined);
+    const stored = await this.#collection(persist)
+      ?.get(key)
+      .catch(() => undefined);
     if (stored) this.#remember(key, stored);
     return stored;
   }
 
   /**
-   * @summary Writes an entry in memory and, when bound, in Storage.
+   * @summary Writes an entry in memory and, when bound, in the collection of the persistence choice.
+   * @description A write that Storage refuses (for example, encryption without keys) leaves the entry in memory only.
    * @example
    * Writing
    * ```ts
-   * await cache.set(key, entry);
+   * await cache.set(key, entry, { encrypt: true, compress: true });
    * ```
    * @param {string} key The key.
    * @param {CacheEntry} entry The entry.
+   * @param {CachePersistence} [persist] The persistence choice. The default is encrypted.
    * @returns {Promise<void>} Resolves when the entry is stored.
    */
-  async set(key: string, entry: CacheEntry): Promise<void> {
+  async set(key: string, entry: CacheEntry, persist: CachePersistence = {}): Promise<void> {
     this.#remember(key, entry);
-    await this.#collection?.set(key, entry).catch(() => undefined);
+    await this.#collection(persist)
+      ?.set(key, entry)
+      .catch(() => undefined);
   }
 
   /**
-   * @summary Deletes the entries whose URL starts with a prefix, or all entries.
+   * @summary Deletes the entries whose URL starts with a prefix, or all entries, in memory and in every collection.
    * @example
    * Deleting one API
    * ```ts
@@ -232,10 +288,14 @@ export class ResponseCache {
       this.#entries.delete(key);
       removed++;
     }
-    const collection = this.#collection;
-    if (collection) {
-      const keys = await collection.keys().catch(() => [] as string[]);
-      for (const key of keys) if (matches(key)) await collection.delete(key).catch(() => undefined);
+    for (const encrypt of [false, true]) {
+      for (const compress of [false, true]) {
+        const collection = this.#collection({ encrypt, compress });
+        if (!collection) continue;
+        const keys = await collection.keys().catch(() => [] as string[]);
+        for (const key of keys)
+          if (matches(key)) await collection.delete(key).catch(() => undefined);
+      }
     }
     return removed;
   }

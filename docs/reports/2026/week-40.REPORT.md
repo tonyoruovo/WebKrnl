@@ -236,17 +236,19 @@ Run these from the root of the repository:
 
 ## Known problems and open items
 
-1. Playwright's own Chromium and Firefox builds do not start on the development machine (`spawn UNKNOWN`). The installed Chrome, Edge, Chromium and WebKit work. Firefox is not tested yet.
-2. Real Safari is not tested. Playwright's WebKit is the closest available proxy on Windows.
-3. CI is deferred. A GitHub Actions workflow exists but is not on.
-4. On Safari and iOS, Window scope reaches one origin until the Global relay arrives in M8.
-5. The iframe link and the hub page run only in real browsers, so the Node coverage of `@platform/hub` is about 70%. The e2e gate tests them.
-6. Some older methods, mainly on `Kernel`, have no `@example` yet. Older prose is not yet in STE.
-7. The old managers in `src/managers` stay until their milestones port them.
-8. Closed after M6 (ARCHITECTURE §18.3): on WebKit, every tab runs its own Storage coordinator. Each request now runs in a Web Lock of the database, so the writes of all tabs keep one order.
-9. Closed after M6: Storage compares its key ids with the state of Crypto (`keyCheck`). On a mismatch it reports a `KeyMismatchError` and refuses encrypted writes.
-10. Closed after M6: collections can declare query indexes, and `lookup(index, value)` reads only the matching entries. Encrypted collections index an HMAC of each value. Range queries are not supported yet.
-11. Cached responses that the Network keeps in Storage (`network.cache`) are not encrypted. Do not use a cache strategy for private data until this is decided.
+The decisions of 2026-10-04 are in **bold**.
+
+1. Playwright's own Chromium and Firefox builds do not start on the development machine (`spawn UNKNOWN`). The installed Chrome, Edge, Chromium and WebKit work. Firefox is not tested yet. **Deferred.**
+2. Real Safari is not tested. Playwright's WebKit is the closest available proxy on Windows. **Deferred.**
+3. CI is deferred. A GitHub Actions workflow exists but is not on. **Deferred.**
+4. On Safari and iOS, Window scope reaches one origin until the Global relay arrives in M8. **Deferred.**
+5. The iframe link and the hub page run only in real browsers, so the Node coverage of `@platform/hub` is about 70%. The e2e gate tests them. **Deferred: a manual browser test at the end of the milestones covers them.**
+6. Some older methods, mainly on `Kernel`, have no `@example` yet. Older prose is not yet in STE. **Deferred.**
+7. The old managers in `src/managers` stay until their milestones port them. **Confirmed.**
+8. Closed after M6 (ARCHITECTURE §18.3): on WebKit, every tab runs its own Storage coordinator. Each request now runs in a Web Lock of the database, so the writes of all tabs keep one order. **Accepted.**
+9. Closed after M6: Storage compares its key ids with the state of Crypto (`keyCheck`). On a mismatch it reports a `KeyMismatchError` and refuses encrypted writes. **Accepted.**
+10. Closed after M6: collections can declare query indexes, and `lookup(index, value)` reads only the matching entries. Encrypted collections index an HMAC of each value. Range queries are not supported yet. **Accepted.**
+11. Closed: cached responses that the Network keeps in Storage are **encrypted by default**, and compression is an option (`persistCache: { encrypt, compress }`, and `cachePersist` for one request). A call site can turn off either step to save its time, or keep a response in memory only. A response is never stored in plain text when encryption is not possible (ARCHITECTURE §19.1).
 12. Auth shares the session only between tabs of one origin (through Storage). Tabs on other subdomains get the status, not the tokens, so each origin signs in on its own (or uses a cookie on the apex).
 13. Without the Web Locks API (WebKit before 15.4), two tabs can push the same outbox change at the same time. The idempotency key still keeps the server from applying it twice.
 

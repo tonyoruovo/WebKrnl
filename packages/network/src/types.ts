@@ -37,6 +37,37 @@ export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 
 export type CacheStrategy = 'network-only' | 'network-first' | 'cache-first' | 'cache-only';
 
 /**
+ * @summary How cached responses are kept in Storage, or `false` for memory only.
+ * @description Encryption keeps private data private at rest. Compression
+ * saves space for large responses. Each step costs time, so a call site can
+ * turn either off. An encrypted write that is not possible keeps the
+ * response in memory only; it is never stored in plain text instead.
+ * @example
+ * Example 1: The default
+ * ```ts
+ * const persist: CachePersistence = { encrypt: true, compress: false };
+ * ```
+ * @example
+ * Example 2: Public, large data: compress, do not encrypt
+ * ```ts
+ * const persist: CachePersistence = { encrypt: false, compress: true };
+ * ```
+ * @public
+ */
+export type CachePersistence =
+  | {
+      /**
+       * @summary Encrypts the stored response with the keys of `@platform/crypto`. The default is `true`.
+       */
+      readonly encrypt?: boolean;
+      /**
+       * @summary Compresses the stored response with gzip. The default is `false`.
+       */
+      readonly compress?: boolean;
+    }
+  | false;
+
+/**
  * @summary How the Network reads the body of a response.
  * @description `auto` reads JSON for a JSON content type, else text.
  * @public
@@ -101,6 +132,10 @@ export interface RequestConfig {
    * @summary How long a cached response stays fresh, in milliseconds. The default is the `cacheTtlMs` option.
    */
   readonly cacheTtlMs?: number;
+  /**
+   * @summary How this response is kept in Storage. The default is the `persistCache` option.
+   */
+  readonly cachePersist?: CachePersistence;
   /**
    * @summary How the body of the response is read. The default is `auto`.
    */
@@ -392,6 +427,10 @@ export interface NetworkOptions {
    * @summary The largest number of cached responses in memory. The default is 200.
    */
   readonly cacheEntries?: number;
+  /**
+   * @summary How cached responses are kept in Storage when it runs. The default is `{ encrypt: true, compress: false }`.
+   */
+  readonly persistCache?: CachePersistence;
   /**
    * @summary The circuit breaker, or `false` to turn it off.
    */

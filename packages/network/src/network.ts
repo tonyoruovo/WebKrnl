@@ -94,7 +94,12 @@ interface GlobalStateLike extends ControlInterface {
 /** The part of Storage that the Network uses. */
 interface StorageLike extends ControlInterface {
   readonly commands: {
-    collection(definition: { name: string; maxEntries?: number }): CacheCollection;
+    collection(definition: {
+      name: string;
+      maxEntries?: number;
+      encrypt?: boolean;
+      compress?: boolean;
+    }): CacheCollection;
   };
 }
 
@@ -295,12 +300,13 @@ export function createNetwork(
     const url = target.href;
     const strategy = config.cache ?? 'network-only';
     const key = ResponseCache.key(method, url);
+    const persist = config.cachePersist ?? options.persistCache ?? {};
     const started = now();
     update((s) => void s.requests++);
 
     const lookup = async () => {
       if (method !== 'GET' || strategy === 'network-only') return undefined;
-      const entry = await cache.get(key);
+      const entry = await cache.get(key, persist);
       update((s) => void (entry ? s.cacheHits++ : s.cacheMisses++));
       return entry;
     };
@@ -324,7 +330,16 @@ export function createNetwork(
       const pending = shared.get(key);
       if (pending) return pending as Promise<NetworkResponse<T>>;
     }
-    const promise = send<T>(id, config, method, url, key, strategy, entry, started);
+    const promise = send<T>(
+      id,
+      { ...config, cachePersist: persist },
+      method,
+      url,
+      key,
+      strategy,
+      entry,
+      started,
+    );
     if (dedupe) {
       shared.set(key, promise);
       void promise.then(
@@ -454,7 +469,7 @@ export function createNetwork(
             storedAt: now(),
             expiresAt: now() + (config.cacheTtlMs ?? options.cacheTtlMs ?? 300_000),
           };
-          await cache.set(key, refreshed);
+          await cache.set(key, refreshed, config.cachePersist);
           return fromEntry(id, url, refreshed, true, attempt, started) as NetworkResponse<T>;
         }
         const data = await parse(raw, method, config).catch((cause: unknown) =>
@@ -505,14 +520,18 @@ export function createNetwork(
         if (method === 'GET' && strategy !== 'network-only') {
           const isCloneable = !(data instanceof Blob) && !(data instanceof ArrayBuffer);
           if (isCloneable) {
-            await cache.set(key, {
-              status: raw.status,
-              headers: headersOut,
-              data,
-              etag: headersOut.etag ?? null,
-              storedAt: now(),
-              expiresAt: now() + (config.cacheTtlMs ?? options.cacheTtlMs ?? 300_000),
-            });
+            await cache.set(
+              key,
+              {
+                status: raw.status,
+                headers: headersOut,
+                data,
+                etag: headersOut.etag ?? null,
+                storedAt: now(),
+                expiresAt: now() + (config.cacheTtlMs ?? options.cacheTtlMs ?? 300_000),
+              },
+              config.cachePersist,
+            );
           }
         }
         return response;
@@ -588,7 +607,9 @@ export function createNetwork(
       }
       const stopStorage = ctx.watch<StorageLike>('storage', (storage) =>
         cache.bind(
-          storage ? storage.commands.collection({ name: 'network.cache', maxEntries: 500 }) : null,
+          storage
+            ? (definition) => storage.commands.collection({ ...definition, maxEntries: 500 })
+            : null,
         ),
       );
       return () => {

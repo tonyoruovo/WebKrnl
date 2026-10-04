@@ -8,7 +8,7 @@ The **Network** subsystem (id `network`, featurized, Tab scope, no required depe
 - **Retries**: network errors and `408`, `425`, `429`, `5xx` retry with backoff, and `Retry-After` is honoured. Only idempotent methods retry, or a request with an `idempotencyKey` (sent as `Idempotency-Key`).
 - **One fetch for identical requests**: identical `GET` requests in flight share one fetch.
 - **Priorities**: at most `maxConcurrent` requests run; the others wait by importance.
-- **Cache**: `network-first`, `cache-first` and `cache-only`, with a time to live and `ETag` revalidation. When Storage runs, the cache is also kept in the collection `network.cache`.
+- **Cache**: `network-first`, `cache-first` and `cache-only`, with a time to live and `ETag` revalidation. When Storage runs, the cache is also kept there: **encrypted by default**, compressed on request (`persistCache`, or `cachePersist` for one request).
 - **Offline**: a request fails at once with `OfflineError`, unless the cache answers. Sync keeps work for later.
 - **Circuit breaker**: after repeated failures to one origin, requests to it fail at once for a cool-down.
 - **Interceptors**: other subsystems add request and response interceptors. Auth adds its token this way.
@@ -70,6 +70,8 @@ From another subsystem, declare `{ target: 'network' }` in `requires` and use `c
 | A response interceptor returns `'retry'`          | The request goes out one more time                                                      |
 | `abort(id)`, `abortAll()` or the caller's signal  | `RequestAbortedError`                                                                    |
 | The Network stops                                 | Every running request is aborted                                                         |
+| A cached response with `cachePersist: { encrypt: true }` and no Storage keys | Kept in memory only, never in plain text                        |
+| `cachePersist: false`                             | Kept in memory only                                                                      |
 
 ## Options
 
@@ -82,6 +84,7 @@ From another subsystem, declare `{ target: 'network' }` in `requires` and use `c
 | `maxConcurrent` | `6`                       | Requests at the same time.                           |
 | `cacheTtlMs`    | `300_000`                 | How long a cached response stays fresh.              |
 | `cacheEntries`  | `200`                     | Cached responses in memory.                          |
+| `persistCache`  | `{ encrypt: true, compress: false }` | How cached responses are kept in Storage, or `false`. A request can change it with `cachePersist`. |
 | `breaker`       | `{ threshold: 5, cooldownMs: 30_000 }` | The circuit breaker, or `false`.         |
 | `fetch`         | the global `fetch`        | The fetch function (tests give a fake).              |
 
