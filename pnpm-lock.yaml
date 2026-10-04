@@ -376,6 +376,18 @@ importers:
         specifier: workspace:*
         version: link:../notification
 
+  packages/realtime:
+    devDependencies:
+      '@platform/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/global-state':
+        specifier: workspace:*
+        version: link:../global-state
+
   packages/storage:
     devDependencies:
       '@platform/core':

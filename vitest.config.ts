@@ -69,6 +69,8 @@ export default defineConfig({
         test: {
           name: 'browser',
           include: BROWSER_TESTS,
+          // A WebSocket server for the Realtime browser tests (port: inject('wsPort')).
+          globalSetup: ['./scripts/test-ws-server.ts'],
           exclude: ['**/node_modules/**', '**/dist/**'],
           browser: {
             enabled: true,
