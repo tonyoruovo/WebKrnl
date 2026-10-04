@@ -1,3 +1,13 @@
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.1](../docs/ARCHITECTURE.md#191-network).
+>
+> - Network is a featurized, Tab-scoped subsystem with no required dependency. Global State is optional. It runs on the main thread only.
+> - Retries use the backoff of `@platform/core` and honour `Retry-After`. Only idempotent methods, or requests with an `idempotencyKey`, retry.
+> - Identical in-flight `GET` requests share one fetch. A circuit breaker for each origin fails fast after repeated failures.
+> - The cache is in memory, with ETag revalidation, and is kept in Storage when Storage runs.
+> - Offline requests fail at once with `OfflineError` unless the cache answers. Sync, not Network, keeps work for later.
+> - Interceptors are added by other subsystems (`intercept`). Auth adds its own, so Network does not depend on Auth.
+> - Dropped for now: batching, request compression, rate limits per endpoint, progress events, and a worker host.
+
 # Network Manager
 
 ## Initial Proposal

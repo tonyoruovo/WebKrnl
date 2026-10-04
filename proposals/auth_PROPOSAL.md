@@ -1,3 +1,13 @@
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.2](../docs/ARCHITECTURE.md#192-auth).
+>
+> - Auth is a featurized, Window-scoped subsystem. Network is optional. Storage and Crypto are late-bound.
+> - The app gives handlers (`login`, `refresh`, `logout`, `elevate`) instead of endpoints, so MFA, OAuth and passkeys stay in the app.
+> - Tokens are never in the unit state. The session is kept in the encrypted Storage collection `auth.session` when Storage runs.
+> - `auth:changed` goes to every tab of the site with the status and the user id, never a token. Logout signs out every tab.
+> - The Network interceptor sends the token only to `protectedOrigins`, and refreshes one time on a `401`.
+> - `credentialCache` (with `hashedPassword`), the cookie manager and the password policy are removed.
+> - Dropped for now: session listing, password change, route and element registries, and device fingerprints.
+
 # Auth Manager
 
 ## Initial Proposal

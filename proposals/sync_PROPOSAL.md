@@ -1,3 +1,12 @@
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.3](../docs/ARCHITECTURE.md#193-sync).
+>
+> - Sync is a featurized, Tab-scoped subsystem on the main thread. Network is required. Storage is late-bound.
+> - Entities are declared with `entity(definition)`: a `push` handler, and optionally `pull`, `apply`, `merge` and a conflict strategy.
+> - An outbox replaces the offline change map. Each change has a stable id, sent as the `Idempotency-Key`, and leaves the outbox only after the server confirms it. Waiting changes to one entity merge.
+> - A Web Lock lets one tab of the origin replay the outbox at a time.
+> - Every change in the outbox is pending work in Global State.
+> - Dropped for now: delta computation, checksums, compression and bandwidth modes.
+
 
 # Sync manager
 ## Initial Proposal

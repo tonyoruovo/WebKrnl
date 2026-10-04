@@ -152,10 +152,11 @@ No code is written until both steps are done.
 
 ### M7 — Connectivity: Network, Auth, Sync, Realtime
 
-- `network`: retries, deduplication, cache, and an interceptor feature
-- `auth`: tokens, refresh, elevation, and permissions. `hashedPassword` is removed.
-- `sync`: subscriptions, intervals, conflict resolution, offline replay
-- `realtime`: socket lifecycle, reconnect with backoff
+- `network`: retries, deduplication, cache, a circuit breaker, and interceptors that other subsystems add (ARCHITECTURE §19.1)
+- `auth`: handlers, tokens, refresh, elevation, permissions, and status in every tab of the site. `hashedPassword` is removed. (§19.2)
+- `sync`: entities, a persisted outbox with idempotency keys, intervals, conflict resolution, offline replay by one tab (§19.3)
+- `realtime`: a socket in a dedicated worker, reconnect with backoff, heartbeats, topics and presence (§19.4)
+- The old Network, Auth, Sync and Realtime code in `src/managers` is ported and deleted
 
 **Gate:** an offline → online scenario completes all queued work with no duplicates, and the user-visible pending work matches the real state throughout.
 

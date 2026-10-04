@@ -206,7 +206,7 @@ interface Dependency {
 
 ### 7.1 Rules
 
-1. The resolver builds a graph of **features**. A cycle between subsystems is allowed when no cycle exists between their features. For example, Auth needs Network's transport and Network's interceptor feature needs Auth. Network's core does not need Auth, so the graph has no cycle.
+1. The resolver builds a graph of **features**. A cycle between subsystems is allowed when no cycle exists between their features. For example, Auth needs Network's transport and Network's interceptor feature needs Auth. Network's core does not need Auth, so the graph has no cycle. (M7 removes even this case: Auth adds its interceptor to Network, so Network does not depend on Auth, §19.1.)
 2. A missing required dependency turns off **only the unit that declares it**. That unit's parent becomes `DEGRADED`.
 3. A dependency that becomes `READY` later turns the waiting unit on. A dependency that leaves `READY` suspends the units that need it.
 4. **Crypto must not depend on Network.** Key material comes from a bootstrap fetch or from injected config. Otherwise boot deadlocks.
@@ -562,10 +562,10 @@ Shutdown runs disposers in reverse order. Persisting state is part of each unit'
 | Storage | featurized | Tab (coordinator shared per origin) | shared → virtual | — (uses the key store of `@platform/crypto`) | `storage`, backends |
 | Consent | featurized | Window | virtual | — (grants persist through the kernel's persistence, which Storage backs from M6) | `consent` |
 | Settings | featurized | Window | virtual | Consent | `settings` |
-| Network | featurized | Tab | virtual | GlobalState | `network` |
-| Auth | featurized | Window | virtual (crypto delegated) | Storage, Network | `auth` |
-| Sync | featurized | Tab | dedicated → virtual | Network, Storage | `sync` |
-| Realtime | featurized | Tab (hosts the Global transport) | dedicated → virtual | Network | `realtime` |
+| Network | featurized | Tab | virtual | — (GlobalState optional, §19.1) | `network` |
+| Auth | featurized | Window | virtual | — (Network optional; Storage and Crypto late-bound, §19.2) | `auth` |
+| Sync | featurized | Tab | virtual | Network (Storage late-bound, §19.3) | `sync` |
+| Realtime | featurized | Tab (hosts the Global transport) | dedicated → virtual | — (Auth optional, §19.4) | `realtime` |
 | Translation | featurized | Tab | virtual (compile: dedicated) | Storage, Network | `translation` |
 | Analytics | featurized | Tab | dedicated → virtual | Consent, Network | `analytics` |
 | Design System | featurized | Page | virtual | — | `design-system` (empty) |
@@ -634,7 +634,10 @@ An adapter exists only where a framework can do something better than the neutra
 | `queue` | The NotificationCenter does not poll the Queue. The Queue pushes broadcasts to it (§10). Dead letters are late-bound to Storage (§7.2). |
 | `logger` | No required dependencies. NotificationCenter and Storage are late-bound (§7.2). Trimmed in M4 (see the proposal's amendments). |
 | `consent` | Grants persist through the kernel's persistence, not a direct Storage dependency. Retention and data-subject requests wait for Storage (M6). |
-| `auth` | Remove `credentialCache.hashedPassword`. Password hashing belongs on the server. |
+| `auth` | Remove `credentialCache.hashedPassword`. Password hashing belongs on the server. Handlers replace endpoints, and tokens are never in unit state (§19.2). |
+| `network` | Runs on the main thread only. Offline requests fail at once; Sync keeps work for later. Auth adds its own interceptor, so Network has no dependency on Auth (§19.1). |
+| `sync` | Runs on the main thread. An outbox with idempotency keys and a Web Lock replaces the offline change map (§19.3). |
+| `realtime` | The protocol is pluggable. Network is not a dependency: the backoff comes from core (§19.4). |
 | `crypto` | Keep the rule that Crypto has no Network dependency (§7.1). Keys persist in IndexedDB as non-extractable `CryptoKey` objects (§18.1). |
 | `storage` | The backends run inside the coordinator processor, not as kernel features. Interactive transactions become atomic batches. The coordinator runs the pipeline with portable functions, and the caller validates with zod (§8.8, §18.2). |
 | `design-system` | The proposal is empty and must be written before its milestone. |
@@ -703,7 +706,7 @@ This section is the design of milestone M6. It amends the `crypto` and `storage`
 
 - **The backends are modules inside the coordinator**, not kernel features. They run in the worker, so they cannot be units of the main-thread kernel. The state of the subsystem reports the active backend and the probe result of each backend.
 - **Backend selection.** The coordinator probes the chain in `setup` (§8.7). A worker host with no persistent backend refuses to start, so the runner fails over to the virtual host. There, `localStorage` and `sessionStorage` exist, and `memory` is the last fallback.
-- **Collections.** Callers use `commands.collection(definition)`. A definition names the calling module and can give a schema (zod, or any object with `safeParse`, so zod is an optional peer), a schema version with migrations, a time to live, an eviction weight, encryption, compression and a maximum number of entries. Keys are canonical: `<domain>:<platform>:<platformVersion>:<module>:<key>`.
+- **Collections.** Callers use `commands.collection(definition)`. A definition names the calling module and can give a schema (zod, or any object with `safeParse`; the package has no dependency on zod), a schema version with migrations, a time to live, an eviction weight, encryption, compression and a maximum number of entries. Keys are canonical: `<domain>:<platform>:<platformVersion>:<module>:<key>`.
 - **Payload format.** A payload is `<flags>:<data>`. The flag `z` means gzip and `e` means AES-GCM. A read undoes what the flags say, so a collection can turn on compression or encryption later. The HMAC tag of an encrypted entry is `envelope.integrity`. (The M6 tests found that the IndexedDB and OPFS backends dropped `integrity`; they keep it now.)
 - **Pipeline in the coordinator.** The coordinator runs the pipeline, as the proposal intended: serialization, compression, encryption and the HMAC tag on a write, and the reverse with migration on a read. The functions of a collection (serializers, migrations, query predicates, eviction comparators) travel to the worker as portable functions (§8.8). The caller validates with the zod schema before a write and after a read, in its own realm, so the full schema applies.
 - **Encryption without a second hop.** The coordinator opens the key store of `@platform/crypto` itself. It reads the same IndexedDB keys as the Crypto subsystem, so Storage and Crypto use the same keys, and a write needs no message to another worker. Storage reloads the keys when Crypto broadcasts `crypto:keys-changed`.
@@ -753,3 +756,94 @@ The week 40 report listed three open items after M6. This section closes them, b
 - Each request of the coordinator runs inside a Web Lock (`navigator.locks`), named after the database. Reads take the lock in `shared` mode. Writes, batches, migrations and evictions take it in `exclusive` mode.
 - The lock queue is first-in, first-out for the origin, so the writes of all tabs apply in one order on every host.
 - Without the Web Locks API (WebKit before 15.4), the coordinator runs as before, and its status says `locks: false`.
+
+---
+
+## 19. Connectivity: Network, Auth, Sync and Realtime (M7)
+
+This section is the design of milestone M7. It amends the proposals `network`, `auth`, `sync` and `realtime`.
+
+```text
+  app / subsystems
+     |  network.request()            auth.login() / hasPermission()     sync.entity('todos').save()     realtime.subscribe('chat')
+     v                                    |                                  |                                |
+  Network  <-- interceptor (Auth) ---------+                                  |                                |
+  retries, timeouts, dedup, cache,        token, refresh, 401 retry           outbox (Storage), push/pull,     socket in a dedicated worker,
+  circuit breaker, offline check          status to every tab (Window)        conflicts, one replayer (lock)   reconnect, heartbeat, topics
+     |                                                                         |
+     +---------------------- fetch -------------------- server <---------------+ (through Network)
+```
+
+Every package depends on `@platform/core`. Global State is optional everywhere: without it, the online and visible states come from `navigator.onLine` and `document.visibilityState`.
+
+### 19.1 Network
+
+`@platform/network` gives the subsystem `network` (featurized, Tab scope, no required dependency). It runs on the main thread (virtual host only): a `Response` body is a stream, and callers need it in their own realm.
+
+- **Requests.** `commands.request(config)` and the shorthands `get`, `post`, `put`, `patch` and `delete`. The result is a `NetworkResponse` with `status`, `headers`, `data` (parsed by content type), `fromCache` and `attempts`. Each request has an id, and `abort(id)` and `abortAll()` cancel requests.
+- **Timeouts.** Each request has a timeout (default 30 s). A timeout is a `NetworkTimeoutError`, not a network error.
+- **Retries.** A network error or a retryable status (408, 425, 429, 500, 502, 503, 504) retries with `computeBackoff` (§8, core). The Network honours `Retry-After`. Only idempotent methods retry, or a request that carries an `idempotencyKey` (sent as the `Idempotency-Key` header).
+- **Deduplication.** Identical in-flight `GET` requests share one fetch.
+- **Concurrency.** At most `maxConcurrent` requests (default 6) run at the same time. The others wait in priority order.
+- **Cache.** Strategies `network-only` (default), `network-first`, `cache-first` and `cache-only`, with a time to live. A cached entry with an `ETag` makes the next request conditional (`If-None-Match`), and a `304` reuses the cached body. The cache is in memory. When Storage runs, it is also kept in the collection `network.cache` (late binding, §7.2).
+- **Offline.** When the platform is offline, a request fails at once with `OfflineError`, unless the cache can answer. Sync, not Network, keeps work for later.
+- **Circuit breaker.** After `breaker.threshold` consecutive failures (default 5) to one origin, the breaker opens for `breaker.cooldownMs` (default 30 s). Requests then fail at once with `CircuitOpenError`. One trial request closes it again.
+- **Interceptors.** `commands.intercept({ request?, response? })` adds an interceptor and returns the function that removes it. A request interceptor can change the request. A response interceptor can ask the Network to send the request one more time (for example, after a token refresh). Auth uses this.
+- **Pending work.** Each request that is not `background` registers as pending work in Global State while it runs.
+- **State.** `online`, `inFlight`, `waiting`, the breaker of each origin, and counters (requests, failures, cache hits and misses).
+- Dropped for now: request batching, request compression, rate limits per endpoint (except `Retry-After`), progress events, and a worker host.
+
+### 19.2 Auth
+
+`@platform/auth` gives the subsystem `auth` (featurized, **Window** scope). Network is optional. Storage and Crypto are optional and late-bound.
+
+- **Handlers, not endpoints.** The app gives the functions that talk to its server: `login(credentials, tools)`, `refresh(refreshToken, tools)`, and optionally `logout` and `elevate`. `tools.request` is Network's `request` when Network runs, else `fetch`. Auth does not know the shape of the credentials, so MFA, OAuth and passkeys stay in the app's handlers.
+- **Tokens.** A session has an access token, a refresh token, their expiry times, and the user (`id`, `roles`, `permissions`, `level`). Auth refreshes the access token `refreshBeforeMs` before it expires (default 60 s). One refresh runs at a time. A failed refresh retries with backoff, then sets the status to `EXPIRED`.
+- **Token storage.** When Storage runs, the session is kept in the encrypted collection `auth.session`, so a reload keeps the user signed in. Without Storage, the session is in memory only. Tokens are never in the unit state, which every unit can read.
+- **Every tab.** Auth broadcasts `auth:changed` in **Window** scope with the status and the user id, never a token. A tab of the same origin then loads the session from Storage. `logout()` broadcasts too, so every tab of the site signs out.
+- **Network interceptor.** When Network runs, Auth adds an interceptor. It sends `Authorization: Bearer <token>` only to the origins in `protectedOrigins` (default: the page origin), so a token never goes to a third party. A `401` refreshes the token one time and sends the request again.
+- **Permissions.** `hasPermission`, `hasRole` and `check({ permissions, roles, level })` read the user of the session. Elevations (`elevate(permissions, durationMs, reason)`) come from the app's `elevate` handler. They live in memory and expire.
+- **Lockout.** After `lockout.maxAttempts` failed logins (default 5), `login` fails at once with `AuthLockedError` for `lockout.durationMs`. The server stays the authority.
+- **Status.** `UNAUTHENTICATED`, `AUTHENTICATING`, `AUTHENTICATED`, `EXPIRED` or `ERROR`.
+- Removed: `credentialCache` with `hashedPassword` (§16), the cookie manager, and password policies (server work).
+- Dropped for now: session listing, password change, protected route and element registries (adapter work, M10), and device fingerprints.
+
+### 19.3 Sync
+
+`@platform/sync` gives the subsystem `sync` (featurized, Tab scope). Network is **required**. Storage is optional and late-bound.
+
+- **Virtual host.** The work of Sync is requests through Network, which runs on the main thread, so a dedicated worker gives no gain. The catalogue row changes to `virtual`.
+- **Entities.** `commands.entity(definition)` declares an entity type: its `push` handler, and optionally `pull`, `apply`, `merge` and a conflict strategy. Like Storage collections, it returns a handle: `save(id, data)`, `remove(id)`, and `pending()`.
+- **Outbox.** Each change goes to an outbox: `{ id, entity, entityId, op, data, createdAt, attempts }`. When Storage runs, the outbox is the collection `sync.outbox`, so changes survive a reload. Without Storage it is in memory, and `state.persistent` is `false`.
+- **No duplicates.** Each change has a stable `id`. The push handler gets it and sends it as the `Idempotency-Key`, so a retried change is applied once by the server. A change leaves the outbox only after the server confirms it. Two changes to the same entity that wait together become one (the last data wins, a delete wins over an update).
+- **One replayer.** The outbox is shared by every tab of the origin. A replay runs inside the Web Lock `platform-sync:<database>`, so two tabs never push the same change at the same time.
+- **When it syncs.** On `syncNow()`, after each change when online, when the platform comes back online, on an interval (default 5 minutes, only while visible), and at start.
+- **Failures.** A transient failure (offline, timeout, `5xx`, `429`) keeps the change and retries with backoff. A permanent failure (another `4xx`) moves the change to `failed`, reports it, and broadcasts `sync:failed`. `retryFailed()` puts failed changes back.
+- **Conflicts.** A push handler returns `{ conflict: remote }` for a `409`. The strategy decides: `server-wins` (drop the change, `apply` the remote data), `client-wins` (push again with `force`), `merge` (the entity's `merge(local, remote)`), or `manual` (keep it in `conflicts` until `resolve(id, choice)`).
+- **Pull.** A `pull(cursor)` handler returns changes and a new cursor. Sync gives each change to `apply`, then keeps the cursor (in Storage when it runs).
+- **Pending work.** Every change in the outbox is pending work in Global State until the server confirms it, so what the user sees matches the outbox. Each tab reloads the outbox when another tab changes it (`storage:changed`).
+- **Status.** `IDLE`, `SYNCING`, `OFFLINE`, `PAUSED` or `ERROR`, with `pending`, `failed`, `conflicts` and `lastSyncAt`. Broadcasts: `sync:completed` and `sync:failed`.
+- Dropped for now: delta computation and checksums (the server's pull gives deltas), compression, and bandwidth modes.
+
+### 19.4 Realtime
+
+`@platform/realtime` gives the subsystem `realtime` (featurized, Tab scope, no required dependency). Auth is optional.
+
+- **Socket in a worker.** The processor `socket` owns the `WebSocket`, on the hosts `dedicated`, then `virtual`. A worker keeps heartbeats on time when the main thread is busy. The processor posts each incoming message and each status change to the unit (`scope.post`, §8).
+- **Protocol.** The default protocol is JSON frames: `{ type: 'subscribe' | 'unsubscribe' | 'publish' | 'message' | 'ping' | 'pong' | 'presence', topic?, data? }`. An app with another protocol gives `protocol: { encode, decode }` as portable functions (§8.8).
+- **Reconnect.** A dropped socket reconnects with `computeBackoff`, while the platform is online and `maxAttempts` is not reached. Going online reconnects at once.
+- **Heartbeat.** A `ping` every `heartbeatMs` (default 25 s). No `pong` within `heartbeatTimeoutMs` (default 10 s) closes the socket and reconnects.
+- **Topics.** Many topics share one socket. `subscribe(topic, listener)` returns the function that unsubscribes. Every topic subscribes again after a reconnect. Messages to a topic go to its listeners and, with `broadcast: true`, as the Tab broadcast `realtime:message`.
+- **Publish.** `publish(topic, data)` sends at once when open. Otherwise it waits in a bounded buffer (default 100) and goes out after the next open.
+- **Presence.** `presence` frames update a map of peers (`online`, `away`, `offline`, `lastSeen`). A peer with no news for `presenceTimeoutMs` becomes `offline`.
+- **Auth.** With `auth: 'query'`, the access token of Auth goes in the URL (`?access_token=`). With `auth: 'message'`, it goes in the first frame. The socket reconnects when the token changes.
+- **Status.** `connecting`, `open`, `closing`, `closed` or `reconnecting`, with `attempts` and `lastError`. Broadcast: `realtime:connection-changed`.
+- The Global transport is a feature of Realtime in M8 (§11.4), not M7.
+
+### 19.5 The gate
+
+The M7 gate is an offline-to-online test in Node, with the real Global State, Queue, Notification Center, Storage, Network and Sync, and a fake server:
+
+1. The platform goes offline. The app saves changes, some of them to the same entity. Nothing is sent. The pending work in Global State always equals the outbox.
+2. The platform goes online. Sync replays the outbox. The fake server fails some pushes in two ways: a `503`, and a dropped response after the change was applied.
+3. Every change is applied by the server exactly once (counted by idempotency key), the outbox is empty, and the pending work is zero. At every step of the test, the pending work equals the real state of the outbox.

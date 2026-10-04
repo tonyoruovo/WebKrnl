@@ -1,3 +1,12 @@
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.4](../docs/ARCHITECTURE.md#194-realtime).
+>
+> - Realtime is a featurized, Tab-scoped subsystem with no required dependency. Auth is optional.
+> - The socket runs in the processor `socket` on the hosts dedicated, then virtual.
+> - The protocol is pluggable (`encode`, `decode` as portable functions). The default is JSON frames.
+> - The reconnect backoff comes from `@platform/core`, so Network is not a dependency.
+> - `publish` while disconnected waits in a bounded buffer.
+> - The Global transport is added in M8.
+
 # Realtime Manager
 
 **Type**: Featurized  
