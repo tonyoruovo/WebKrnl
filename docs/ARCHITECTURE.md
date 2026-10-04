@@ -187,7 +187,7 @@ Conformance of the subsystems that exist now:
 | Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
 | Crypto, Consent, Global State, Notification, hub | No user data (keys, decisions and state of the device) | Not applicable |
 
-The subsystems marked **Not yet** follow this rule after the work item in PLAN (M8).
+The subsystems marked **Not yet** follow this rule after the work item in PLAN (M8, §20.4).
 
 ---
 
@@ -880,3 +880,65 @@ The M7 gate is an offline-to-online test in Node, with the real Global State, Qu
 1. The platform goes offline. The app saves changes, some of them to the same entity. Nothing is sent. The counts in the pending work of Sync in Global State always equal the outbox.
 2. The platform goes online. Sync replays the outbox. The fake server fails some pushes in two ways: a `503`, and a dropped response after the change was applied.
 3. Every change is applied by the server exactly once (counted by idempotency key), the outbox is empty, and the pending work is zero. At every step of the test, the pending work equals the real state of the outbox.
+
+---
+
+## 20. Global scope (M8)
+
+This section is the design of milestone M8. It makes §11.4 concrete, gives WebKit browsers the Window relay of §11.3, and applies the sign-out rule (§5.1) to the subsystems that did not follow it yet.
+
+```text
+  device A                                   server                                   device B
+  unit (scope 'global') --broadcast-->                                                 Queue.ingest (dedupe by messageId)
+    Notification Center --global relay-->   'platform:global'                           --> local fan-out
+      Realtime feature 'global'              forwards to the other connections         ^
+        outbox (Storage) until 'ack' ------> of the same audience, and acks ----------+
+        socket open?  yes: socket frames
+                      no, online: HTTP through Network (POST publish, GET poll)
+                      offline: wait in the outbox (it survives a reload)
+```
+
+### 20.1 The Global transport
+
+- **A feature of Realtime.** `createRealtime({ url, global: { ... } })` adds the feature `global` to Realtime. It uses the Realtime socket, so it shares the connection, the reconnects, the heartbeats and the Auth token. When the feature fails, Realtime is `DEGRADED`, not `FAILED`.
+- **Reserved topics.** Global envelopes travel on the topic `platform:global`, and Window envelopes of the relay on `platform:window:<windowId>`. The frames are the Realtime frames (§19.4) with one addition: the server answers each accepted `publish` on a reserved topic with `{ "type": "ack", "data": "<messageId>" }`.
+- **The envelope.** The `data` of a frame is a wire envelope, version 1 (`encodeWire` and `decodeWire` of `@platform/core`). A receiver drops an envelope that does not decode, and reports it.
+- **Sending.** The feature attaches to the Notification Center as the scope relay of `global` (§11.3, the same mechanism as Window). Each local Global broadcast goes into the **outbox**, then out.
+- **The outbox.** An envelope stays in the outbox until the server acknowledges it. Without an acknowledgement, it is sent again after a reconnect, or after `ackTimeoutMs` (default 10 s). When Storage runs, the outbox is the collection `realtime.global-outbox`, so it survives a reload. An envelope whose `ttl` has passed is dropped. The outbox is bounded (`maxOutbox`, default 500): the oldest envelope goes first, and is counted.
+- **Receiving.** An envelope from the server goes to `Queue.ingest`, which drops repeats by `messageId` and fans it out in this tab. The sender's own envelope, if the server sends it back, is a repeat too.
+- **Exactly once for each receiver** is at least once (the outbox, the acknowledgement, sending again) plus deduplication by `messageId` (the Queue, and the window client for the relay).
+- **The audience** is the decision of the server. The usual audience is every connection of the same user (the Auth token of the socket), so a broadcast reaches every device and session of the user. The wire protocol document states the rule.
+- **HTTP fallback.** While the socket is not open and the platform is online, the feature uses Network, if it runs and `global.http` is set: `POST <http>/publish` sends an envelope (`{ "channel", "envelope" }`, answered with `{ "ack": "<messageId>" }`), and `GET <http>/poll?channels=…&cursor=…` is a long poll that returns `{ "envelopes": [...], "cursor": "…" }`. When the socket opens, polling stops. The same envelope can arrive by both paths; deduplication handles it.
+- **State.** `transport` (`socket`, `http` or `none`), `outbox` (the count), `sent`, `received`, `dropped`.
+- Dropped for now: Server-Sent Events, Global 1-to-1 requests (only broadcasts cross the server), and compression of frames.
+
+### 20.2 The Window relay
+
+- The feature gives a `WindowRelay` (§11.3): `publish(windowId, envelope)` sends on `platform:window:<windowId>`, `subscribe(windowId, listener)` receives from it, and `connected` is `true` while the socket is open or HTTP polling runs.
+- The server forwards an envelope on `platform:window:<id>` only to the other connections that subscribed to the same window id (§11.4). The window id comes from the session cookie on the apex domain, so only the tabs of one browser session share it.
+- `@platform/hub` binds the relay late: the window transport watches Realtime (`ctx.watch('realtime')`) and gives the relay of its `global` feature to the window client (`setRelay`). The client uses the relay only while the hub is not known to be `shared`, as before.
+
+### 20.3 The wire protocol and conformance
+
+- **`docs/WIRE-PROTOCOL.md`** is the contract for backend teams: the envelope (v1) and its rules, the socket frames and the reserved topics, the acknowledgement, the HTTP endpoints, the audience and the Window rule, and what the server must not do (for example, add fingerprints, §9.4).
+- **Fixtures.** `@platform/core` ships valid and invalid wire envelopes as JSON (`fixtures/wire`), with the reason that each invalid one fails.
+- **A conformance runner.** `@platform/realtime/conformance` exports `runConformance({ url, http?, token? })`. It connects two or three clients to a server and checks the rules: ping and pong, subscribe and forward, acknowledgements, no echo of Window envelopes to other window ids, invalid envelopes refused, and the HTTP endpoints when `http` is given. It returns one result for each rule, so a backend team can run it in its own CI.
+- **The test double.** An in-memory server (`packages/realtime/test/global-server.ts`) implements the protocol for the tests of this repository. It is never published. The browser tests use the WebSocket test server (`scripts/test-ws-server.ts`), which also implements the reserved topics, so the conformance runner runs against it.
+
+### 20.4 Sign-out in the other subsystems (§5.1)
+
+| Subsystem | Wipes on sign-out or a change of user |
+|---|---|
+| Network | Every cached response, in memory and in Storage |
+| Sync | The outbox (waiting, failed and conflicting changes) and the pull cursors |
+| Realtime | The publish buffer, presence, the topic listeners stay (they belong to the app), and the Global outbox. The socket opens again with the new token, or closes. |
+| Queue | The dead letters, in memory and in Storage |
+| Logger | The log entries, in memory and in Storage |
+
+### 20.5 The gate
+
+The M8 gate is a Node test with three devices (kernels), the in-memory server, and Storage:
+
+1. Device A is offline. A unit with Global scope broadcasts. The envelope waits in the outbox. A reloads (a new kernel on the same Storage), and the envelope is still there.
+2. A goes online. The server drops the first acknowledgement, so A sends the envelope again, and the server delivers it twice to B.
+3. Each subscriber on B and C receives the broadcast exactly once, and A's outbox is empty.

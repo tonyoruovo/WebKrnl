@@ -163,10 +163,10 @@ No code is written until both steps are done.
 
 ### M8 — Global scope
 
-- The Global transport as a Realtime feature, with Network fallback (§11.4)
+- The Global transport as a Realtime feature, with Network fallback (§11.4, §20.1)
 - Persistence and replay of outgoing Global packets while offline
 - The Window relay (§11.3): the Global transport forwards Window-scope envelopes between connections with the same window id
-- Wire-protocol documentation and conformance fixtures that backend teams can run against their own servers
+- Wire-protocol documentation and conformance fixtures that backend teams can run against their own servers (§20.3)
 - An in-memory server test double, used only in this repo's tests and never published
 - The sign-out wipe (ARCHITECTURE §5.1) in the subsystems that do not follow it yet: Network, Sync, Realtime, Queue and Logger
 
