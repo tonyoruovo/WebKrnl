@@ -27,6 +27,7 @@
  */
 
 import {
+  createDeduplicator,
   createStore,
   decodeWire,
   defineUnit,
@@ -318,6 +319,9 @@ export function createGlobalFeature(
   const connected = createStore(false);
   const windowListeners = new Map<string, Set<(envelope: PacketEnvelope) => void>>();
   const topicStops = new Map<string, () => void>();
+  // The envelopes that this tab sent. A poll, or a server, can send them back: they are dropped.
+  const own = createDeduplicator(1000);
+  const isOwn = (envelope: PacketEnvelope) => own.seen(envelope.metadata.messageId);
   let context: UnitContext<GlobalData> | null = null;
   let flush: () => Promise<void> = async () => {};
 
@@ -330,7 +334,9 @@ export function createGlobalFeature(
         windowListeners.set(windowId, (set = new Set()));
         stopTopic = bridge.subscribe(windowTopic(windowId), (data) => {
           const envelope = decode(data);
-          if (envelope) for (const l of [...(windowListeners.get(windowId) ?? [])]) l(envelope);
+          if (envelope && !isOwn(envelope)) {
+            for (const l of [...(windowListeners.get(windowId) ?? [])]) l(envelope);
+          }
         });
         topicStops.set(windowId, stopTopic);
       }
@@ -366,6 +372,7 @@ export function createGlobalFeature(
       ctx?.state.update((s) => void s.dropped++);
       return;
     }
+    own.seen(envelope.metadata.messageId);
     const entry: OutboxEntry = {
       id: envelope.metadata.messageId,
       channel,
@@ -438,7 +445,7 @@ export function createGlobalFeature(
       };
       const deliver = (channel: string, data: unknown) => {
         const envelope = decode(data);
-        if (!envelope) return;
+        if (!envelope || isOwn(envelope)) return;
         if (channel === GLOBAL_TOPIC) return ingest(envelope);
         const windowId = channel.slice('platform:window:'.length);
         for (const listener of [...(windowListeners.get(windowId) ?? [])]) listener(envelope);
