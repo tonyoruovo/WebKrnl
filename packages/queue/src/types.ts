@@ -636,6 +636,16 @@ export interface StoredCollection<T> {
    * @returns {Promise<Array<{ key: string; value: T }>>} The entries.
    */
   entries(): Promise<Array<{ key: string; value: T }>>;
+  /**
+   * @summary Deletes every value. The Queue calls it on sign-out (ARCHITECTURE §5.1).
+   * @example
+   * On sign-out
+   * ```ts
+   * await collection.clear();
+   * ```
+   * @returns {Promise<void>} Resolves when the values are deleted.
+   */
+  clear(): Promise<void>;
 }
 
 /**

@@ -386,3 +386,90 @@ export function createTestPlatform(
     status: (id) => kernel.unit(id).lifecycle.getSnapshot().status,
   };
 }
+
+/**
+ * @summary A test stand-in for Auth: a unit `auth` whose sign-in state the test sets.
+ * @description Units that wipe user data on sign-out (`watchSignOut`,
+ * docs/ARCHITECTURE.md §5.1) can be tested without `@platform/auth`. After
+ * each call, await `platform.settle()`: views notify in batches.
+ * @public
+ */
+export interface TestAuth {
+  /**
+   * @summary The unit to give to the kernel. Its id is `auth`.
+   */
+  readonly unit: SubsystemDefinition;
+  /**
+   * @summary Signs a user in.
+   * @example
+   * Signing in
+   * ```ts
+   * auth.signIn('u1');
+   * await platform.settle();
+   * ```
+   * @param {string} userId The id of the user.
+   * @returns {void}
+   */
+  signIn(userId: string): void;
+  /**
+   * @summary Signs the user out.
+   * @example
+   * Signing out
+   * ```ts
+   * auth.signOut();
+   * await platform.settle();
+   * ```
+   * @returns {void}
+   */
+  signOut(): void;
+}
+
+/**
+ * @summary Makes a test stand-in for Auth.
+ * @example
+ * Testing a sign-out wipe
+ * ```ts
+ * const auth = createTestAuth();
+ * const platform = createTestPlatform([auth.unit, createNetwork()]);
+ * await platform.start();
+ * auth.signIn('u1');
+ * await platform.settle();
+ * auth.signOut();
+ * await platform.settle();
+ * ```
+ * @returns {TestAuth} The unit and its controls.
+ * @public
+ */
+export function createTestAuth(): TestAuth {
+  type Data = { status: string; user: { id: string } | null };
+  let update: ((next: Data) => void) | null = null;
+  const unit: SubsystemDefinition = {
+    id: 'auth',
+    scope: 'tab',
+    kind: 'featurized',
+    state: {
+      initial: { status: 'UNAUTHENTICATED', user: null } as Data,
+      policy: { status: { readable: true }, user: { readable: true } },
+    },
+    init(ctx) {
+      update = (next) =>
+        (ctx.state as { update(fn: (s: Data) => void): void }).update((s) =>
+          Object.assign(s, next),
+        );
+      return () => void (update = null);
+    },
+    control: (ctx) => ({
+      commands: { accessToken: () => null },
+      views: { state: ctx.state.readable },
+    }),
+  };
+  const set = (next: Data) => {
+    if (!update) throw new Error('The test Auth unit does not run.');
+    update(next);
+  };
+  return {
+    unit,
+    signIn: (userId) => set({ status: 'AUTHENTICATED', user: { id: userId } }),
+    signOut: () => set({ status: 'UNAUTHENTICATED', user: null }),
+  };
+}

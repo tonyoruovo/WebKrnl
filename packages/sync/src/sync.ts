@@ -38,6 +38,7 @@ import {
   type SubsystemDefinition,
   type UnitContext,
   type View,
+  watchSignOut,
 } from '@platform/core';
 
 import { Outbox, mergeOps, type OutboxStore } from './outbox';
@@ -120,6 +121,7 @@ interface SyncStore extends OutboxStore {
 interface CursorStore {
   get(key: string): Promise<{ cursor: string | null } | undefined>;
   set(key: string, value: { cursor: string | null }): Promise<void>;
+  clear(): Promise<void>;
 }
 
 /** The part of Storage that Sync uses. */
@@ -450,6 +452,7 @@ export function createSync(options: SyncOptions = {}): SubsystemDefinition<SyncD
       { target: 'network', kind: 'required' },
       { target: 'global-state', kind: 'optional' },
       { target: 'storage', kind: 'optional' },
+      { target: 'auth', kind: 'optional' },
     ],
     state: {
       initial: {
@@ -542,7 +545,18 @@ export function createSync(options: SyncOptions = {}): SubsystemDefinition<SyncD
       (timer as { unref?: () => void } | undefined)?.unref?.();
       kick();
 
+      // Sign-out (ARCHITECTURE §5.1): the changes of a user never reach the next user.
+      const stopSignOut = watchSignOut(ctx, async () => {
+        clearTimeout(retryTimer);
+        await outbox.clear();
+        cursors.clear();
+        await cursorStore?.clear();
+        ctx.state.update((s) => void (s.lastError = null));
+        showPending();
+      });
+
       return async () => {
+        stopSignOut();
         // Stop new runs, then let the current run end before Storage and Network stop.
         paused = true;
         clearTimeout(retryTimer);

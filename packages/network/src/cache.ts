@@ -172,6 +172,9 @@ export class ResponseCache {
   readonly #entries = new Map<string, CacheEntry>();
   #open: CacheCollectionFactory | null = null;
   readonly #collections = new Map<string, CacheCollection>();
+  // An invalidation that still deletes from Storage. Reads and writes wait for it, so a
+  // read cannot bring an entry back into memory while it is being deleted.
+  #invalidating: Promise<unknown> = Promise.resolve();
 
   /**
    * @summary Makes a cache.
@@ -242,6 +245,7 @@ export class ResponseCache {
       this.#entries.set(key, hit);
       return hit;
     }
+    await this.#invalidating;
     const stored = await this.#collection(persist)
       ?.get(key)
       .catch(() => undefined);
@@ -263,6 +267,7 @@ export class ResponseCache {
    * @returns {Promise<void>} Resolves when the entry is stored.
    */
   async set(key: string, entry: CacheEntry, persist: CachePersistence = {}): Promise<void> {
+    await this.#invalidating;
     this.#remember(key, entry);
     await this.#collection(persist)
       ?.set(key, entry)
@@ -288,15 +293,19 @@ export class ResponseCache {
       this.#entries.delete(key);
       removed++;
     }
-    for (const encrypt of [false, true]) {
-      for (const compress of [false, true]) {
-        const collection = this.#collection({ encrypt, compress });
-        if (!collection) continue;
-        const keys = await collection.keys().catch(() => [] as string[]);
-        for (const key of keys)
-          if (matches(key)) await collection.delete(key).catch(() => undefined);
+    const deleting = (async () => {
+      for (const encrypt of [false, true]) {
+        for (const compress of [false, true]) {
+          const collection = this.#collection({ encrypt, compress });
+          if (!collection) continue;
+          const keys = await collection.keys().catch(() => [] as string[]);
+          for (const key of keys)
+            if (matches(key)) await collection.delete(key).catch(() => undefined);
+        }
       }
-    }
+    })();
+    this.#invalidating = deleting;
+    await deleting;
     return removed;
   }
 

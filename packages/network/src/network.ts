@@ -39,6 +39,7 @@ import {
   type SubsystemDefinition,
   type UnitContext,
   type View,
+  watchSignOut,
 } from '@platform/core';
 
 import { Breakers } from './breaker';
@@ -552,6 +553,7 @@ export function createNetwork(
     requires: [
       { target: 'global-state', kind: 'optional' },
       { target: 'storage', kind: 'optional' },
+      { target: 'auth', kind: 'optional' },
     ],
     state: {
       initial: {
@@ -612,7 +614,15 @@ export function createNetwork(
             : null,
         ),
       );
+      // Sign-out (ARCHITECTURE §5.1): stop the requests of the user, then wipe the cache.
+      const stopSignOut = watchSignOut(ctx, async () => {
+        for (const controller of controllers.values()) {
+          controller.abort(new RequestAbortedError('[network] The user signed out.', ''));
+        }
+        await cache.invalidate();
+      });
       return () => {
+        stopSignOut();
         stopGlobal();
         stopView?.();
         stopStorage();

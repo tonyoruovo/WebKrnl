@@ -42,6 +42,7 @@
 
 import {
   LateBinding,
+  watchSignOut,
   createRingBuffer,
   defineSubsystem,
   type ControlInterface,
@@ -95,6 +96,16 @@ export interface StoredLog {
    * @returns {Promise<Array<{ key: string; value: LogEntry }>>} The entries.
    */
   entries(): Promise<Array<{ key: string; value: LogEntry }>>;
+  /**
+   * @summary Deletes every entry. The Logger calls it on sign-out (ARCHITECTURE §5.1).
+   * @example
+   * On sign-out
+   * ```ts
+   * await stored.clear();
+   * ```
+   * @returns {Promise<void>} Resolves when the entries are deleted.
+   */
+  clear(): Promise<void>;
 }
 
 /**
@@ -925,6 +936,7 @@ export function createLogger(
       { target: 'queue', kind: 'optional' },
       { target: 'notification', kind: 'optional' },
       { target: 'storage', kind: 'optional' },
+      { target: 'auth', kind: 'optional' },
     ],
     state: {
       initial: {
@@ -1050,6 +1062,20 @@ export function createLogger(
           }),
         );
       }
+      // Sign-out (ARCHITECTURE §5.1): log entries and traces carry the context of the user.
+      stops.push(
+        watchSignOut(ctx, async () => {
+          entries.clear();
+          traces.clear();
+          storedSink.clear();
+          sink.clear();
+          ctx.state.update((s) => {
+            s.entries = 0;
+            s.traces = 0;
+          });
+          await stored?.clear();
+        }),
+      );
       return () => {
         stored = null;
         for (const stop of stops) stop();

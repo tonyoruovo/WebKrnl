@@ -46,9 +46,11 @@
 
 export { createQueue, type Queue } from './queue';
 export {
+  DEAD_LETTER_COLLECTION,
   QUEUE_ID,
   QueueRejectedError,
   type AdmissionControl,
+  type CollectionSource,
   type DeadLetter,
   type FanOut,
   type QueueControl,
@@ -56,4 +58,5 @@ export {
   type QueueOptions,
   type RejectionReason,
   type SettledPacket,
+  type StoredCollection,
 } from './types';

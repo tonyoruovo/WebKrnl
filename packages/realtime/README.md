@@ -73,6 +73,7 @@ commands.presence('u2')?.status; // 'online'
 
 | Situation                              | Result                                                                          |
 | -------------------------------------- | ------------------------------------------------------------------------------- |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The buffered publishes and the presence are wiped. The listeners stay (they belong to the app). The socket opens again with the new token |
 | The socket drops                       | `reconnecting`, backoff, then `open`; every topic subscribes again             |
 | No `pong` within `heartbeatTimeoutMs`  | The socket closes and reconnects                                               |
 | The platform goes offline              | The socket closes; no reconnect attempts until online                          |

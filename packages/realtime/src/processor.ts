@@ -147,6 +147,12 @@ export type SocketRequest =
        * @summary Returns the status.
        */
       readonly op: 'status';
+    }
+  | {
+      /**
+       * @summary Drops the publish buffer. The unit calls it on sign-out (ARCHITECTURE §5.1).
+       */
+      readonly op: 'reset';
     };
 
 /**
@@ -427,6 +433,10 @@ export function createSocketProcessor(
             close(1001, 'offline');
             setStatus('closed');
           }
+          return status;
+        case 'reset':
+          buffer.length = 0;
+          dropped = 0;
           return status;
         case 'status':
           return { status, attempts, lastError, dropped };

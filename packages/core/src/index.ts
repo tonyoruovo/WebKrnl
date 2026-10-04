@@ -104,6 +104,7 @@ export * from './route';
 export * from './rpc';
 export * from './scheduler';
 export * from './scope';
+export * from './signout';
 export * from './state';
 export * from './supervisor';
 export * from './transport';

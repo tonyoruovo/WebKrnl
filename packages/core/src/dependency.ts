@@ -460,4 +460,17 @@ export class LateBinding<T> {
   unbind(): void {
     this.#sink = null;
   }
+
+  /**
+   * @summary Drops the buffered items, for example the data of a user who signed out (ARCHITECTURE §5.1).
+   * @example
+   * On sign-out
+   * ```ts
+   * binding.clear();
+   * ```
+   * @returns {number} The number of items dropped.
+   */
+  clear(): number {
+    return this.#buffer.splice(0).length;
+  }
 }

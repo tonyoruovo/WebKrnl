@@ -56,6 +56,7 @@
 
 import {
   LateBinding,
+  watchSignOut,
   PacketExpiredError,
   UnitUnavailableError,
   appendFingerprint,
@@ -488,6 +489,7 @@ export function createQueue(options: QueueOptions = {}): Queue {
     requires: [
       { target: 'global-state', kind: 'optional' },
       { target: 'storage', kind: 'optional' },
+      { target: 'auth', kind: 'optional' },
     ],
     state: {
       initial: {
@@ -549,7 +551,15 @@ export function createQueue(options: QueueOptions = {}): Queue {
                 })
                 .catch((error: unknown) => ctx.report(error));
             });
+      // Sign-out (ARCHITECTURE §5.1): dead letters carry the payloads of the user.
+      const stopSignOut = watchSignOut(ctx, async () => {
+        deadLetters.set([]);
+        sink.clear();
+        counters();
+        await stored?.clear();
+      });
       return () => {
+        stopSignOut();
         stopStorage();
         stored = null;
         stopped = true;

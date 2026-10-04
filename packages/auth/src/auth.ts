@@ -399,6 +399,19 @@ export function createAuth<C = unknown>(
 
     init(ctx) {
       context = ctx;
+      // Storage is in the kernel and can still start: wait for it before a restore at start,
+      // so a stored session of this origin wins over a new one from the server.
+      const storageComing = () => {
+        const status = ctx.statuses.getSnapshot()['storage']?.status;
+        return (
+          persist !== false && status !== undefined && status !== 'FAILED' && status !== 'DESTROYED'
+        );
+      };
+      const stopWaiting = ctx.statuses.subscribe(() => {
+        if (started || session || store || !restoreOnStart || storageComing()) return;
+        started = true; // Storage will not come: restore now, one time.
+        void restoreNow();
+      });
       const stopStorage = ctx.watch<StorageLike>('storage', (storage) => {
         store =
           storage && persist !== false
@@ -413,7 +426,10 @@ export function createAuth<C = unknown>(
         if (store) started = true;
         const at = signOuts;
         if (!store) {
-          if (restoreOnStart) void restoreNow();
+          if (restoreOnStart && !storageComing()) {
+            started = true;
+            void restoreNow();
+          }
           return;
         }
         // A reload: take the stored session back, else ask the server.
@@ -462,6 +478,7 @@ export function createAuth<C = unknown>(
         });
       });
       return () => {
+        stopWaiting();
         stopStorage();
         stopNetwork();
         stopInterceptor?.();

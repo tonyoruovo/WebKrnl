@@ -82,6 +82,7 @@ const stop = commands.observe((settled) => archive(settled));
 
 | Situation                                             | Result                                                                    |
 | ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The dead letters are wiped, in memory, in the late-binding buffer and in Storage |
 | A broadcast outside its sender's scope                | `QueueRejectedError` (`scope`)                                            |
 | Global State does not admit the importance            | `QueueRejectedError` (`admission`)                                        |
 | `maxDepth` packets are waiting (not for `CRITICAL`)   | `QueueRejectedError` (`overflow`)                                         |

@@ -312,6 +312,26 @@ export class Outbox {
     return this.exclusive(() => this.#delete(id));
   }
 
+  /**
+   * @summary Deletes every change, in memory and in the collection. Sync calls it on sign-out (ARCHITECTURE §5.1).
+   * @example
+   * On sign-out
+   * ```ts
+   * await outbox.clear();
+   * ```
+   * @returns {Promise<number>} The number of changes deleted.
+   */
+  clear(): Promise<number> {
+    return this.exclusive(async () => {
+      const ids = [...this.#changes.keys()];
+      for (const id of ids) await this.#delete(id);
+      // Changes that only the collection has (another tab wrote them) go too.
+      const store = this.#store;
+      if (store) for (const { key } of await store.entries()) await store.delete(key);
+      return ids.length;
+    });
+  }
+
   async #delete(id: string): Promise<boolean> {
     const existed = this.#changes.delete(id);
     if (existed) this.onChange();

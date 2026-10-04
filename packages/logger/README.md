@@ -82,6 +82,7 @@ commands.resetLevel('sync');
 
 | Situation                                               | Result                                                                                     |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The entries and the traces are wiped, in memory, in the buffers and in Storage |
 | An entry below the threshold                            | Not kept; `log` returns `null`. Check `isEnabled` before costly context.                   |
 | A context key containing a sensitive pattern            | Its value becomes `'[REDACTED]'`, at any depth                                             |
 | A context value that cannot be cloned                   | Described: errors as `{ name, message }`, functions as `'[Function]'`, ...                 |

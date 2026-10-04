@@ -34,6 +34,7 @@ import {
   type ProcessorDef,
   type SubsystemDefinition,
   type View,
+  watchSignOut,
 } from '@platform/core';
 
 import {
@@ -279,7 +280,18 @@ export function createRealtime(
 
       if (options.autoConnect !== false) void call({ op: 'connect', token: token() });
 
+      // Sign-out (ARCHITECTURE §5.1): the buffered publishes and the presence belong to the user.
+      // The listeners stay: they belong to the app. The token change reconnects the socket.
+      const stopSignOut = watchSignOut(ctx, async () => {
+        ctx.state.update((s) => {
+          s.presence = {};
+          s.dropped = 0;
+        });
+        await handle.call({ op: 'reset' });
+      });
+
       return () => {
+        stopSignOut();
         stopHost();
         stopPosts();
         clearInterval(sweep);

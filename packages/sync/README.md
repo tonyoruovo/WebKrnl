@@ -70,13 +70,14 @@ The push handler decides how a change reaches your API. Throw an error with a `s
 2. **Send `change.id` as the `Idempotency-Key`** on every push. On the server, keep each key with its result for as long as a device can stay offline (days), and scope it to the user. A key that comes back returns the first result and applies nothing.
 3. **Answer conflicts with `409` and the current version**, and choose a strategy for each entity: `server-wins` for data that the server owns, `merge` for documents, `manual` when the user must decide.
 4. **Return permanent errors as 4xx** (for example, `422` for invalid data), so Sync stops retrying, and transient errors as `5xx` or `429`, so it retries.
-5. **Use Storage**, so the outbox survives a reload. The outbox holds user data, so it follows the sign-out rule (ARCHITECTURE §5.1): the changes of a user must not reach the next user of the device. Until Sync does this by itself (planned in M8), `discard` the changes on sign-out.
+5. **Use Storage**, so the outbox survives a reload. The outbox holds user data, so it follows the sign-out rule (ARCHITECTURE §5.1): the changes of a user must not reach the next user of the device. Sync wipes the outbox and the cursors on sign-out by itself.
 6. **Pull with a cursor** that the server gives, and let `apply` write to your local data (a Storage collection). A waiting local change wins over the server's version until it is pushed.
 
 ## Behaviour
 
 | Situation                                   | Result                                                                                       |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The outbox (waiting, failed and conflicting changes) and the pull cursors are wiped, in memory and in Storage |
 | A change while online                       | Sent at once                                                                                 |
 | A change while offline                      | Waits; `status` is `OFFLINE`; the pending work shows the count                               |
 | Back online                                 | The outbox is sent, oldest first, then a pull                                                |
