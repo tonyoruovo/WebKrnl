@@ -931,7 +931,7 @@ This section is the design of milestone M8. It makes §11.4 concrete, gives WebK
 |---|---|
 | Network | Every cached response, in memory and in Storage |
 | Sync | The outbox (waiting, failed and conflicting changes) and the pull cursors |
-| Realtime | The publish buffer, presence, the topic listeners stay (they belong to the app), and the Global outbox. The socket opens again with the new token, or closes. |
+| Realtime | The publish buffer, presence and the Global outbox. The topic listeners stay, because they belong to the app. The socket opens again with the new token, or closes. |
 | Queue | The dead letters, in memory and in Storage |
 | Logger | The log entries, in memory and in Storage |
 
