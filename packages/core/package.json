@@ -8,10 +8,12 @@
   "exports": {
     ".": "./src/index.ts",
     "./testing": "./src/testing/index.ts",
-    "./worker": "./src/worker.ts"
+    "./worker": "./src/worker.ts",
+    "./fixtures/*": "./fixtures/*"
   },
   "files": [
-    "src"
+    "src",
+    "fixtures"
   ],
   "sideEffects": false,
   "peerDependencies": {

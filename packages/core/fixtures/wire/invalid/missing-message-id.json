@@ -1,0 +1,26 @@
+{
+  "description": "The message id is missing: receivers cannot drop repeats.",
+  "reason": "metadata.messageId",
+  "envelope": {
+    "v": 1,
+    "eventId": "note:saved",
+    "actionName": "note:saved",
+    "importance": "MEDIUM",
+    "payload": {
+      "id": "n1",
+      "title": "Shopping list"
+    },
+    "metadata": {
+      "source": "notes",
+      "target": null,
+      "scope": "global",
+      "timestamp": 1767225600000,
+      "traceId": "0b8f3c1d-2e4a-4f6b-8c9d-1a2b3c4d5e6f",
+      "spanId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
+    },
+    "fingerprints": {
+      "entries": [],
+      "dropped": 0
+    }
+  }
+}

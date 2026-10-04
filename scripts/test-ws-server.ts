@@ -2,7 +2,8 @@
  * @fileoverview
  * @summary A small WebSocket server for the browser tests of Realtime (vitest `globalSetup`).
  * @description
- * It speaks the default JSON frames of `@platform/realtime`: it answers
+ * It speaks the default JSON frames of `@platform/realtime`, with the reserved
+ * topics of the Global transport (docs/WIRE-PROTOCOL.md): it answers
  * `ping` with `pong`, remembers `subscribe` and `unsubscribe`, and sends each
  * `publish` as a `message` to every subscriber of the topic. It is not a
  * general server: text frames only, no fragmentation, no extensions.
@@ -21,6 +22,8 @@ import { createServer, type Server } from 'node:http';
 import type { Duplex } from 'node:stream';
 
 import type { TestProject } from 'vitest/node';
+
+import { decodeWire } from '../packages/core/src/wire';
 
 declare module 'vitest' {
   export interface ProvidedContext {
@@ -104,10 +107,25 @@ export default function setup(project: TestProject) {
         } else if (frame.type === 'unsubscribe' && frame.topic)
           topics.get(frame.topic)?.delete(socket);
         else if (frame.type === 'publish' && frame.topic) {
+          // Reserved topics follow docs/WIRE-PROTOCOL.md: a valid envelope only, no echo to
+          // the sender, and an ack. Other topics reach every subscriber.
+          const reserved = frame.topic.startsWith('platform:');
+          if (reserved) {
+            try {
+              decodeWire(frame.data);
+            } catch {
+              continue;
+            }
+          }
           for (const peer of topics.get(frame.topic) ?? []) {
+            if (reserved && peer === socket) continue;
             peer.write(
               encode(JSON.stringify({ type: 'message', topic: frame.topic, data: frame.data })),
             );
+          }
+          if (reserved) {
+            const id = (frame.data as { metadata: { messageId: string } }).metadata.messageId;
+            send({ type: 'ack', data: id });
           }
         }
       }

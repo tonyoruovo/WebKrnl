@@ -55,3 +55,15 @@ describe('Realtime in the browser', () => {
     });
   });
 });
+
+describe('the Global wire protocol in the browser', () => {
+  it('passes the conformance runner against the WebSocket test server', async () => {
+    const { runConformance } = await import('../src/conformance');
+    const results = await runConformance({
+      url: `ws://127.0.0.1:${inject('wsPort')}/`,
+      timeoutMs: 1000,
+    });
+    expect(results.filter((r) => !r.passed)).toEqual([]);
+    expect(results.map((r) => r.rule)).toEqual(['ping', 'ack', 'forward', 'window', 'refuse']);
+  });
+});
