@@ -10,36 +10,28 @@
  *
  * ```text
  *   Global State -> Queue -> Notification
- *     -> Network -> Auth -> Realtime
- *     -> Sync -> Translation -> Analytics
+ *     -> Translation -> Analytics
  *   ```
  *
  * The Logger and Consent managers moved to `@platform/logger` and
  * `@platform/consent` (M4): warnings go to `options.warn`, and analytics asks
  * `options.analyticsConsent`, which denies by default. Crypto and Storage moved
- * to `@platform/crypto` and `@platform/storage` (M6).
+ * to `@platform/crypto` and `@platform/storage` (M6). Network, Auth, Sync and
+ * Realtime moved to `@platform/network`, `@platform/auth`, `@platform/sync`
+ * and `@platform/realtime` (M7).
  *
- * Optional injectables (fetch, socket factory, login) let
- * tests and alternate environments substitute their own implementations.
+ * Optional injectables (the analytics transport and consent) let tests and
+ * alternate environments substitute their own implementations.
  *
  * @see {@linkcode createPlatform}
  * @author MathAid
  */
 
 import { AnalyticsManager, type AnalyticsSnapshot } from './analytics/analytics.manager';
-import {
-  AuthManager,
-  type AuthCredentials,
-  type AuthTokens,
-  type AuthUser,
-} from './auth/auth.manager';
 import { defaultQueueConfig } from './bus';
 import { GlobalState } from './global/global-state.manager';
-import { NetworkManager } from './network/network.manager';
 import { NotificationCenter } from './notification/notification.manager';
 import { MessageQueue } from './queue/queue.manager';
-import { RealtimeManager, type RealtimeSocket } from './realtime/realtime.manager';
-import { SyncManager } from './sync/sync.manager';
 import { TranslationManager } from './translation/translation.manager';
 
 /**
@@ -48,20 +40,10 @@ import { TranslationManager } from './translation/translation.manager';
 export interface PlatformOptions {
   /** The busy threshold for Global State. Defaults to 50. */
   busyThreshold?: number;
-  /** The fetch function for Network. */
-  fetchFn?: NetworkManager['fetchFn'];
-  /** The socket factory for Realtime. */
-  socketFactory?: () => RealtimeSocket;
-  /** The login function for Auth. */
-  loginFn?: (credentials: AuthCredentials) => Promise<{ user: AuthUser; tokens: AuthTokens }>;
-  /** The refresh function for Auth. */
-  refreshFn?: (refreshToken: string) => Promise<AuthTokens>;
   /** The analytics transport. */
   analyticsTransport?: (snapshot: AnalyticsSnapshot) => Promise<void>;
   /** Whether analytics may collect. Defaults to `() => false`: no consent, no analytics. */
   analyticsConsent?: () => boolean;
-  /** Receives warnings from Network. Defaults to `console.warn`. */
-  warn?: (message: string) => void;
 }
 
 /**
@@ -71,10 +53,6 @@ export interface Platform {
   readonly globalState: GlobalState;
   readonly queue: MessageQueue;
   readonly notifications: NotificationCenter;
-  readonly network: NetworkManager;
-  readonly auth: AuthManager;
-  readonly realtime: RealtimeManager | null;
-  readonly sync: SyncManager;
   readonly translation: TranslationManager;
   readonly analytics: AnalyticsManager;
   /** Transitions Global State from INITIALIZING to IDLE. */
@@ -89,12 +67,12 @@ export interface Platform {
  * @summary Creates and wires the full platform.
  * @description
  * Constructs every manager in boot order and wires the integrations. Optional
- * injectables let callers substitute fetch, the socket, or the login.
+ * injectables let callers substitute the analytics transport and consent.
  *
  * @example
  * Example 1: Boot the platform
  * ```ts
- * const platform = await createPlatform({ fetchFn: fetch });
+ * const platform = await createPlatform({ analyticsConsent: () => consent.isGranted('analytics') });
  * platform.markReady();
  * ```
  *
@@ -114,30 +92,10 @@ export async function createPlatform(options: PlatformOptions = {}): Promise<Pla
   // 3. Notification Center
   const notifications = new NotificationCenter();
 
-  // 4. Warnings, until the platform runs on the kernel (M10).
-  const warn = options.warn ?? ((message: string) => console.warn(message));
-
-  // 8. Network
-  const network = new NetworkManager({
-    fetchFn: options.fetchFn,
-    warn: { warn },
-  });
-
-  // 9. Auth
-  const auth = new AuthManager({ loginFn: options.loginFn, refreshFn: options.refreshFn });
-
-  // 10. Realtime (optional)
-  const realtime = options.socketFactory
-    ? new RealtimeManager({ socketFactory: options.socketFactory })
-    : null;
-
-  // 11. Sync
-  const sync = new SyncManager();
-
-  // 12. Translation
+  // 4. Translation
   const translation = new TranslationManager();
 
-  // 13. Analytics, gated by consent; fails closed.
+  // 5. Analytics, gated by consent; fails closed.
   const analytics = new AnalyticsManager({
     transport: options.analyticsTransport,
     consent: options.analyticsConsent ?? (() => false),
@@ -147,16 +105,11 @@ export async function createPlatform(options: PlatformOptions = {}): Promise<Pla
     globalState,
     queue,
     notifications,
-    network,
-    auth,
-    realtime,
-    sync,
     translation,
     analytics,
     markReady: () => globalState.markReady(),
     stop: () => globalState.stop(),
-    dispose: () => {
-      realtime?.disconnect();
-    },
+    // Nothing holds resources since M7; kept until the platform runs on the kernel (M10).
+    dispose: () => {},
   };
 }

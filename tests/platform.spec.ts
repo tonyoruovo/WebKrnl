@@ -24,9 +24,6 @@ describe('createPlatform', () => {
 
     expect(platform.queue).toBeDefined();
     expect(platform.notifications).toBeDefined();
-    expect(platform.network).toBeDefined();
-    expect(platform.auth).toBeDefined();
-    expect(platform.sync).toBeDefined();
     expect(platform.translation).toBeDefined();
     expect(platform.analytics).toBeDefined();
   });
