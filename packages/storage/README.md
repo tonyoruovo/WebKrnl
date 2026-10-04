@@ -26,7 +26,7 @@ The coordinator runs in a **shared worker**, then on the main thread (failover).
 }
 ```
 
-`zod` is an optional peer dependency. The package starts its worker with `new SharedWorker(new URL('./coordinator.worker.ts', import.meta.url), { type: 'module' })`. Vite, webpack 5 and Rollup find the worker file from this expression.
+The package has no dependency on `zod`: a schema is any object with `safeParse`, so a zod schema works as it is. The package starts its worker with `new SharedWorker(new URL('./coordinator.worker.ts', import.meta.url), { type: 'module' })`. Vite, webpack 5 and Rollup find the worker file from this expression.
 
 ## Entry points
 

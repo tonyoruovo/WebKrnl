@@ -15,8 +15,7 @@
   "sideEffects": false,
   "peerDependencies": {
     "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*",
-    "zod": "^4.0.0"
+    "@platform/crypto": "workspace:*"
   },
   "devDependencies": {
     "@platform/core": "workspace:*",
@@ -25,10 +24,5 @@
     "@platform/queue": "workspace:*",
     "zod": "^4.6.5"
   },
-  "license": "ISC",
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    }
-  }
+  "license": "ISC"
 }
