@@ -322,6 +322,18 @@ importers:
         specifier: workspace:*
         version: link:../queue
 
+  packages/network:
+    devDependencies:
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/global-state':
+        specifier: workspace:*
+        version: link:../global-state
+      '@platform/storage':
+        specifier: workspace:*
+        version: link:../storage
+
   packages/notification:
     devDependencies:
       '@platform/core':
