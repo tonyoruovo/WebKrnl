@@ -41,11 +41,17 @@ describe('Realtime in the browser', () => {
     expect(a.views.state.getSnapshot().host).toBe('dedicated');
 
     const got: unknown[] = [];
-    b.commands.subscribe('room', (data) => got.push(data));
-    // a and b use different sockets, so give b's subscribe time to reach the server first.
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    await a.commands.publish('room', { text: 'hello from a' });
-    await expect.poll(() => got).toEqual([{ text: 'hello from a' }]);
+    // Each run has its own topic: the browser projects share one server.
+    const room = `room-${crypto.randomUUID()}`;
+    b.commands.subscribe(room, (data) => got.push(data));
+    // a and b use different sockets, and b's subscribe can reach the server later than a's
+    // publish (under load). a publishes again until b gets the message.
+    await expect
+      .poll(async () => {
+        if (got.length === 0) await a.commands.publish(room, { text: 'hello from a' });
+        return got[0];
+      })
+      .toEqual({ text: 'hello from a' });
     // Heartbeats go out and pongs come back: the socket stays open.
     await new Promise((resolve) => setTimeout(resolve, 600));
     expect(a.views.state.getSnapshot()).toMatchObject({

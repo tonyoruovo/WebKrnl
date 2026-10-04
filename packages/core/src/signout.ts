@@ -97,7 +97,8 @@ export function watchSignOut(
   const stopWatch = ctx.watch<AuthStateSource>(target, (auth) => {
     stopView?.();
     stopView = undefined;
-    if (!auth) return; // Auth stopped: that is not a sign-out.
+    // Auth stopped (that is not a sign-out), or the unit has no state view of Auth.
+    if (typeof auth?.views?.state?.subscribe !== 'function') return;
     const read = () => {
       const { status, user } = auth.views.state.getSnapshot();
       const id = user?.id ?? null;

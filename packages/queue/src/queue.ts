@@ -523,7 +523,8 @@ export function createQueue(options: QueueOptions = {}): Queue {
         options.persistDeadLetters === false
           ? () => {}
           : ctx.watch<CollectionSource>('storage', (storage) => {
-              if (!storage) {
+              // A unit with the id `storage` that is not Storage (a test double) has no collections.
+              if (typeof storage?.commands?.collection !== 'function') {
                 stored = null;
                 sink.unbind();
                 return;
