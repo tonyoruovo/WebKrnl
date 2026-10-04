@@ -64,6 +64,14 @@ Storage does not send messages to Crypto. Its coordinator opens the same `KeySto
 
 Signing keys are always device keys.
 
+## Recommended flow
+
+1. **Keep device keys (the default) for data that belongs to this browser**, such as sessions and caches. Use `material` or `fetch` keys only when two devices must read the same encrypted data.
+2. **Give Storage the same key source.** Storage checks it, and refuses encrypted writes on a mismatch.
+3. **Rotate on a schedule that you choose** (`rotate`), for example after a security event. Old keys still decrypt.
+4. **Call `forget()` for an account deletion.** Every value that the keys encrypted becomes unreadable at once, also copies in caches and backups.
+5. **Send the public key of `sign` to the server one time**, and sign sensitive requests, so the server knows that they come from this device.
+
 ## Behaviour
 
 | Situation                                          | Result                                                                                                |

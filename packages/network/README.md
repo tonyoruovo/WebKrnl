@@ -56,6 +56,25 @@ try {
 
 From another subsystem, declare `{ target: 'network' }` in `requires` and use `ctx.dependency<NetworkControl>('network')`.
 
+## Recommended flow
+
+**Tokens and transport**
+
+1. Use HTTPS only. Let Auth add the token: it adds `Authorization: Bearer` only for its `protectedOrigins`, and refreshes once on a `401`. Do not add tokens in your own interceptors or in query strings.
+2. Keep `credentials: 'same-origin'` (the default). Your API takes the Bearer token, not cookies, so it needs no CSRF protection. Only the auth endpoints of the server use the session cookie (see the Auth README).
+
+**Retries**
+
+3. Give every request that changes data an `idempotencyKey` (Sync does this for you), and keep the keys on the server at least as long as a client can retry: for offline work, days, not minutes. Then a retry never applies a change twice.
+4. Send `Retry-After` with `429` and `503`. The Network waits that long.
+
+**Caching**
+
+5. Cache only `GET` responses that are safe to show again: `network-first` for data that should be fresh but must work offline, `cache-first` for data that changes rarely. Send an `ETag`, so a stale entry costs a `304` and no body.
+6. Keep the default `persistCache: { encrypt: true }` for anything about the user. Turn encryption off (`cachePersist: { encrypt: false }`) only for public data, and turn compression on for large text responses. Use `cachePersist: false` for data that must not survive a reload.
+7. The Network does not read `Cache-Control`: the call site decides. Do not set a cache strategy on responses that the server marks `no-store`.
+8. On sign-out, call `commands.invalidate()`, so the next user of the device cannot see cached private responses.
+
 ## Behaviour
 
 | Situation                                        | Result                                                                                   |

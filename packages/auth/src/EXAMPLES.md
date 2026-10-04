@@ -171,3 +171,64 @@ can refund now: true
 proof for the server: elevation-proof
 can refund later: false
 ```
+
+## Sign in on another subdomain with the apex cookie
+
+<!-- example id="auth/restore" runtime="any" -->
+
+A user signs in on `shop.example.com`, then opens `account.example.com`. Storage is per origin, so the second site cannot read the first one's session, and tokens never travel between them. Instead, the server keeps an `HttpOnly` session cookie on `example.com`, and the `restore` handler asks the server for a session for this origin.
+
+```ts file=main.ts
+import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@platform/auth';
+import { Kernel } from '@platform/core';
+
+// A fake server. In a browser, the cookie is HttpOnly on the apex domain: no script can read it.
+const server = { cookie: false, issued: 0 };
+const issue = (): AuthSession => ({
+  user: { id: 'u1', name: 'Ada', roles: [], permissions: [], level: 1 },
+  accessToken: `token-for-this-origin-${++server.issued}`,
+  refreshToken: null,
+  accessExpiresAt: null,
+});
+const handlers: AuthHandlers<null> = {
+  login: async () => {
+    server.cookie = true; // Set-Cookie: session=…; HttpOnly; Secure; SameSite=Lax; Domain=example.com
+    return issue();
+  },
+  refresh: async (session) => session,
+  logout: async () => {
+    server.cookie = false; // the server clears the cookie
+  },
+  restore: async () => (server.cookie ? issue() : null), // POST /auth/restore, with the cookie
+};
+
+async function site() {
+  const kernel = new Kernel([createAuth<null>({ handlers, persist: false })]);
+  await kernel.start();
+  return { kernel, auth: kernel.unit<AuthControl<null>>(AUTH_ID).control! };
+}
+
+const shop = await site();
+await shop.auth.commands.login(null);
+console.log('shop:', shop.auth.views.state.getSnapshot().status);
+
+// account.example.com opens later. At start, it asks the server.
+const account = await site();
+while (account.auth.views.state.getSnapshot().status !== 'AUTHENTICATED') {
+  await new Promise((resolve) => setTimeout(resolve, 5));
+}
+console.log('account:', account.auth.views.state.getSnapshot().status, 'user:', account.auth.views.state.getSnapshot().user?.name);
+console.log('same token:', shop.auth.commands.accessToken() === account.auth.commands.accessToken());
+
+await shop.auth.commands.logout();
+const later = await site();
+console.log('restored after logout:', await later.auth.commands.restore());
+for (const s of [shop, account, later]) await s.kernel.stop();
+```
+
+```text output
+shop: AUTHENTICATED
+account: AUTHENTICATED user: Ada
+same token: false
+restored after logout: false
+```

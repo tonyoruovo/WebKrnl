@@ -168,6 +168,7 @@ export function createAuth<C = unknown>(
           durationMs: options.lockout?.durationMs ?? 300_000,
         };
   const persist = options.persist ?? 'encrypted';
+  const restoreOnStart = options.restoreOnStart ?? true;
   const origins = new Set(
     options.protectedOrigins ??
       (typeof location !== 'undefined' && location.origin && location.origin !== 'null'
@@ -180,6 +181,10 @@ export function createAuth<C = unknown>(
   let store: SessionStore | null = null;
   let network: NetworkLike | null = null;
   let refreshing: Promise<boolean> | null = null;
+  let restoring: Promise<boolean> | null = null;
+  // Grows with each sign-out, so a restore that started before it is dropped.
+  let signOuts = 0;
+  let started = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let context: UnitContext<AuthData> | null = null;
   const skip = new Set<string>();
@@ -258,6 +263,49 @@ export function createAuth<C = unknown>(
     } catch (error) {
       context?.report(error);
     }
+  }
+
+  /** Asks the server for a session with the restore handler. One restore runs at a time. */
+  function restoreNow(): Promise<boolean> {
+    if (session) return Promise.resolve(true);
+    const restore = handlers.restore;
+    if (!restore) return Promise.resolve(false);
+    restoring ??= (async () => {
+      const ctx = context;
+      const started = signOuts;
+      const before = ctx?.state.get().status;
+      if (before === 'UNAUTHENTICATED')
+        ctx?.state.update((s) => void (s.status = 'AUTHENTICATING'));
+      try {
+        const restored = await restore(tools());
+        if (session) return true; // a login or a stored session came first
+        if (signOuts !== started) return false; // a sign-out came while the server answered
+        // Another tab of this origin may have stored a session meanwhile: one origin shares one session.
+        const stored = await store?.get('current').catch(() => undefined);
+        if (session) return true;
+        if (signOuts !== started) return false;
+        if (stored) {
+          adopt(stored);
+          return true;
+        }
+        if (!restored) {
+          ctx?.state.update((s) => void (s.status = before ?? 'UNAUTHENTICATED'));
+          return false;
+        }
+        adopt(restored);
+        await save(restored);
+        announce('restore');
+        return true;
+      } catch (error) {
+        // A failed restore is not a failed login: no lockout count.
+        ctx?.report(error);
+        if (!session) ctx?.state.update((s) => void (s.status = before ?? 'UNAUTHENTICATED'));
+        return false;
+      }
+    })().finally(() => {
+      restoring = null;
+    });
+    return restoring;
   }
 
   function refreshNow(): Promise<boolean> {
@@ -360,12 +408,23 @@ export function createAuth<C = unknown>(
               })
             : null;
         ctx.state.update((s) => void (s.persistent = store !== null));
-        if (!store || session) return;
-        // A reload: take the stored session back.
+        // The start: load the stored session (or restore) one time, not after each restart of Storage.
+        if (session || started) return;
+        if (store) started = true;
+        const at = signOuts;
+        if (!store) {
+          if (restoreOnStart) void restoreNow();
+          return;
+        }
+        // A reload: take the stored session back, else ask the server.
         void store
           .get('current')
           .then(async (stored) => {
-            if (!stored || session) return;
+            if (session || signOuts !== at) return;
+            if (!stored) {
+              if (restoreOnStart) await restoreNow();
+              return;
+            }
             adopt(stored);
             if (stored.accessExpiresAt !== null && stored.accessExpiresAt <= now())
               await refreshNow();
@@ -413,26 +472,30 @@ export function createAuth<C = unknown>(
         store = null;
         network = null;
         context = null;
+        started = false;
       };
     },
 
     receive(packet, ctx) {
       const change = packet.take() as AuthChanged;
       if (change.status === 'UNAUTHENTICATED') {
+        signOuts++;
         if (session) {
           adopt(null);
           void save(null);
         }
         return;
       }
-      if (change.status === 'AUTHENTICATED' && store) {
-        void store
-          .get('current')
-          .then((stored) => {
-            if (stored && stored.accessToken !== session?.accessToken) adopt(stored);
-          })
-          .catch((error: unknown) => ctx.report(error));
-      }
+      if (change.status !== 'AUTHENTICATED') return;
+      // Same origin: the session is in Storage. Another subdomain: ask the server (the apex cookie).
+      const at = signOuts;
+      void (store?.get('current') ?? Promise.resolve(undefined))
+        .then(async (stored) => {
+          if (signOuts !== at) return; // a sign-out came while Storage answered
+          if (stored && stored.accessToken !== session?.accessToken) adopt(stored);
+          else if (!stored && !session) await restoreNow();
+        })
+        .catch((error: unknown) => ctx.report(error));
     },
 
     control: (ctx) => {
@@ -472,6 +535,7 @@ export function createAuth<C = unknown>(
             }
           },
           async logout() {
+            signOuts++;
             const current = session;
             if (current && handlers.logout) {
               await handlers.logout(current, tools()).catch((error: unknown) => ctx.report(error));
@@ -481,6 +545,7 @@ export function createAuth<C = unknown>(
             announce('logout');
           },
           refresh: () => refreshNow(),
+          restore: () => restoreNow(),
           accessToken: () => session?.accessToken ?? null,
           hasPermission,
           hasRole,

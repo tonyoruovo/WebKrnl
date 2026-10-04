@@ -88,7 +88,7 @@ interface AuthLike extends ControlInterface {
  * @example
  * Example 1: An app with Auth
  * ```ts
- * createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'query' });
+ * createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' });
  * ```
  *
  * @example

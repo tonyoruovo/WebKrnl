@@ -10,7 +10,7 @@ The **Realtime** subsystem (id `realtime`, featurized, Tab scope, no required de
 - **Topics**: many topics share one socket. Every topic subscribes again after a reconnect.
 - **Publish buffer**: messages published while disconnected go out after the next open (bounded).
 - **Presence**: `presence` frames keep a map of peers; peers without news become `offline`.
-- **Auth**: with `auth: 'query'` or `'message'`, the access token of Auth reaches the server, and a new token reconnects.
+- **Auth**: with `auth: 'message'` (recommended) or `'query'`, the access token of Auth reaches the server, and a new token reconnects.
 - **Pluggable protocol**: JSON frames by default; `protocol: { encode, decode }` for another server (portable functions).
 
 Design: [ARCHITECTURE §19.4](../../docs/ARCHITECTURE.md#194-realtime) and the amended [Realtime proposal](../../proposals/realtime_PROPOSAL.md). The Global transport joins Realtime in M8.
@@ -40,7 +40,7 @@ The package starts its worker with `new Worker(new URL('./socket.worker.ts', imp
 ```ts
 import { createRealtime, type RealtimeControl } from '@platform/realtime';
 
-const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'query' })], {
+const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' })], {
   router: queue.router,
 });
 await kernel.start();
@@ -59,6 +59,15 @@ commands.presence('u2')?.status; // 'online'
   server --> client   {"type":"message","topic":"chat","data":...}   {"type":"pong"}   {"type":"ping"}
                       {"type":"presence","data":{"peer":"u2","status":"away"}}
 ```
+
+## Recommended flow
+
+1. **Use `wss://` only.**
+2. **Authenticate with `auth: 'message'`.** The access token goes in the first frame, `{ "type": "auth", "data": "<token>" }`. With `'query'`, the token is in the URL, and URLs end up in the logs of servers and proxies. The server closes a socket that sends no valid `auth` frame within a few seconds.
+3. **Let the token rotate.** When Auth refreshes the token, Realtime opens the socket again with the new one. The server should also close sockets whose token expired, and Realtime reconnects.
+4. **Check the topic on the server.** A subscription is a request: the server allows only the topics that the user may read (for example, `orders:<own id>`).
+5. **Do not cache socket messages.** Use them to refresh data through Network or Sync, which apply the cache and persistence rules.
+6. **Keep the defaults for heartbeats** (25 s, with a 10 s timeout). Mobile networks drop idle sockets without a close frame.
 
 ## Behaviour
 

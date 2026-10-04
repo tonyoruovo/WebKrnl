@@ -84,6 +84,15 @@ From another subsystem, declare `{ target: 'storage', kind: 'optional' }` in `re
 
 Indexes support equality only. In an encrypted collection, an index stores an HMAC of each value, never the value. After a change to the index functions, call `reindex()`.
 
+## Recommended flow
+
+1. **Give `createStorage` the same key source as `createCrypto`.** Storage checks it (`state.keyCheck`) and refuses encrypted writes on a mismatch, so `crypto.forget()` always erases the encrypted data.
+2. **Encrypt every collection with data about the user** (`encrypt: true`): sessions, drafts, messages, cached private responses. Encryption adds an integrity tag, so a changed entry is detected and reported.
+3. **Use `compress: true` for large text values** only. Small values get larger.
+4. **Give each collection a schema and a version.** Migrations run in the coordinator, so the data on disk always matches the newest app.
+5. **Index encrypted collections with care.** An index of an encrypted collection stores an HMAC of each value, not the value, so a lookup still works and the value stays private.
+6. **On sign-out, clear the collections of the user.** For an account deletion, `crypto.forget()` makes all encrypted data unreadable at once, also copies in backups.
+
 ## Behaviour
 
 | Situation                                              | Result                                                                                                      |
@@ -101,6 +110,7 @@ Indexes support equality only. In an encrypted collection, an index stores an HM
 | More than one coordinator runs (WebKit, or a tab after a failover) | Each request runs in a Web Lock of the database, so the writes of all tabs keep one order       |
 | An index entry points to an expired or deleted entry   | The lookup leaves it out and deletes it                                                                    |
 | Use reaches the warning level (80 %)                   | `storage:quota` with `level: 'warning'`                                                                     |
+| No Web Locks API (outside the supported browsers, §1.1) | Requests run without the lock; with more than one coordinator, the writes of two tabs can interleave (`status.locks` is `false`) |
 | Use reaches the critical level (95 %)                  | Eviction (expired entries, then the lowest weight), then `storage:quota` with `level: 'critical'`          |
 
 ## Options

@@ -255,7 +255,7 @@ export interface RealtimeMessage {
  * @example
  * Example 1: An app
  * ```ts
- * createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'query' });
+ * createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' });
  * ```
  * @example
  * Example 2: A test with a fake socket, on the main thread
@@ -286,7 +286,8 @@ export interface RealtimeOptions {
    */
   readonly protocol?: RealtimeProtocol;
   /**
-   * @summary How the access token of Auth reaches the server: in the URL, in the first frame, or not at all (the default).
+   * @summary How the access token of Auth reaches the server: in the first frame, in the URL, or not at all (the default).
+   * @description Prefer `message`: a URL can end up in the logs of servers and proxies, and a frame does not.
    */
   readonly auth?: 'query' | 'message' | false;
   /**

@@ -249,8 +249,8 @@ The decisions of 2026-10-04 are in **bold**.
 9. Closed after M6: Storage compares its key ids with the state of Crypto (`keyCheck`). On a mismatch it reports a `KeyMismatchError` and refuses encrypted writes. **Accepted.**
 10. Closed after M6: collections can declare query indexes, and `lookup(index, value)` reads only the matching entries. Encrypted collections index an HMAC of each value. Range queries are not supported yet. **Accepted.**
 11. Closed: cached responses that the Network keeps in Storage are **encrypted by default**, and compression is an option (`persistCache: { encrypt, compress }`, and `cachePersist` for one request). A call site can turn off either step to save its time, or keep a response in memory only. A response is never stored in plain text when encryption is not possible (ARCHITECTURE §19.1).
-12. Auth shares the session only between tabs of one origin (through Storage). Tabs on other subdomains get the status, not the tokens, so each origin signs in on its own (or uses a cookie on the apex).
-13. Without the Web Locks API (WebKit before 15.4), two tabs can push the same outbox change at the same time. The idempotency key still keeps the server from applying it twice.
+12. Closed before M8: a tab on another subdomain signs in with the optional `restore` handler. The server keeps an `HttpOnly; Secure; SameSite=Lax` session cookie on the apex domain, and `restore` gets a session for this origin with it. Tokens never travel between tabs. A restore that a sign-out overtakes is dropped (ARCHITECTURE §19.2). The READMEs of Auth, Network, Sync, Realtime, Storage, Crypto and the hub have a **Recommended flow** section for tokens, cookies, caching and transport.
+13. Closed: Web Locks exist in every supported browser (Safari 15.4 and later; ARCHITECTURE §1.1 asks for iOS 16.4). Without them, the fallback stays as it is: two tabs can push the same change, and the idempotency key keeps the server from applying it twice. The Sync, Auth and Storage READMEs describe the fallback.
 
 ## Next steps
 

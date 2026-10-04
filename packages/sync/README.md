@@ -64,6 +64,15 @@ views.state.subscribe(() => showBadge(views.state.getSnapshot().pending));
 
 The push handler decides how a change reaches your API. Throw an error with a `status` of 4xx for a permanent failure.
 
+## Recommended flow
+
+1. **Push through Network** (`tools.network`), not `fetch`. Then the Auth token, the `401` refresh, the retries and the offline check all apply.
+2. **Send `change.id` as the `Idempotency-Key`** on every push. On the server, keep each key with its result for as long as a device can stay offline (days), and scope it to the user. A key that comes back returns the first result and applies nothing.
+3. **Answer conflicts with `409` and the current version**, and choose a strategy for each entity: `server-wins` for data that the server owns, `merge` for documents, `manual` when the user must decide.
+4. **Return permanent errors as 4xx** (for example, `422` for invalid data), so Sync stops retrying, and transient errors as `5xx` or `429`, so it retries.
+5. **Use Storage**, so the outbox survives a reload. The outbox can hold private data: on sign-out, decide what happens to it. A shared device should `discard` the changes of a user who signs out; a personal device can keep them for the next sign-in.
+6. **Pull with a cursor** that the server gives, and let `apply` write to your local data (a Storage collection). A waiting local change wins over the server's version until it is pushed.
+
 ## Behaviour
 
 | Situation                                   | Result                                                                                       |
@@ -77,6 +86,7 @@ The push handler decides how a change reaches your API. Throw an error with a `s
 | The server answers with a conflict          | The entity's strategy decides; `manual` waits for `resolve`                                  |
 | Two tabs with the same outbox               | One tab sends it at a time                                                                   |
 | A reload with changes in the outbox (Storage) | The changes come back and are sent                                                         |
+| No Web Locks API (outside the supported browsers, §1.1) | Two tabs can push the same change at the same time; the idempotency key still makes the server apply it once |
 | `pause()`                                   | No automatic runs until `resume()`                                                           |
 
 ## Options

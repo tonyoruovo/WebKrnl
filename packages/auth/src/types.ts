@@ -262,6 +262,25 @@ export interface AuthHandlers<C> {
     session: AuthSession,
     tools: AuthTools,
   ): Promise<Elevation>;
+  /**
+   * @summary Asks the server for a session for this origin, with the session cookie on the apex domain.
+   * @description Auth calls it at start when no session is stored, and when
+   * another tab announces a sign-in that this tab cannot load from Storage
+   * (a tab on another subdomain). The cookie must be `HttpOnly; Secure;
+   * SameSite=Lax` with `Domain` set to the apex. Tokens never travel
+   * between tabs (docs/ARCHITECTURE.md §19.2).
+   * @example
+   * A restore endpoint
+   * ```ts
+   * restore: async ({ network }) => {
+   *   const response = await network!.commands.request<AuthSession>({ url: '/auth/restore', method: 'POST', allowErrorStatus: true });
+   *   return response.status === 200 ? response.data : null;
+   * }
+   * ```
+   * @param {AuthTools} tools The Network and `fetch`.
+   * @returns {Promise<AuthSession | null>} A session, or `null` when the server has no session.
+   */
+  restore?(tools: AuthTools): Promise<AuthSession | null>;
 }
 
 /**
@@ -342,7 +361,7 @@ export interface AuthChanged {
   /**
    * @summary What happened.
    */
-  readonly reason: 'login' | 'logout' | 'refresh' | 'expired';
+  readonly reason: 'login' | 'logout' | 'refresh' | 'expired' | 'restore';
 }
 
 /**
@@ -422,6 +441,10 @@ export interface AuthOptions<C> {
       }
     | false;
   /**
+   * @summary Calls the restore handler at start when no session is stored. The default is `true`.
+   */
+  readonly restoreOnStart?: boolean;
+  /**
    * @summary How the session is kept in Storage: `encrypted` (the default), `plain`, or `false` for memory only.
    */
   readonly persist?: 'encrypted' | 'plain' | false;
@@ -468,6 +491,19 @@ export interface AuthControl<C = unknown> {
      * @returns {Promise<void>} Resolves when the session is gone.
      */
     logout(): Promise<void>;
+    /**
+     * @summary Asks the server for a session with the restore handler (the cookie on the apex domain).
+     * @description Auth calls it by itself at start and after a sign-in in
+     * another tab. Call it after the server set the cookie in another way,
+     * for example after an OAuth redirect.
+     * @example
+     * After an OAuth redirect
+     * ```ts
+     * if (await commands.restore()) router.push('/home');
+     * ```
+     * @returns {Promise<boolean>} `true` when a user is signed in afterwards.
+     */
+    restore(): Promise<boolean>;
     /**
      * @summary Refreshes the access token now.
      * @example

@@ -19,7 +19,7 @@
  * ```ts
  * import { createRealtime } from '@platform/realtime';
  *
- * const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example', auth: 'query' })], { router: queue.router });
+ * const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example', auth: 'message' })], { router: queue.router });
  * ```
  *
  * @example

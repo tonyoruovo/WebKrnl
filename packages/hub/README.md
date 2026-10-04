@@ -95,6 +95,12 @@ views.state.getSnapshot();
 
 The client also writes one session cookie, `__platform_window`, for the apex domain (`Domain=example.com; Path=/; SameSite=Lax; Secure`). It holds a random window id and the hub's partition state, nothing personal; it is strictly necessary for Window scope.
 
+## Recommended flow
+
+1. **Never send secrets through Window scope.** Every allowed origin of the site gets a Window broadcast. Auth sends only the status and the user id; each subdomain gets its own tokens from the server, with the session cookie on the apex domain (see the Auth README).
+2. **Keep the origin allowlist short**: only your own subdomains. The hub page refuses every other origin.
+3. **Serve the hub page with its CSP** (`frame-ancestors` with your subdomains) and without `X-Frame-Options`, on the path that `renderHubPage` expects.
+
 ## Behaviour
 
 | Situation                                                | Result                                                                                         |

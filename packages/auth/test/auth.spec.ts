@@ -38,6 +38,8 @@ const user = { id: 'u1', name: 'Ada', roles: ['USER'], permissions: ['orders:rea
 /** A fake auth server: tokens are 'access-<n>'; /api accepts only the newest one. */
 function authServer(options: { accessTtlMs?: number; refreshFails?: boolean } = {}) {
   let generation = 0;
+  // The session cookie on the apex domain: set by login, cleared by logout.
+  const cookie = { set: false };
   const log: string[] = [];
   const session = (): AuthSession => ({
     user,
@@ -50,6 +52,7 @@ function authServer(options: { accessTtlMs?: number; refreshFails?: boolean } = 
       log.push('login');
       if (credentials.password !== 'right')
         throw Object.assign(new Error('bad password'), { status: 401 });
+      cookie.set = true;
       return session();
     },
     async refresh(current, { network }) {
@@ -63,6 +66,11 @@ function authServer(options: { accessTtlMs?: number; refreshFails?: boolean } = 
     },
     async logout() {
       log.push('logout');
+      cookie.set = false;
+    },
+    async restore() {
+      log.push(`restore:${cookie.set ? 'cookie' : 'none'}`);
+      return cookie.set ? session() : null;
     },
     async elevate(request) {
       return {
@@ -87,7 +95,7 @@ function authServer(options: { accessTtlMs?: number; refreshFails?: boolean } = 
     }
     return Response.json('public');
   }) as typeof globalThis.fetch;
-  return { handlers, log, seen, fetch, expire: () => generation++ };
+  return { handlers, log, seen, fetch, cookie, expire: () => generation++ };
 }
 
 /** One tab: Queue, Notification Center, window transport, Network, Storage and Auth. */
@@ -241,6 +249,9 @@ describe('Auth', () => {
     const channel = `auth-tabs-${Math.random()}`;
     const a = await tab(server, { database, channel });
     const b = await tab(server, { database, channel });
+    // Same origin: the session must reach b through Storage, so both need it bound first.
+    await expect.poll(() => a.auth.views.state.getSnapshot().persistent).toBe(true);
+    await expect.poll(() => b.auth.views.state.getSnapshot().persistent).toBe(true);
     await a.auth.commands.login({ user: 'ada', password: 'right' });
     await expect.poll(() => b.auth.views.state.getSnapshot().status).toBe('AUTHENTICATED');
     expect(b.auth.commands.accessToken()).toBe('access-1');
@@ -252,5 +263,62 @@ describe('Auth', () => {
     await a.auth.commands.logout();
     await expect.poll(() => b.auth.views.state.getSnapshot().status).toBe('UNAUTHENTICATED');
     expect(b.auth.commands.accessToken()).toBeNull();
+  });
+
+  it('signs in a tab on another subdomain through the apex cookie, never by sharing tokens', async () => {
+    const server = authServer();
+    const channel = `auth-sites-${Math.random()}`;
+    // Two origins: each has its own Storage, and both share the Window channel.
+    const shop = await tab(server, { database: `shop-${Date.now()}`, channel });
+    const account = await tab(server, { database: `account-${Date.now()}`, channel });
+    await shop.auth.commands.login({ user: 'ada', password: 'right' });
+    await expect.poll(() => account.auth.views.state.getSnapshot().status).toBe('AUTHENTICATED');
+    // Its own token, from its own restore call: no token crossed between the tabs.
+    expect(account.auth.commands.accessToken()).not.toBe(shop.auth.commands.accessToken());
+    expect(server.log).toContain('restore:cookie');
+
+    await shop.auth.commands.logout();
+    await expect.poll(() => account.auth.views.state.getSnapshot().status).toBe('UNAUTHENTICATED');
+    expect(server.cookie.set).toBe(false);
+    // A restore or a Storage read that was under way when the sign-out came does not sign it in again.
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    expect(account.auth.views.state.getSnapshot().status).toBe('UNAUTHENTICATED');
+    expect(shop.auth.views.state.getSnapshot().status).toBe('UNAUTHENTICATED');
+  });
+
+  it('restores at start when the server has a session, and stays signed out otherwise', async () => {
+    const server = authServer();
+    const empty = await tab(server);
+    await expect.poll(() => server.log).toContain('restore:none');
+    expect(empty.auth.views.state.getSnapshot()).toMatchObject({
+      status: 'UNAUTHENTICATED',
+      failedAttempts: 0,
+    });
+
+    server.cookie.set = true; // signed in on another subdomain earlier
+    const later = await tab(server);
+    await expect.poll(() => later.auth.views.state.getSnapshot().status).toBe('AUTHENTICATED');
+    expect(await later.auth.commands.restore()).toBe(true);
+
+    const off = await tab(server, { restoreOnStart: false });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(off.auth.views.state.getSnapshot().status).toBe('UNAUTHENTICATED');
+    expect(await off.auth.commands.restore()).toBe(true);
+  });
+
+  it('prefers the stored session to a restore after a reload', async () => {
+    const server = authServer();
+    const database = `auth-prefer-${Date.now()}`;
+    const first = await tab(server, { database });
+    await expect.poll(() => first.auth.views.state.getSnapshot().persistent).toBe(true);
+    await first.auth.commands.login({ user: 'ada', password: 'right' });
+    await first.kernel.stop();
+    kernels.splice(0);
+    server.log.length = 0;
+
+    const second = await tab(server, { database });
+    await expect.poll(() => second.auth.views.state.getSnapshot().status).toBe('AUTHENTICATED');
+    expect(second.auth.commands.accessToken()).toBe('access-1');
+    expect(server.log.filter((l) => l.startsWith('restore'))).toEqual([]);
   });
 });
