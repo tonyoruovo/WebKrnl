@@ -5,7 +5,7 @@
 **Window scope**: broadcasts that reach every tab of a site, across its subdomains, in one browser session. `BroadcastChannel` and IndexedDB stop at the origin, and `a.example.com` and `b.example.com` are different origins, so Window scope needs:
 
 - a **hub page** on the apex (`https://example.com/__platform/hub.html`), which every subdomain tab frames, and whose `BroadcastChannel` they share;
-- a **relay** where the browser partitions that hub. **WebKit (Safari, and every browser on iOS) does**: its framed hubs are keyed by the top-level origin, so `a.` and `b.` never meet through it ([spike](../../spikes/m5-hub/FINDINGS.md)). The relay is the Global transport (M8); until one is configured, Window scope on WebKit reaches the tabs of one origin, and the client says so.
+- a **relay** where the browser partitions that hub. **WebKit (Safari, and every browser on iOS) does**: its framed hubs are keyed by the top-level origin, so `a.` and `b.` never meet through it ([spike](../../spikes/m5-hub/FINDINGS.md)). The relay is the Global transport of `@platform/realtime` (option `global`): when Realtime runs with it, the window transport takes the relay by itself. Without it, Window scope on WebKit reaches the tabs of one origin, and the client says so.
 
 The client detects which case it is in, uses the relay only when needed, and delivers each broadcast once. Design: [ARCHITECTURE §11.3](../../docs/ARCHITECTURE.md#113-window-scope-the-hub-and-the-relay) (amendment A11).
 
@@ -120,7 +120,7 @@ The client also writes one session cookie, `__platform_window`, for the apex dom
 | ------------- | ------------------- | ------------------------------------------------------------------- |
 | `hubUrl`      | none                | The hub page on the apex. Leave it out for a single-origin app.     |
 | `channel`     | `__platform_window` | The `BroadcastChannel` name; must match `renderHubPage`'s.          |
-| `relay`       | none                | The relay for partitioned browsers (the Global transport, from M8). |
+| `relay`       | from Realtime       | The relay for partitioned browsers. By default, the Window relay of Realtime's Global transport, when there is one. |
 | `timeoutMs`   | `5000`              | Wait for the hub's `welcome` and for each `pong`.                   |
 | `heartbeatMs` | `10000`             | How often the hub is pinged.                                        |
 | `retryBaseMs` | `500`               | Reconnection backoff base.                                          |

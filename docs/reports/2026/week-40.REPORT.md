@@ -2,17 +2,19 @@
 
 **Branch:** `staging` on [tonyoruovo/web-subsystem](https://github.com/tonyoruovo/web-subsystem). **Version:** `0.0.2` (pre-alpha, not published).
 
-This report brings you up to date on the work of this week. The work started on 2026-10-01 and has more than 80 commits. This version of the report includes milestones M6 and M7 and the runnable examples (updated 2026-10-04). Read the summary first, then the sections that apply to your work.
+This report brings you up to date on the work of this week. The work started on 2026-10-01 and has more than 80 commits. This version of the report includes milestones M6, M7 and M8 and the runnable examples (updated 2026-10-04). Read the summary first, then the sections that apply to your work.
 
 ## Summary
 
 - We agreed an architecture and a plan before we wrote code. The documents are `docs/ARCHITECTURE.md` and `docs/PLAN.md`.
-- We completed milestones M0 to M7 of eleven (M0 to M10). Each milestone has a gate test, and every gate passes.
+- We completed milestones M0 to M8 of eleven (M0 to M10). Each milestone has a gate test, and every gate passes.
 - The kernel (`@platform/core`) and twelve subsystem packages are built: Global State, Queue, Notification Center, Logger, Consent, the Window-scope hub, Crypto, Storage, Network, Auth, Sync and Realtime.
 - M6 added the data foundation. Crypto keeps non-extractable keys in IndexedDB. Storage keeps data in collections, through one coordinator in a shared worker. The details are in [Crypto and Storage (M6)](#crypto-and-storage-m6).
 - M7 added connectivity. Network sends requests with retries, a cache and a circuit breaker. Auth keeps the session and its tokens secret. Sync gets offline changes to the server exactly once. Realtime keeps one socket in a worker. The details are in [Connectivity (M7)](#connectivity-m7).
+- M8 added Global scope. A Global broadcast reaches the other devices and sessions of the user through your server, also after an offline period, and each receiver gets it once. The same transport relays Window scope on Safari and iOS. `docs/WIRE-PROTOCOL.md` is the contract for backend teams, with fixtures and a conformance runner. The details are in [Global scope (M8)](#global-scope-m8).
+- Each subsystem wipes the data of the signed-in user at sign-out or when another user signs in (ARCHITECTURE §5.1).
 - Functions can now cross worker boundaries as portable functions, so a migration or a filter can run in the worker.
-- Every source folder has an `EXAMPLES.md` with runnable examples (81 examples in 20 files). A doc compiler can turn them into code sandboxes. A script runs each one and compares its output.
+- Every source folder has an `EXAMPLES.md` with runnable examples (83 examples). A doc compiler can turn them into code sandboxes. A script runs each one and compares its output.
 - A spike found that Safari and all iOS browsers partition the cross-subdomain hub. We changed the design (amendment A11). The details are in [Window scope across subdomains](#window-scope-across-subdomains).
 - Every public member of every interface and class now has its own TSDoc block. A script enforces this rule.
 - All prose now uses ASD-STE100 Simplified Technical English (STE). This report also uses it.
@@ -23,7 +25,8 @@ This report brings you up to date on the work of this week. The work started on 
 |---|---|
 | [`README.md`](../../../README.md) | The purpose of the project, the packages and the status |
 | [`proposals/README.md`](../../../proposals/README.md) | The original definitions. This document has precedence over all others. |
-| [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) | The design. §15 lists amendments A1 to A11. §17 is the M4 retrospective. §8.7, §8.8 and §18 are the M6 design. §19 is the M7 design. |
+| [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) | The design. §15 lists amendments A1 to A11. §17 is the M4 retrospective. §8.7, §8.8 and §18 are the M6 design. §19 is the M7 design. §20 is the M8 design. §5.1 is the sign-out rule. |
+| [`docs/WIRE-PROTOCOL.md`](../../WIRE-PROTOCOL.md) | The Global wire protocol, for backend teams |
 | [`docs/PLAN.md`](../../PLAN.md) | The milestones, their gates, and the working principles |
 | `packages/<name>/README.md` | How to use each package |
 | `packages/<name>/src/**/EXAMPLES.md` | Runnable examples for each source folder |
@@ -55,7 +58,9 @@ This report brings you up to date on the work of this week. The work started on 
 | Auth handlers | The app gives `login`, `refresh`, `logout` and `elevate`. Auth does not know the credentials, so MFA, OAuth and passkeys stay in the app. Tokens are never in unit state. |
 | Exactly once | Sync gives each change a stable id, sent as `Idempotency-Key`. A change leaves the outbox only after the server confirms it. One tab replays a shared outbox (Web Lock). |
 | Pending work of Sync | One Global State entry for each entity type, with the count, so a long offline outbox does not make the platform `BUSY`. |
-| Realtime | The socket runs in a dedicated worker. The protocol is pluggable. The Global transport joins it in M8. |
+| Realtime | The socket runs in a dedicated worker. The protocol is pluggable. The Global transport is a feature of it (M8). |
+| Data of the signed-in user | Each subsystem wipes its own user data (state, persisted state, Storage, memory, processors) at sign-out or when another user signs in. `watchSignOut` of `@platform/core` gives the signal. (ARCHITECTURE §5.1) |
+| Global delivery | At least once from the server: an outbox that keeps each envelope until the server acknowledges it. Exactly once for each receiver: the Queue drops repeats by `messageId`. The server does not keep messages for offline receivers. |
 
 ## Milestones
 
@@ -69,8 +74,9 @@ This report brings you up to date on the work of this week. The work started on 
 | M5 | Window scope: the hub, the client and the transport. Consent moves to Window scope. | A broadcast from `a.<site>` reaches `b.<site>` in real browsers, and a foreign origin is refused |
 | M6 | Crypto and Storage. Processor configuration and portable functions in the kernel. Dead letters and log entries persist. | The shared worker dies during a write, and no data is lost |
 | M7 | Network, Auth, Sync and Realtime | Offline work goes online with failures; every change is applied once, and the pending work matches the outbox at every step |
+| M8 | Global scope: the Global transport, the Window relay, the wire protocol document, fixtures and conformance runner, and the sign-out wipe | A Global broadcast survives an offline period and a reload, and each receiver gets it once while the server drops an ack and delivers twice |
 
-The next milestones are M8 (Global scope), M9 (Translation, Settings, Analytics, Design System) and M10 (orchestrator, Vue adapter, scaffolder).
+The next milestones are M9 (Translation, Settings, Analytics, Design System) and M10 (orchestrator, Vue adapter, scaffolder).
 
 ## The packages
 
@@ -185,6 +191,31 @@ What the tests found:
 | A later empty run cleared the error while a failed change was still in the outbox | The status comes from the outbox: `ERROR` while failed changes exist. |
 | An outbox change for each pending-work entry would make a long offline outbox look like a busy platform | One entry for each entity type, with the count. |
 
+## Global scope (M8)
+
+```text
+  this tab:   port.send (Global) --> Notification Center --> realtime/global outbox (memory + Storage)
+                --> socket: publish on platform:global --> server --> ack --> leaves the outbox
+                --> no socket: POST <http>/publish through Network
+  other device: server --> message on platform:global --> decodeWire --> Queue.ingest (drops repeats) --> subscribers
+```
+
+- **The Global transport** is the feature `realtime/global` of Realtime (option `global`). It uses the socket of Realtime and two reserved topics, `platform:global` and `platform:window:<windowId>`.
+- **The outbox** keeps each envelope until the server acknowledges it. It sends again after `ackTimeoutMs` or a reconnect, and drops expired envelopes. It is in Storage, so it survives a reload.
+- **The HTTP fallback** publishes and long-polls through Network while the socket cannot open.
+- **The Window relay**: the window transport of `@platform/hub` takes it from Realtime by itself. On Safari and iOS, Window scope now reaches every subdomain of the site.
+- **For backend teams**: `docs/WIRE-PROTOCOL.md` (envelope, frames, ack, HTTP endpoints, audience rules), the fixtures in `@platform/core/fixtures/wire`, and `runConformance` in `@platform/realtime/conformance`. The conformance runner passes against the in-memory test server in Node and against the WebSocket test server in Chrome and WebKit.
+- **Sign-out**: Network, Sync, Realtime, Queue and Logger now wipe the data of the user, as Auth, Storage and Consent did. `createTestAuth` of `@platform/core/testing` tests it.
+
+What the tests found:
+
+| Finding | Result |
+|---|---|
+| Writes in flight on the main-thread host were lost when the kernel stopped | The virtual host waits for its calls before it stops. The Storage coordinator waits for its queue before it closes the database. |
+| A poll gave a tab its own Global broadcast back | Each tab drops the envelopes that it sent. |
+| Auth restored a session after a sign-out that came first | Auth counts sign-outs and drops a restore that one overtook. |
+| A Network cache read during the wipe filled the memory cache again | Cache reads and writes wait for the wipe. |
+
 ## Runnable examples
 
 Every source folder of a package has an `EXAMPLES.md`. Each example is a small real-world case with its expected output. `docs/EXAMPLES-FORMAT.md` is the contract for the doc compiler.
@@ -213,7 +244,7 @@ Run these from the root of the repository:
 | `pnpm install` | Installs the workspace |
 | `pnpm check` | Type-check, lint, format check, `check:docs`, `check:examples`, and all tests. Run it before you push. |
 | `pnpm verify` | Type-check, lint, format check and `check:docs`. Run it before each commit. |
-| `pnpm test:node` | Node tests (1095 tests) |
+| `pnpm test:node` | Node tests (1128 tests) |
 | `pnpm test:browser` | Browser tests, one project for each installed browser |
 | `pnpm test:e2e` | Multi-origin tests with Playwright, for example the Window-scope gate |
 | `pnpm check:docs` | Lists public members whose TSDoc block is missing or incomplete |
@@ -241,7 +272,7 @@ The decisions of 2026-10-04 are in **bold**.
 1. Playwright's own Chromium and Firefox builds do not start on the development machine (`spawn UNKNOWN`). The installed Chrome, Edge, Chromium and WebKit work. Firefox is not tested yet. **Deferred.**
 2. Real Safari is not tested. Playwright's WebKit is the closest available proxy on Windows. **Deferred.**
 3. CI is deferred. A GitHub Actions workflow exists but is not on. **Deferred.**
-4. On Safari and iOS, Window scope reaches one origin until the Global relay arrives in M8. **Deferred.**
+4. Closed in M8: on Safari and iOS, Window scope reaches every subdomain through the Window relay of the Global transport, when Realtime runs with the option `global`. Without it, Window scope reaches one origin.
 5. The iframe link and the hub page run only in real browsers, so the Node coverage of `@platform/hub` is about 70%. The e2e gate tests them. **Deferred: a manual browser test at the end of the milestones covers them.**
 6. Some older methods, mainly on `Kernel`, have no `@example` yet. Older prose is not yet in STE. **Deferred.**
 7. The old managers in `src/managers` stay until their milestones port them. **Confirmed.**
@@ -254,4 +285,4 @@ The decisions of 2026-10-04 are in **bold**.
 
 ## Next steps
 
-M8 adds Global scope: the Global transport as a feature of Realtime, with Network as the fallback, and the persistence and replay of outgoing Global packets while offline (ARCHITECTURE §11.4). It also gives WebKit browsers the Window relay that M5 left open.
+M9 adds the product subsystems: Translation, Settings, Analytics and the Design System. A manual browser test of the Window relay on real Safari and iOS stays open (items 2 and 5).

@@ -117,3 +117,91 @@ socket 1: orders
 socket 2: prices
 socket 2: orders
 ```
+
+## Send a Global broadcast to another device
+
+<!-- example id="realtime/global" runtime="any" -->
+
+The user changes a setting on the laptop. The phone gets the change. Each device runs Realtime with the option `global`; the fake server forwards `platform:global` to the other sockets and acknowledges each envelope, as [the wire protocol](../../../docs/WIRE-PROTOCOL.md) says.
+
+```ts file=main.ts
+import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@platform/core';
+import { createNotificationCenter } from '@platform/notification';
+import { createQueue } from '@platform/queue';
+import { REALTIME_ID, createRealtime, type GlobalControl, type SocketLike } from '@platform/realtime';
+
+// A fake server: it forwards a reserved topic to the other subscribers, then sends an ack.
+const subscribers = new Map<SocketLike, Set<string>>();
+function connect(): SocketLike {
+  const deliver = (to: SocketLike, frame: unknown) => setTimeout(() => to.onmessage?.({ data: JSON.stringify(frame) }), 1);
+  const socket: SocketLike = {
+    readyState: 0,
+    onopen: null,
+    onmessage: null,
+    onclose: null,
+    onerror: null,
+    send(data) {
+      const frame = JSON.parse(String(data)) as { type: string; topic?: string; data?: { metadata: { messageId: string } } };
+      if (frame.type === 'subscribe') subscribers.get(socket)!.add(frame.topic!);
+      if (frame.type !== 'publish') return;
+      for (const [other, topics] of subscribers) {
+        if (other !== socket && topics.has(frame.topic!)) deliver(other, { type: 'message', topic: frame.topic, data: frame.data });
+      }
+      deliver(socket, { type: 'ack', data: frame.data!.metadata.messageId });
+    },
+    close() {},
+  };
+  subscribers.set(socket, new Set());
+  setTimeout(() => {
+    (socket as { readyState: number }).readyState = 1;
+    socket.onopen?.({});
+  }, 1);
+  return socket;
+}
+
+async function device(name: string) {
+  let port: PacketPort | undefined;
+  const settings: SubsystemDefinition = {
+    id: 'settings',
+    scope: 'global',
+    kind: 'featurized',
+    state: { initial: {} },
+    subscribes: ['settings:changed'],
+    init: (ctx) => void (port = ctx.port),
+    receive: (packet) => console.log(`${name} got:`, JSON.stringify(packet.take())),
+    control: () => NO_CONTROL,
+  };
+  const notification = createNotificationCenter();
+  const queue = createQueue({ fanOut: notification.fanOut });
+  const kernel = new Kernel(
+    [
+      queue.subsystem,
+      notification.subsystem,
+      createRealtime({ url: 'wss://rt.example/socket', hosts: ['virtual'], socket: connect, global: {} }),
+      settings,
+    ] as SubsystemDefinition[],
+    { router: queue.router },
+  );
+  await kernel.start();
+  const global = kernel.unit<GlobalControl>(`${REALTIME_ID}/global`).control!;
+  return { kernel, port: () => port!, global };
+}
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const laptop = await device('laptop');
+const phone = await device('phone');
+while (laptop.global.views.state.getSnapshot().transport !== 'socket') await wait(5);
+await wait(20); // the subscriptions reach the server
+
+await laptop.port().send({ eventId: 'settings:changed', payload: { theme: 'dark' } });
+while (laptop.global.views.state.getSnapshot().outbox !== 0) await wait(5);
+await wait(20);
+console.log('laptop outbox:', laptop.global.views.state.getSnapshot().outbox);
+await laptop.kernel.stop();
+await phone.kernel.stop();
+```
+
+```text output
+phone got: {"theme":"dark"}
+laptop outbox: 0
+```

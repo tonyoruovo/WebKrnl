@@ -28,7 +28,8 @@ The kernel of the platform. Every other `@platform/*` package is built on it.
 | Routing and retries    | `PacketRouter`, `directRouter`, `computeBackoff`, `BackoffStrategy`                     | [§10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) |
 | Transports             | `Transport`, `createChannelTransportPair`, `createInRealmTransportPair`, `RpcEndpoint`  | [§10](../../docs/ARCHITECTURE.md#10-messaging-topology)                                      |
 | Scopes and routes      | `Scope`, `reaches`, `assertSendAllowed`, `RouteSource`                                  | [§11](../../docs/ARCHITECTURE.md#11-scopes)                                                  |
-| Global wire protocol   | `encodeWire`, `decodeWire`, `WireEnvelopeSchema`                                        | [§11.4](../../docs/ARCHITECTURE.md#114-global-scope-the-server)                              |
+| Global wire protocol   | `encodeWire`, `decodeWire`, `WireEnvelopeSchema`, the fixtures                          | [§11.4](../../docs/ARCHITECTURE.md#114-global-scope-the-server), [WIRE-PROTOCOL](../../docs/WIRE-PROTOCOL.md) |
+| Sign-out               | `watchSignOut`                                                                          | [§5.1](../../docs/ARCHITECTURE.md#51-data-of-the-signed-in-user-each-subsystem-wipes-its-own)                                    |
 
 ## Installation
 
@@ -53,6 +54,7 @@ Runs in the supported browsers (see the [root README](../../README.md#supported-
 | `@platform/core`         | Everything an app or a subsystem package needs.                                   |
 | `@platform/core/testing` | `createTestPlatform` and helpers: boot real units in tests, without browser APIs. |
 | `@platform/core/worker`  | `serveProcessor`: the one call a worker entry file makes.                         |
+| `@platform/core/fixtures/wire/*` | JSON fixtures of the wire protocol: `valid/*.json` and `invalid/*.json` (with the `reason`). For server tests. |
 
 ## Quick start
 
@@ -352,6 +354,8 @@ expect(platform.errors).toEqual([]);
 
 await platform.stop();
 ```
+
+`createTestAuth()` is a small Auth unit for the sign-out wipe (ARCHITECTURE §5.1): add `auth.unit` to the units, then call `auth.signIn('u1')` and `auth.signOut()`. A subsystem reacts with `watchSignOut(ctx, (reason) => wipe())`, where `reason` is `'sign-out'` or `'user-changed'`.
 
 ## Errors
 

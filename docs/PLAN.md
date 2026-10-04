@@ -170,7 +170,7 @@ No code is written until both steps are done.
 - An in-memory server test double, used only in this repo's tests and never published
 - The sign-out wipe (ARCHITECTURE §5.1) in the subsystems that do not follow it yet: Network, Sync, Realtime, Queue and Logger
 
-**Gate:** a Global broadcast survives an offline period and is delivered exactly once per receiver (at least once, plus deduplication).
+**Gate:** a Global broadcast survives an offline period and is delivered exactly once per receiver (at least once, plus deduplication). _Done 2026-10-04: `packages/realtime/test/gate.spec.ts` (ARCHITECTURE §20.5). The sender is offline, then reloads, then goes online while the server drops an ack and delivers each envelope twice: each receiver gets the broadcast once. The wire protocol is in `docs/WIRE-PROTOCOL.md`._
 
 ### M9 — Product subsystems
 
