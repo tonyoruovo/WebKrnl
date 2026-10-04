@@ -280,6 +280,8 @@ export class VirtualHost<In, Out> implements Host<In, Out> {
   readonly #posts = listeners<unknown>();
   readonly #scope;
   #module: ProcessorModule<In, Out> | null = null;
+  // Calls that are accepted and wait in the scheduler. stop() lets them finish first.
+  readonly #pending = new Set<Promise<unknown>>();
 
   /**
    * @summary Creates a host for one module. The module loads in `start`.
@@ -314,10 +316,14 @@ export class VirtualHost<In, Out> implements Host<In, Out> {
   call(message: In): Promise<Out> {
     const module = this.#module;
     if (!module) return Promise.reject(new Error('The virtual host is not started.'));
-    return this.scheduler.postTask(() => {
+    const task = this.scheduler.postTask(() => {
       this.#scope.startSlice();
       return module.handle(message, this.#scope);
     });
+    this.#pending.add(task);
+    const done = () => void this.#pending.delete(task);
+    task.then(done, done);
+    return task;
   }
 
   /**
@@ -344,6 +350,8 @@ export class VirtualHost<In, Out> implements Host<In, Out> {
   async stop(): Promise<void> {
     const module = this.#module;
     this.#module = null;
+    // A call that was accepted before the stop runs before the teardown: a write is not lost.
+    await Promise.allSettled([...this.#pending]);
     await module?.teardown?.();
   }
 }

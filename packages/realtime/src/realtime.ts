@@ -28,15 +28,18 @@
  */
 
 import {
+  createStore,
   defineSubsystem,
   toPortable,
   type ControlInterface,
   type ProcessorDef,
   type SubsystemDefinition,
+  type UnitContext,
   type View,
   watchSignOut,
 } from '@platform/core';
 
+import { createGlobalFeature, type SocketBridge } from './global';
 import {
   createSocketProcessor,
   type SocketConfig,
@@ -128,12 +131,58 @@ export function createRealtime(
   const broadcastTopics = new Map<string, number>();
   const presenceTimeoutMs = options.presenceTimeoutMs ?? 60_000;
 
+  // What the unit and its feature 'global' share: the socket, topics and acks.
+  let unitCtx: UnitContext<RealtimeData> | null = null;
+  let callSocket: ((request: SocketRequest) => Promise<unknown>) | null = null;
+  const socketStatus = createStore<RealtimeData['status']>('closed');
+  const acks = new Set<(messageId: string) => void>();
+  const reportError = (error: unknown) => unitCtx?.report(error);
+  const showTopics = () => unitCtx?.state.update((s) => void (s.topics = [...listeners.keys()]));
+
+  /** Adds a listener to a topic; the first listener subscribes on the server. */
+  function addListener(topic: string, listener: (data: unknown) => void, broadcast: boolean) {
+    let set = listeners.get(topic);
+    if (!set) {
+      listeners.set(topic, (set = new Set()));
+      showTopics();
+      callSocket?.({ op: 'subscribe', topic }).catch(reportError);
+    }
+    set.add(listener);
+    if (broadcast) broadcastTopics.set(topic, (broadcastTopics.get(topic) ?? 0) + 1);
+    let active = true;
+    return () => {
+      if (!active) return;
+      active = false;
+      set.delete(listener);
+      if (broadcast) broadcastTopics.set(topic, (broadcastTopics.get(topic) ?? 1) - 1);
+      if (set.size > 0) return;
+      listeners.delete(topic);
+      showTopics();
+      callSocket?.({ op: 'unsubscribe', topic }).catch(reportError);
+    };
+  }
+
+  const bridge: SocketBridge = {
+    status: socketStatus.view,
+    send: async (topic, data) =>
+      callSocket
+        ? (await callSocket({ op: 'publish', topic, data, buffer: false })) === true
+        : false,
+    subscribe: (topic, listener) => addListener(topic, listener, false),
+    onAck(listener) {
+      acks.add(listener);
+      return () => void acks.delete(listener);
+    },
+  };
+  const global = options.global ? createGlobalFeature(bridge, options.global) : null;
+
   const readable = { readable: true } as const;
   return defineSubsystem({
     id: REALTIME_ID,
     scope: 'tab',
     kind: 'featurized',
     processors: [processor],
+    features: global ? [global.unit] : [],
     requires: [
       { target: 'global-state', kind: 'optional' },
       { target: 'auth', kind: 'optional' },
@@ -161,6 +210,8 @@ export function createRealtime(
 
     init(ctx) {
       const handle = ctx.processor<SocketRequest, unknown>('socket');
+      unitCtx = ctx;
+      callSocket = (request) => handle.call(request);
       const call = (request: SocketRequest) =>
         handle.call(request).catch((error: unknown) => ctx.report(error));
       const token = () =>
@@ -183,7 +234,10 @@ export function createRealtime(
 
       const stopPosts = handle.onPost((message) => {
         const note = message as SocketNote;
-        if (note.note === 'status') {
+        if (note.note === 'ack') {
+          for (const listener of [...acks]) listener(String(note.data));
+        } else if (note.note === 'status') {
+          socketStatus.set(note.status);
           const from = ctx.state.get().status;
           ctx.state.update((s) => {
             s.status = note.status;
@@ -291,6 +345,9 @@ export function createRealtime(
       });
 
       return () => {
+        unitCtx = null;
+        callSocket = null;
+        socketStatus.set('closed');
         stopSignOut();
         stopHost();
         stopPosts();
@@ -308,45 +365,19 @@ export function createRealtime(
         config.auth === false
           ? null
           : (ctx.dependency<AuthLike>('auth')?.commands.accessToken() ?? null);
-      const topics = () => ctx.state.update((s) => void (s.topics = [...listeners.keys()]));
       return {
         commands: {
           connect: async () => void (await handle().call({ op: 'connect', token: token() })),
           disconnect: async () => void (await handle().call({ op: 'disconnect' })),
-          subscribe(
+          subscribe: (
             topic: string,
             listener: (data: unknown) => void,
             subscribeOptions: { readonly broadcast?: boolean } = {},
-          ) {
-            let set = listeners.get(topic);
-            if (!set) {
-              listeners.set(topic, (set = new Set()));
-              topics();
-              void handle()
-                .call({ op: 'subscribe', topic })
-                .catch((error: unknown) => ctx.report(error));
-            }
-            set.add(listener);
-            if (subscribeOptions.broadcast)
-              broadcastTopics.set(topic, (broadcastTopics.get(topic) ?? 0) + 1);
-            let active = true;
-            return () => {
-              if (!active) return;
-              active = false;
-              set.delete(listener);
-              if (subscribeOptions.broadcast)
-                broadcastTopics.set(topic, (broadcastTopics.get(topic) ?? 1) - 1);
-              if (set.size > 0) return;
-              listeners.delete(topic);
-              topics();
-              void handle()
-                .call({ op: 'unsubscribe', topic })
-                .catch((error: unknown) => ctx.report(error));
-            };
-          },
+          ) => addListener(topic, listener, subscribeOptions.broadcast === true),
           publish: async (topic: string, data: unknown) =>
             void (await handle().call({ op: 'publish', topic, data })),
           presence: (peer: string): Presence | undefined => ctx.state.get().presence[peer],
+          windowRelay: () => global?.relay ?? null,
         },
         views: { state: ctx.state.readable },
       };

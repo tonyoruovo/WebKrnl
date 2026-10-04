@@ -45,6 +45,7 @@ import {
   createWindowClient,
   type WindowClient,
   type WindowClientOptions,
+  type WindowRelay,
   type WindowStatus,
 } from './client';
 
@@ -70,6 +71,28 @@ export interface RelayHost extends ControlInterface {
      * @returns {() => void} Detaches the relay.
      */
     attachRelay(relay: ScopeRelay): () => void;
+  };
+}
+
+/**
+ * @summary The part of Realtime that the window transport uses: the relay of its Global transport.
+ * @public
+ */
+export interface RelaySource extends ControlInterface {
+  /**
+   * @summary The commands of Realtime.
+   */
+  readonly commands: {
+    /**
+     * @summary Returns the Window relay, or `null` when Realtime has no Global transport.
+     * @example
+     * Reading the relay
+     * ```ts
+     * const relay = realtime.commands.windowRelay();
+     * ```
+     * @returns {WindowRelay | null} The relay.
+     */
+    windowRelay?(): WindowRelay | null;
   };
 }
 
@@ -208,6 +231,7 @@ export function createWindowTransport(
     requires: [
       { target: 'queue', kind: 'optional' },
       { target: 'notification', kind: 'optional' },
+      { target: 'realtime', kind: 'optional' },
     ],
     state: {
       initial: {
@@ -261,6 +285,11 @@ export function createWindowTransport(
             ctx.state.update((s) => void s.sent++);
           },
         });
+      });
+
+      // The Global transport of Realtime is the relay, when it runs (docs/ARCHITECTURE.md §20.2).
+      ctx.watch<RelaySource>('realtime', (realtime) => {
+        current.setRelay(realtime?.commands.windowRelay?.() ?? options.relay ?? null);
       });
 
       current.connect().catch((error: unknown) => ctx.report(error));

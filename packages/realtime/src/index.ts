@@ -33,6 +33,7 @@
  * @author MathAid
  */
 
+export * from './global';
 export * from './processor';
 export * from './realtime';
 export * from './types';

@@ -343,6 +343,19 @@ export interface WindowClient {
    * ```
    */
   close(): void;
+  /**
+   * @summary Sets the relay after the start, or removes it with `null`.
+   * @description The window transport calls it when the Global transport of
+   * Realtime starts or stops (docs/ARCHITECTURE.md §20.2).
+   * @example
+   * Binding the relay of Realtime
+   * ```ts
+   * client.setRelay(realtime.commands.windowRelay());
+   * ```
+   * @param {WindowRelay | null} relay The relay.
+   * @returns {void}
+   */
+  setRelay(relay: WindowRelay | null): void;
 }
 
 /**
@@ -377,7 +390,7 @@ export function createWindowClient(options: WindowClientOptions = {}): WindowCli
   const heartbeatMs = options.heartbeatMs ?? 10_000;
   const retryBaseMs = options.retryBaseMs ?? 500;
   const bufferSize = options.bufferSize ?? 100;
-  const relay = options.relay;
+  let relay = options.relay ?? null;
   const cookies = mode === 'single-origin' ? null : (options.cookies ?? documentCookies());
   const link: HubLink =
     options.link ??
@@ -459,11 +472,12 @@ export function createWindowClient(options: WindowClientOptions = {}): WindowCli
   };
 
   const attachRelay = (windowId: string) => {
-    if (!relay || stopRelay) return;
-    stopRelay = relay.subscribe(windowId, receive);
+    const current = relay;
+    if (!current || stopRelay) return;
+    stopRelay = current.subscribe(windowId, receive);
     const sync = () =>
-      update({ relay: relay.connected.getSnapshot() ? 'connected' : 'disconnected' });
-    stopRelayStatus = relay.connected.subscribe(sync);
+      update({ relay: current.connected.getSnapshot() ? 'connected' : 'disconnected' });
+    stopRelayStatus = current.connected.subscribe(sync);
     sync();
   };
 
@@ -514,6 +528,17 @@ export function createWindowClient(options: WindowClientOptions = {}): WindowCli
     onEnvelope(listener) {
       listeners.add(listener);
       return () => void listeners.delete(listener);
+    },
+    setRelay(next) {
+      if (next === relay) return;
+      stopRelay?.();
+      stopRelayStatus?.();
+      stopRelay = undefined;
+      stopRelayStatus = undefined;
+      relay = next;
+      update({ relay: next ? 'disconnected' : 'none' });
+      const { windowId } = store.view.getSnapshot();
+      if (windowId) attachRelay(windowId);
     },
     close() {
       closed = true;

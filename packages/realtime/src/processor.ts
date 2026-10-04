@@ -131,6 +131,13 @@ export type SocketRequest =
        * @summary The data.
        */
       readonly data: unknown;
+      /**
+       * @summary Buffers the frame while disconnected. The default is `true`.
+       * @description With `false`, the request returns `true` when the frame went out and
+       * `false` when the socket is not open. The Global outbox uses it, so it alone decides
+       * when to send again (docs/ARCHITECTURE.md §20.1).
+       */
+      readonly buffer?: boolean;
     }
   | {
       /**
@@ -203,6 +210,16 @@ export type SocketNote =
       readonly note: 'presence';
       /**
        * @summary The data of the frame.
+       */
+      readonly data: unknown;
+    }
+  | {
+      /**
+       * @summary The server accepted a publish on a reserved topic (docs/ARCHITECTURE.md §20.1).
+       */
+      readonly note: 'ack';
+      /**
+       * @summary The data of the frame: the `messageId` of the envelope.
        */
       readonly data: unknown;
     };
@@ -333,6 +350,8 @@ export function createSocketProcessor(
         scope?.post({ note: 'message', topic: frame.topic, data: frame.data } satisfies SocketNote);
       } else if (frame.type === 'presence') {
         scope?.post({ note: 'presence', data: frame.data } satisfies SocketNote);
+      } else if (frame.type === 'ack') {
+        scope?.post({ note: 'ack', data: frame.data } satisfies SocketNote);
       }
     };
     current.onerror = () => {
@@ -414,6 +433,7 @@ export function createSocketProcessor(
           return status;
         case 'publish': {
           const frame: Frame = { type: 'publish', topic: request.topic, data: request.data };
+          if (request.buffer === false) return send(frame);
           if (!send(frame)) {
             buffer.push(frame);
             if (buffer.length > config!.publishBuffer) {

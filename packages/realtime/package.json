@@ -19,7 +19,12 @@
   "devDependencies": {
     "@platform/auth": "workspace:*",
     "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*"
+    "@platform/global-state": "workspace:*",
+    "@platform/notification": "workspace:*",
+    "@platform/queue": "workspace:*",
+    "@platform/storage": "workspace:*",
+    "@platform/network": "workspace:*",
+    "@platform/hub": "workspace:*"
   },
   "license": "ISC"
 }

@@ -968,6 +968,8 @@ export function createCoordinator(
     },
 
     async teardown() {
+      // Requests already in the queue finish first: a write in flight at shutdown is not lost.
+      await queue;
       await backend?.close();
       (await keys?.catch(() => null))?.clear();
       backend = null;

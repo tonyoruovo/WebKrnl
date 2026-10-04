@@ -18,6 +18,8 @@
 
 import type { HostKind, View } from '@platform/core';
 
+import type { GlobalOptions, GlobalWindowRelay } from './global';
+
 /**
  * @summary One message of the Realtime protocol.
  * @example
@@ -37,7 +39,15 @@ export interface Frame {
    * @summary The kind of frame.
    */
   readonly type:
-    'subscribe' | 'unsubscribe' | 'publish' | 'message' | 'ping' | 'pong' | 'presence' | 'auth';
+    | 'subscribe'
+    | 'unsubscribe'
+    | 'publish'
+    | 'message'
+    | 'ping'
+    | 'pong'
+    | 'presence'
+    | 'auth'
+    | 'ack';
   /**
    * @summary The topic, for subscribe, unsubscribe, publish and message.
    */
@@ -318,6 +328,10 @@ export interface RealtimeOptions {
    * @summary How long a peer without news stays present, in milliseconds. The default is 60 000.
    */
   readonly presenceTimeoutMs?: number;
+  /**
+   * @summary Turns on the Global transport: Global broadcasts and the Window relay through the server (docs/ARCHITECTURE.md §20).
+   */
+  readonly global?: GlobalOptions;
 }
 
 /**
@@ -389,6 +403,17 @@ export interface RealtimeControl {
      * @returns {Presence | undefined} The presence.
      */
     presence(peer: string): Presence | undefined;
+    /**
+     * @summary Returns the Window relay of the Global transport, or `null` without the option `global`.
+     * @description The window transport of `@platform/hub` uses it (docs/ARCHITECTURE.md §20.2).
+     * @example
+     * In the hub
+     * ```ts
+     * client.setRelay(realtime.commands.windowRelay());
+     * ```
+     * @returns {GlobalWindowRelay | null} The relay.
+     */
+    windowRelay(): GlobalWindowRelay | null;
   };
   /**
    * @summary The views.
