@@ -70,7 +70,7 @@ The push handler decides how a change reaches your API. Throw an error with a `s
 2. **Send `change.id` as the `Idempotency-Key`** on every push. On the server, keep each key with its result for as long as a device can stay offline (days), and scope it to the user. A key that comes back returns the first result and applies nothing.
 3. **Answer conflicts with `409` and the current version**, and choose a strategy for each entity: `server-wins` for data that the server owns, `merge` for documents, `manual` when the user must decide.
 4. **Return permanent errors as 4xx** (for example, `422` for invalid data), so Sync stops retrying, and transient errors as `5xx` or `429`, so it retries.
-5. **Use Storage**, so the outbox survives a reload. The outbox can hold private data: on sign-out, decide what happens to it. A shared device should `discard` the changes of a user who signs out; a personal device can keep them for the next sign-in.
+5. **Use Storage**, so the outbox survives a reload. The outbox holds user data, so it follows the sign-out rule (ARCHITECTURE §5.1): the changes of a user must not reach the next user of the device. Until Sync does this by itself (planned in M8), `discard` the changes on sign-out.
 6. **Pull with a cursor** that the server gives, and let `apply` write to your local data (a Storage collection). A waiting local change wins over the server's version until it is pushed.
 
 ## Behaviour

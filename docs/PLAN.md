@@ -17,6 +17,7 @@
    - Every public member has its own TSDoc block. This applies to the properties, methods, accessors and constructors of classes, to constructor parameter properties, and to the members of interfaces and nested object types. A description on the parent does not count. Each block has a `@summary`. A method block also has its `@param`, `@returns` and `@throws` tags, and an `@example` when the use is not obvious. `pnpm check:docs` finds the members that do not follow this rule (decided 2026-10-02).
    - Each source directory has an `EXAMPLES.md` with runnable, real-world examples for the doc pages, in the format of `docs/EXAMPLES-FORMAT.md`. `pnpm check:examples` runs them (decided 2026-10-03).
    - All prose follows ASD-STE100 Simplified Technical English: documentation, READMEs, TSDoc, commit messages and error messages (decided 2026-10-02).
+6. **Each subsystem wipes the data of the signed-in user** that it keeps, in state, persisted state, Storage, memory and processors, when the user signs out or another user signs in (ARCHITECTURE §5.1). Auth only announces. Each README has a **Sign-out** row. (decided 2026-10-04)
 
 ---
 
@@ -167,6 +168,7 @@ No code is written until both steps are done.
 - The Window relay (§11.3): the Global transport forwards Window-scope envelopes between connections with the same window id
 - Wire-protocol documentation and conformance fixtures that backend teams can run against their own servers
 - An in-memory server test double, used only in this repo's tests and never published
+- The sign-out wipe (ARCHITECTURE §5.1) in the subsystems that do not follow it yet: Network, Sync, Realtime, Queue and Logger
 
 **Gate:** a Global broadcast survives an offline period and is delivered exactly once per receiver (at least once, plus deduplication).
 

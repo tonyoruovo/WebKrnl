@@ -73,7 +73,7 @@ From another subsystem, declare `{ target: 'network' }` in `requires` and use `c
 5. Cache only `GET` responses that are safe to show again: `network-first` for data that should be fresh but must work offline, `cache-first` for data that changes rarely. Send an `ETag`, so a stale entry costs a `304` and no body.
 6. Keep the default `persistCache: { encrypt: true }` for anything about the user. Turn encryption off (`cachePersist: { encrypt: false }`) only for public data, and turn compression on for large text responses. Use `cachePersist: false` for data that must not survive a reload.
 7. The Network does not read `Cache-Control`: the call site decides. Do not set a cache strategy on responses that the server marks `no-store`.
-8. On sign-out, call `commands.invalidate()`, so the next user of the device cannot see cached private responses.
+8. On sign-out, the cached responses of the user must go (ARCHITECTURE §5.1: each subsystem wipes its own data). Until the Network does this by itself (planned in M8), call `commands.invalidate()` on sign-out.
 
 ## Behaviour
 

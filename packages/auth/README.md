@@ -86,7 +86,7 @@ This is the flow that the platform is designed for. Your server does its part of
 
 **Caching and other subsystems**
 
-8. On sign-out (`auth:changed` with `UNAUTHENTICATED`), clear what belongs to the user: `network.commands.invalidate()`, and the Storage collections with private data. For an account deletion, `crypto.commands.forget()` makes all encrypted data unreadable at once.
+8. On sign-out, **each subsystem wipes the data of the user that it keeps** (ARCHITECTURE §5.1): its state, its persisted state, its Storage collections, its memory and its workers. Auth only ends the session and announces it. Your own units do the same: watch Auth (`ctx.watch('auth')`) and wipe when the status becomes `UNAUTHENTICATED` or `user.id` changes. For an account deletion, `crypto.commands.forget()` also makes encrypted copies unreadable.
 9. Do not use a cache strategy on responses that must not outlive the session, even encrypted.
 10. Realtime: use `auth: 'message'` (the token in the first frame) rather than `'query'`, because URLs end up in server and proxy logs. Sync: push through Network, so the token and the 401 refresh apply.
 
@@ -106,6 +106,7 @@ This is the flow that the platform is designed for. Your server does its part of
 | A tab starts without a stored session               | `restore` (unless `restoreOnStart: false`); `null` keeps it signed out, with no lockout count |
 | No Web Locks API (outside the supported browsers, §1.1) | Two tabs can refresh at the same time; with rotating refresh tokens, one of them can become `EXPIRED` |
 | Auth stops                                          | Tokens and elevations leave memory                                                        |
+| Sign-out (the user data that Auth keeps)            | The session, the tokens and the elevations are wiped, in memory and in `auth.session`. Other subsystems wipe their own data (ARCHITECTURE §5.1) |
 
 ## Options
 

@@ -157,6 +157,38 @@ interface StateCell<S> {
 }
 ```
 
+### 5.1 Data of the signed-in user: each subsystem wipes its own
+
+**Every subsystem is responsible for wiping the data of the signed-in user that it keeps.** Auth ends the session and announces it. Auth does not wipe the data of other subsystems, and the app does not wipe it for them. A subsystem knows what it keeps, so it is the only unit that can wipe all of it.
+
+- **User data** is any value that came from, or describes, the signed-in user: profile fields, documents, messages, orders, cached private responses, queued changes, payloads, log context, tokens. Data of the device or the browser (a theme, the tab id, consent decisions of the browser) is not user data. Each subsystem decides for each state key and each collection, and documents the decision.
+- **When.** A subsystem wipes when the user signs out (Auth leaves `AUTHENTICATED` and `EXPIRED` for `UNAUTHENTICATED`), and when a **different** user signs in (`user.id` changes). A refresh of the same user is not a sign-out.
+- **The signal.** `auth:changed` is a Window broadcast, and a Tab-scoped unit cannot subscribe to it (§11.2). So a subsystem watches Auth (`ctx.watch('auth')`, declared as an optional dependency) and subscribes to its `views.state`. Auth adopts a sign-out from every tab of the site, so this one signal is enough in every tab.
+- **What to wipe**, all of it, in the same step:
+  1. the **state** keys with user data, back to their initial values;
+  2. the **persisted state** (the kernel's persistence, `persisted` keys): the wiped state is persisted at once, so a reload cannot bring the old values back;
+  3. the **Storage collections** with user data: `clear()`;
+  4. **memory** outside state: caches, buffers, maps, secrets;
+  5. the data in the subsystem's **processors** (workers): through a request to the processor.
+- **Before the next user.** The wipe ends before the subsystem serves the next sign-in. A subsystem that cannot finish at once refuses work for the new user until it has finished.
+- **Account deletion** is a sign-out plus `crypto.forget()` (§18.1), which also makes encrypted copies in backups unreadable.
+- **Documentation.** Each package README states what the subsystem wipes, in a **Sign-out** row of its behaviour table, and what it keeps on purpose.
+
+Conformance of the subsystems that exist now:
+
+| Subsystem | User data that it keeps | Wipes on sign-out |
+|---|---|---|
+| Auth | The session, tokens, elevations | Yes |
+| Network | Cached responses (memory and `network.cache*`) | **Not yet** |
+| Sync | The outbox (`sync.outbox.*`), the pull cursors | **Not yet** (a shared device must not keep the changes of another user) |
+| Realtime | Topic listeners, presence, the publish buffer; the socket of the user | **Not yet** (it reconnects with the new token, but keeps the buffer and presence) |
+| Queue | Dead letters (payloads, `queue.dead-letters`) | **Not yet** |
+| Logger | Log entries with context (`logger.entries`) | **Not yet** (decide: wipe, or keep with the user data sanitized) |
+| Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
+| Crypto, Consent, Global State, Notification, hub | No user data (keys, decisions and state of the device) | Not applicable |
+
+The subsystems marked **Not yet** follow this rule after the work item in PLAN (M8).
+
 ---
 
 ## 6. Control interface
