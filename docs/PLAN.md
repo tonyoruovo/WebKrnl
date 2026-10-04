@@ -158,7 +158,7 @@ No code is written until both steps are done.
 - `realtime`: a socket in a dedicated worker, reconnect with backoff, heartbeats, topics and presence (§19.4)
 - The old Network, Auth, Sync and Realtime code in `src/managers` is ported and deleted
 
-**Gate:** an offline → online scenario completes all queued work with no duplicates, and the user-visible pending work matches the real state throughout.
+**Gate:** an offline → online scenario completes all queued work with no duplicates, and the user-visible pending work matches the real state throughout. _Done 2026-10-04: `packages/sync/test/gate.spec.ts` (ARCHITECTURE §19.5). Offline work, then online with a `503` and dropped responses: the server applies each change once, and the pending work matches the outbox at every sample._
 
 ### M8 — Global scope
 

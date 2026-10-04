@@ -2,16 +2,17 @@
 
 **Branch:** `staging` on [tonyoruovo/web-subsystem](https://github.com/tonyoruovo/web-subsystem). **Version:** `0.0.2` (pre-alpha, not published).
 
-This report brings you up to date on the work of this week. The work started on 2026-10-01 and has 71 commits. This version of the report includes milestone M6 and the runnable examples (updated 2026-10-03). Read the summary first, then the sections that apply to your work.
+This report brings you up to date on the work of this week. The work started on 2026-10-01 and has more than 80 commits. This version of the report includes milestones M6 and M7 and the runnable examples (updated 2026-10-04). Read the summary first, then the sections that apply to your work.
 
 ## Summary
 
 - We agreed an architecture and a plan before we wrote code. The documents are `docs/ARCHITECTURE.md` and `docs/PLAN.md`.
-- We completed milestones M0 to M6 of eleven (M0 to M10). Each milestone has a gate test, and every gate passes.
-- The kernel (`@platform/core`) and eight subsystem packages are built: Global State, Queue, Notification Center, Logger, Consent, the Window-scope hub, Crypto and Storage.
+- We completed milestones M0 to M7 of eleven (M0 to M10). Each milestone has a gate test, and every gate passes.
+- The kernel (`@platform/core`) and twelve subsystem packages are built: Global State, Queue, Notification Center, Logger, Consent, the Window-scope hub, Crypto, Storage, Network, Auth, Sync and Realtime.
 - M6 added the data foundation. Crypto keeps non-extractable keys in IndexedDB. Storage keeps data in collections, through one coordinator in a shared worker. The details are in [Crypto and Storage (M6)](#crypto-and-storage-m6).
+- M7 added connectivity. Network sends requests with retries, a cache and a circuit breaker. Auth keeps the session and its tokens secret. Sync gets offline changes to the server exactly once. Realtime keeps one socket in a worker. The details are in [Connectivity (M7)](#connectivity-m7).
 - Functions can now cross worker boundaries as portable functions, so a migration or a filter can run in the worker.
-- Every source folder has an `EXAMPLES.md` with runnable examples (69 examples in 16 files). A doc compiler can turn them into code sandboxes. A script runs each one and compares its output.
+- Every source folder has an `EXAMPLES.md` with runnable examples (81 examples in 20 files). A doc compiler can turn them into code sandboxes. A script runs each one and compares its output.
 - A spike found that Safari and all iOS browsers partition the cross-subdomain hub. We changed the design (amendment A11). The details are in [Window scope across subdomains](#window-scope-across-subdomains).
 - Every public member of every interface and class now has its own TSDoc block. A script enforces this rule.
 - All prose now uses ASD-STE100 Simplified Technical English (STE). This report also uses it.
@@ -22,7 +23,7 @@ This report brings you up to date on the work of this week. The work started on 
 |---|---|
 | [`README.md`](../../../README.md) | The purpose of the project, the packages and the status |
 | [`proposals/README.md`](../../../proposals/README.md) | The original definitions. This document has precedence over all others. |
-| [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) | The design. §15 lists amendments A1 to A11. §17 is the M4 retrospective. §8.7, §8.8 and §18 are the M6 design. |
+| [`docs/ARCHITECTURE.md`](../../ARCHITECTURE.md) | The design. §15 lists amendments A1 to A11. §17 is the M4 retrospective. §8.7, §8.8 and §18 are the M6 design. §19 is the M7 design. |
 | [`docs/PLAN.md`](../../PLAN.md) | The milestones, their gates, and the working principles |
 | `packages/<name>/README.md` | How to use each package |
 | `packages/<name>/src/**/EXAMPLES.md` | Runnable examples for each source folder |
@@ -48,7 +49,13 @@ This report brings you up to date on the work of this week. The work started on 
 | Functions across workers | A processor can get functions from its caller as portable functions (source text, rebuilt in the worker). They must be self-contained. Under a strict CSP, the worker refuses and the work runs on the main thread. |
 | Storage pipeline | The Storage coordinator runs the full pipeline (serialize, compress, encrypt, migrate). The caller validates with the full schema in its own realm. |
 | Storage hosts | Shared worker, then main thread. No dedicated worker, because it would add a writer for no gain. |
-| Crypto and Storage keys | Storage opens the key store of Crypto itself. Both use the same keys and the same token format, with no message between them. |
+| Crypto and Storage keys | Storage opens the key store of Crypto itself. Both use the same keys and the same token format, with no message between them. A key check finds a mismatch. |
+| Network host | The main thread only. A response body is a stream that callers need in their own realm. |
+| Network and Auth | Auth adds its interceptor to Network, so Network does not depend on Auth. The token goes only to protected origins. |
+| Auth handlers | The app gives `login`, `refresh`, `logout` and `elevate`. Auth does not know the credentials, so MFA, OAuth and passkeys stay in the app. Tokens are never in unit state. |
+| Exactly once | Sync gives each change a stable id, sent as `Idempotency-Key`. A change leaves the outbox only after the server confirms it. One tab replays a shared outbox (Web Lock). |
+| Pending work of Sync | One Global State entry for each entity type, with the count, so a long offline outbox does not make the platform `BUSY`. |
+| Realtime | The socket runs in a dedicated worker. The protocol is pluggable. The Global transport joins it in M8. |
 
 ## Milestones
 
@@ -61,8 +68,9 @@ This report brings you up to date on the work of this week. The work started on 
 | M4 | Pilot subsystems: Logger and Consent, and a retrospective | Both are ported, the old classes are deleted, and the kernel changes are merged |
 | M5 | Window scope: the hub, the client and the transport. Consent moves to Window scope. | A broadcast from `a.<site>` reaches `b.<site>` in real browsers, and a foreign origin is refused |
 | M6 | Crypto and Storage. Processor configuration and portable functions in the kernel. Dead letters and log entries persist. | The shared worker dies during a write, and no data is lost |
+| M7 | Network, Auth, Sync and Realtime | Offline work goes online with failures; every change is applied once, and the pending work matches the outbox at every step |
 
-The next milestones are M7 (Network, Auth, Sync, Realtime), M8 (Global scope), M9 (Translation, Settings, Analytics, Design System) and M10 (orchestrator, Vue adapter, scaffolder).
+The next milestones are M8 (Global scope), M9 (Translation, Settings, Analytics, Design System) and M10 (orchestrator, Vue adapter, scaffolder).
 
 ## The packages
 
@@ -78,9 +86,13 @@ All packages are in `packages/`. Each one has a README and tests.
 | `@platform/consent` | Records consent decisions for each category under a policy version, and gates telemetry. It fails closed. All tabs of a site share the decisions. |
 | `@platform/hub` | Window scope: the hub page for the apex, the client in each tab, partition detection, and the `window` transport subsystem. |
 | `@platform/crypto` | Keys and the operations that use them: AES-GCM encryption, HMAC tags, ECDSA signatures, digests, rotation and crypto-shredding. Keys persist in IndexedDB and cannot be read. |
-| `@platform/storage` | Collections over IndexedDB, OPFS, Cache, Web Storage and memory. Validation, encryption, compression, migrations, batches, change events in every tab, a quota monitor, and the kernel persistence adapter. |
+| `@platform/storage` | Collections over IndexedDB, OPFS, Cache, Web Storage and memory. Validation, encryption, compression, migrations, batches, query indexes, change events in every tab, a quota monitor, and the kernel persistence adapter. |
+| `@platform/network` | Requests with timeouts, retries, one fetch for identical requests, priorities, a cache with ETags, a circuit breaker for each origin, interceptors, and offline failures. |
+| `@platform/auth` | The session from app handlers, token refresh (also on a 401), permissions, roles, elevations, a login lockout, and the status in every tab of the site. |
+| `@platform/sync` | Entities, a persisted outbox with idempotency keys, conflicts, pulls with cursors, permanent and transient failures, and offline replay. |
+| `@platform/realtime` | One WebSocket in a dedicated worker for many topics: reconnects, heartbeats, a publish buffer, presence, and the Auth token. |
 
-The old code in `src/managers` stays until each subsystem is ported. The old Logger, Consent, Crypto and Storage code is deleted. The old Global State, Queue and Notification managers are still in `src/managers`.
+The old code in `src/managers` stays until each subsystem is ported. The old Logger, Consent, Crypto, Storage, Network, Auth, Sync and Realtime code is deleted. The old Global State, Queue and Notification managers are still in `src/managers`.
 
 ## How a packet moves
 
@@ -148,6 +160,31 @@ What the tests found:
 | The scheduler's `MessageChannel` port did not keep Node alive while tasks waited | Found by the examples checker. The port now holds a reference while tasks wait. |
 | A Consent example waited 50 ms for another tab | Too short on a slow machine. It waits 500 ms now. |
 
+## Connectivity (M7)
+
+```text
+  app --> network.request() --> retries, cache, breaker, interceptors --> fetch
+            ^ Auth interceptor: token for protected origins, refresh once on 401
+  app --> todos.update() --> Sync outbox (Storage) --> online? push through Network (Idempotency-Key)
+                                 |                       server confirms --> leaves the outbox
+                                 +--> Global State pending work: "3 changes to todos waiting"
+  app --> realtime.subscribe() --> socket processor (dedicated worker) --> server; reconnect, heartbeat
+```
+
+- **Network** runs on the main thread. A request fails at once when offline (unless the cache answers), so Sync, not Network, keeps work for later.
+- **Auth** keeps the session in an encrypted Storage collection. Two tabs never refresh at the same time: a Web Lock, and a check of the stored session first. Rotating refresh tokens need this.
+- **Sync** merges two waiting changes of one entity only when the first was never sent. A sent change may be applied already, and its idempotency key must keep its data.
+- **Realtime** subscribes every topic again after a reconnect, so listeners do nothing.
+
+What the tests found:
+
+| Finding | Result |
+|---|---|
+| The outbox reloaded from Storage while a new change was written, and dropped the change | Found by the gate test. Every outbox operation now runs in one queue, and `record` reads, merges and writes in one exclusive step. |
+| Sync teardown left a run in flight, which then used a stopped Storage | The disposer waits for the run. |
+| A later empty run cleared the error while a failed change was still in the outbox | The status comes from the outbox: `ERROR` while failed changes exist. |
+| An outbox change for each pending-work entry would make a long offline outbox look like a busy platform | One entry for each entity type, with the count. |
+
 ## Runnable examples
 
 Every source folder of a package has an `EXAMPLES.md`. Each example is a small real-world case with its expected output. `docs/EXAMPLES-FORMAT.md` is the contract for the doc compiler.
@@ -176,7 +213,7 @@ Run these from the root of the repository:
 | `pnpm install` | Installs the workspace |
 | `pnpm check` | Type-check, lint, format check, `check:docs`, `check:examples`, and all tests. Run it before you push. |
 | `pnpm verify` | Type-check, lint, format check and `check:docs`. Run it before each commit. |
-| `pnpm test:node` | Node tests (1091 tests) |
+| `pnpm test:node` | Node tests (1095 tests) |
 | `pnpm test:browser` | Browser tests, one project for each installed browser |
 | `pnpm test:e2e` | Multi-origin tests with Playwright, for example the Window-scope gate |
 | `pnpm check:docs` | Lists public members whose TSDoc block is missing or incomplete |
@@ -209,7 +246,10 @@ Run these from the root of the repository:
 8. Closed after M6 (ARCHITECTURE §18.3): on WebKit, every tab runs its own Storage coordinator. Each request now runs in a Web Lock of the database, so the writes of all tabs keep one order.
 9. Closed after M6: Storage compares its key ids with the state of Crypto (`keyCheck`). On a mismatch it reports a `KeyMismatchError` and refuses encrypted writes.
 10. Closed after M6: collections can declare query indexes, and `lookup(index, value)` reads only the matching entries. Encrypted collections index an HMAC of each value. Range queries are not supported yet.
+11. Cached responses that the Network keeps in Storage (`network.cache`) are not encrypted. Do not use a cache strategy for private data until this is decided.
+12. Auth shares the session only between tabs of one origin (through Storage). Tabs on other subdomains get the status, not the tokens, so each origin signs in on its own (or uses a cookie on the apex).
+13. Without the Web Locks API (WebKit before 15.4), two tabs can push the same outbox change at the same time. The idempotency key still keeps the server from applying it twice.
 
 ## Next steps
 
-M7 ports Network, Auth, Sync and Realtime onto the kernel. Sync and the offline replay will use Storage collections. Auth will use Crypto for tokens. The M7 gate is an offline-to-online test: all queued work completes once, and the pending work that the user sees matches the real state.
+M8 adds Global scope: the Global transport as a feature of Realtime, with Network as the fallback, and the persistence and replay of outgoing Global packets while offline (ARCHITECTURE §11.4). It also gives WebKit browsers the Window relay that M5 left open.
