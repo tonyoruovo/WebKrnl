@@ -218,7 +218,7 @@ export async function runConformance(options: ConformanceOptions): Promise<Confo
   const results: ConformanceResult[] = [];
   const record = (rule: string, passed: boolean, detail: string) =>
     results.push({ rule, passed, detail });
-  let clients: Client[] = [];
+  let clients: Client[];
   try {
     clients = await Promise.all([Client.open(options), Client.open(options), Client.open(options)]);
   } catch (error) {
