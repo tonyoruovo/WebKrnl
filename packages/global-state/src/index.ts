@@ -5,7 +5,8 @@
  * @description
  * Re-exports the Global State subsystem ({@linkcode createGlobalState}), its
  * status derivation and admission rules (`status.ts`), its environment
- * sources (`environment.ts`) and tab identity (`tab-identity.ts`).
+ * sources (`environment.ts`), tab identity (`tab-identity.ts`) and the tab
+ * count (`tab-count.ts`).
  *
  * ```text
  *   @platform/global-state
@@ -14,6 +15,7 @@
  *   +-- canAccept                admission by importance
  *   +-- createBrowserEnvironment / createStaticEnvironment
  *   +-- resolveTabIdentity       unique per tab, stable across reloads
+ *   +-- createTabCounter         the open tabs of this origin (Web Locks)
  *   ```
  *
  * @example
@@ -46,4 +48,5 @@
 export * from './environment';
 export * from './global-state';
 export * from './status';
+export * from './tab-count';
 export * from './tab-identity';

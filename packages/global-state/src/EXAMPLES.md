@@ -128,3 +128,36 @@ first tab: tab_1
 after a reload: tab_1
 duplicated tab: tab_2
 ```
+
+## Warn when the app is open in several tabs
+
+<!-- example id="global-state/tab-count" runtime="any" -->
+
+An editor warns the user when the same app is open in another tab, so that two tabs do not edit the same document. Here three counters in one page act as three tabs: they share the Web Locks and the `BroadcastChannel` of the page, as tabs of one origin do.
+
+```ts file=main.ts
+import { createTabCounter } from '@platform/global-state';
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const id = `${Date.now()}`;
+const tabs = [1, 2, 3].map((n) => createTabCounter(`tab_${n}_${id}`, { page: null }));
+const counts = () => tabs.map((tab) => tab.count.getSnapshot()).join(', ');
+
+while (counts() !== '3, 3, 3') await wait(5);
+console.log('open:', counts());
+if (tabs[0]!.count.getSnapshot() > 1) console.log('warning: the editor is open in another tab');
+
+tabs[2]!.close(); // the user closes a tab
+while (counts().slice(0, 4) !== '2, 2') await wait(5);
+console.log('after a tab closes:', tabs[0]!.count.getSnapshot(), tabs[1]!.count.getSnapshot());
+
+tabs[0]!.close();
+tabs[1]!.close();
+await wait(10);
+```
+
+```text output
+open: 3, 3, 3
+warning: the editor is open in another tab
+after a tab closes: 2 2
+```

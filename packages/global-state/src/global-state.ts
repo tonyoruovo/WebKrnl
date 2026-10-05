@@ -54,6 +54,7 @@ import {
   type PlatformStatus,
   type UnitSummary,
 } from './status';
+import { createTabCounter, type TabCountOptions } from './tab-count';
 import { resolveTabIdentity, type TabIdentityOptions } from './tab-identity';
 
 /**
@@ -161,6 +162,11 @@ export interface GlobalStateData {
    * @summary The number of units in each condition.
    */
   units: UnitSummary;
+  /**
+   * @summary The number of tabs of this origin with the platform open and shown, this tab included.
+   * @description See {@linkcode createTabCounter}. It is 1 without Web Locks and `BroadcastChannel`.
+   */
+  tabs: number;
 }
 
 /**
@@ -289,6 +295,11 @@ export interface GlobalStateOptions {
    */
   readonly tabIdentity?: TabIdentityOptions | false;
   /**
+   * @summary Replacements of the browser APIs of the tab count, or `false` to turn it off.
+   * @description See {@linkcode TabCountOptions}. Without it, `tabs` stays 1.
+   */
+  readonly tabCount?: TabCountOptions | false;
+  /**
    * @summary The clock, in Unix milliseconds.
    * @description The default is `Date.now`.
    */
@@ -344,6 +355,7 @@ export function createGlobalState(
         visible: environment.visible(),
         pending: [],
         units: summarizeUnits({}),
+        tabs: 1,
       } as GlobalStateData,
       policy: {
         status: readable,
@@ -352,6 +364,7 @@ export function createGlobalState(
         visible: readable,
         pending: readable,
         units: readable,
+        tabs: readable,
       },
     },
     async init(ctx) {
@@ -372,7 +385,17 @@ export function createGlobalState(
       recompute();
       const stopStatuses = ctx.statuses.subscribe(recompute);
       const stopEnvironment = environment.subscribe(recompute);
+      const counter =
+        options.tabCount === false ? null : createTabCounter(identity.id, options.tabCount);
+      const showTabs = () => {
+        const tabs = counter?.count.getSnapshot() ?? 1;
+        if (ctx.state.get().tabs !== tabs) ctx.state.update((s) => void (s.tabs = tabs));
+      };
+      const stopTabs = counter?.count.subscribe(showTabs);
+      showTabs();
       return () => {
+        stopTabs?.();
+        counter?.close();
         stopStatuses();
         stopEnvironment();
         identity.close();
