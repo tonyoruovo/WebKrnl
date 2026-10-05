@@ -185,6 +185,7 @@ Conformance of the subsystems that exist now:
 | Queue | Dead letters (payloads, `queue.dead-letters`) | Yes |
 | Logger | Log entries with context (`logger.entries`), traces | Yes |
 | Settings | The `user` settings (for example `locale`); the `device` settings are not user data | Yes (the `user` settings return to their defaults) |
+| Analytics | The buffer and the waiting batches (`analytics.outbox`), the session id | Yes (a new session starts) |
 | Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
 | Crypto, Consent, Global State, Notification, hub, Translation | No user data (keys, decisions, catalogs and state of the device) | Not applicable |
 

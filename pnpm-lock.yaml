@@ -265,6 +265,30 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@24.1.0)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(vite@8.3.1(@types/node@24.1.0))
 
+  packages/analytics:
+    devDependencies:
+      '@platform/consent':
+        specifier: workspace:*
+        version: link:../consent
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/global-state':
+        specifier: workspace:*
+        version: link:../global-state
+      '@platform/network':
+        specifier: workspace:*
+        version: link:../network
+      '@platform/notification':
+        specifier: workspace:*
+        version: link:../notification
+      '@platform/queue':
+        specifier: workspace:*
+        version: link:../queue
+      '@platform/settings':
+        specifier: workspace:*
+        version: link:../settings
+
   packages/auth:
     devDependencies:
       '@platform/core':
