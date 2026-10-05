@@ -460,6 +460,30 @@ importers:
         specifier: workspace:*
         version: link:../storage
 
+  packages/translation:
+    devDependencies:
+      '@platform/consent':
+        specifier: workspace:*
+        version: link:../consent
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/network':
+        specifier: workspace:*
+        version: link:../network
+      '@platform/notification':
+        specifier: workspace:*
+        version: link:../notification
+      '@platform/queue':
+        specifier: workspace:*
+        version: link:../queue
+      '@platform/settings':
+        specifier: workspace:*
+        version: link:../settings
+      '@platform/storage':
+        specifier: workspace:*
+        version: link:../storage
+
 packages:
 
   '@babel/helper-string-parser@7.29.7':

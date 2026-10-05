@@ -137,7 +137,7 @@ Browser tests run on every installation listed in [`playwright.config.ts`](playw
 pnpm check:browsers
 ```
 
-Run a subset with `BROWSERS=chrome,edge pnpm test:browser`.
+Run a subset with `BROWSERS=chrome,edge pnpm test:browser`. If Windows reserved the port of the browser test server (`listen EACCES ... 63315`), move it with `BROWSER_PORT` (for example `BROWSER_PORT=55315`).
 
 > **CI is deferred.** A GitHub Actions workflow exists in `.github/workflows/ci.yml` but is not enabled yet. Until then, run `pnpm check` locally.
 

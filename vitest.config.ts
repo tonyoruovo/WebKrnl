@@ -76,6 +76,8 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
+            // Windows can reserve the default port (63315) for Hyper-V; BROWSER_PORT moves it.
+            api: { port: Number(process.env.BROWSER_PORT ?? 63315) },
             instances,
           },
         },
