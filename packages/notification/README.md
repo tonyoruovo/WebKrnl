@@ -1,6 +1,6 @@
 # @platform/notification
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Notification Center**: the platform's broadcast router. It is a centralized subsystem (id `notification`, Tab scope) that owns **routing only** (amendment A10):
 

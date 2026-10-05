@@ -1,6 +1,6 @@
 # @platform/hub
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 **Window scope**: broadcasts that reach every tab of a site, across its subdomains, in one browser session. `BroadcastChannel` and IndexedDB stop at the origin, and `a.example.com` and `b.example.com` are different origins, so Window scope needs:
 

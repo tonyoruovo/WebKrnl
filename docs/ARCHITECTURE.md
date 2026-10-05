@@ -184,6 +184,7 @@ Conformance of the subsystems that exist now:
 | Realtime | Presence, the publish buffer, the Global outbox; the socket of the user | Yes (the listeners stay: they belong to the app) |
 | Queue | Dead letters (payloads, `queue.dead-letters`) | Yes |
 | Logger | Log entries with context (`logger.entries`), traces | Yes |
+| Settings | The `user` settings (for example `locale`); the `device` settings are not user data | Yes (the `user` settings return to their defaults) |
 | Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
 | Crypto, Consent, Global State, Notification, hub | No user data (keys, decisions and state of the device) | Not applicable |
 

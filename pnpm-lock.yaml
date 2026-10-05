@@ -403,6 +403,24 @@ importers:
         specifier: workspace:*
         version: link:../storage
 
+  packages/settings:
+    devDependencies:
+      '@platform/consent':
+        specifier: workspace:*
+        version: link:../consent
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/hub':
+        specifier: workspace:*
+        version: link:../hub
+      '@platform/notification':
+        specifier: workspace:*
+        version: link:../notification
+      '@platform/queue':
+        specifier: workspace:*
+        version: link:../queue
+
   packages/storage:
     devDependencies:
       '@platform/core':

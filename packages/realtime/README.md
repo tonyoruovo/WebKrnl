@@ -1,6 +1,6 @@
 # @platform/realtime
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Realtime** subsystem (id `realtime`, featurized, Tab scope, no required dependency). It keeps one WebSocket for many topics:
 

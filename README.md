@@ -2,7 +2,7 @@
 
 > **Status: pre-alpha (`0.0.2`).** The architecture is agreed. The kernel and its worker runtime (`@platform/core`, M1 and M2), the three centralized subsystems (`@platform/global-state`, `@platform/queue`, `@platform/notification`, M3), the pilot subsystems (`@platform/logger`, `@platform/consent`, M4), Window scope across subdomains (`@platform/hub`, M5), the data foundation (`@platform/crypto`, `@platform/storage`, M6), and connectivity (`@platform/network`, `@platform/auth`, `@platform/sync`, `@platform/realtime`, M7), and Global scope (the Global transport of `@platform/realtime` and the [wire protocol](docs/WIRE-PROTOCOL.md), M8) are built. The other subsystems are not yet ported onto the kernel. Nothing here is ready for production use, and every API shown below may change.
 >
-> `@platform` is a **placeholder name** until milestone M9, when the final name is chosen.
+> `@platform` is a **placeholder name** until the alpha (M10): the final name is chosen before the first release.
 
 A framework-agnostic **platform runtime** for browser applications. Your app boots it once and hands it the work that must not fail: storage, network calls, authentication, sync, real-time messaging, and the messages between them.
 
@@ -48,7 +48,7 @@ Each subsystem is its own package. Packages depend on each other through peer de
 | `@platform/realtime`      | WebSocket and SSE connections, and the Global scope transport                                    |
 | `@platform/translation`   | Translation catalogs                                                                             |
 | `@platform/analytics`     | Consent-gated, sampled analytics                                                                 |
-| `@platform/design-system` | To be designed                                                                                   |
+| `@platform/design-system` | Design tokens and the theme: color scheme, contrast, density, motion                             |
 | `@platform/hub`           | The page that connects tabs across subdomains (Window scope)                                     |
 | `@platform/platform`      | Boots a chosen set of subsystems                                                                 |
 | `@platform/vue`           | Vue adapter                                                                                      |
@@ -154,8 +154,8 @@ Run a subset with `BROWSERS=chrome,edge pnpm test:browser`.
 | M6        | Crypto and Storage                                                 |
 | M7        | Network, Auth, Sync, Realtime                                      |
 | M8        | Global scope                                                       |
-| M9        | Translation, Settings, Analytics, Design System; final name chosen |
-| M10       | Orchestrator, Vue adapter, scaffolder                              |
+| M9        | Translation, Settings, Analytics, Design System                    |
+| M10       | Orchestrator, Vue adapter, scaffolder; final name chosen           |
 | Alpha     | Validation in real React, Vue, Svelte and Astro apps               |
 
 Milestones do not change the version: it stays `0.0.2` until every milestone is complete and alpha tests pass in real React, Vue, Svelte and Astro projects. Details and exit criteria are in [`docs/PLAN.md`](docs/PLAN.md).

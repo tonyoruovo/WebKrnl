@@ -1,6 +1,6 @@
 # @platform/auth
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Auth** subsystem (id `auth`, featurized, **Window** scope). It keeps the session of the user:
 

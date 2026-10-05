@@ -1,6 +1,6 @@
 # @platform/queue
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Queue**: the platform's packet router. It is a centralized subsystem (id `queue`, Tab scope), and its `router` replaces the kernel's direct router, so every packet a subsystem sends goes through it. The Queue owns **scheduling**:
 

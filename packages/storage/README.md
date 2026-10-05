@@ -1,6 +1,6 @@
 # @platform/storage
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Storage** subsystem (id `storage`, featurized, Tab scope, no required dependency). It keeps the data of an app in **collections**, and one **coordinator** writes for every tab of the origin:
 

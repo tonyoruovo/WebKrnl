@@ -1,6 +1,6 @@
 # @platform/core
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The kernel of the platform. Every other `@platform/*` package is built on it.
 

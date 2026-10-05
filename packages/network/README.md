@@ -1,6 +1,6 @@
 # @platform/network
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Network** subsystem (id `network`, featurized, Tab scope, no required dependency). It sends the HTTP requests of every subsystem and of the app:
 

@@ -1,6 +1,6 @@
 # @platform/consent
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until milestone M9.
+> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
 
 The **Consent** subsystem (id `consent`, featurized, Window scope). It records what the user agreed to, per category, under a **policy version**, and answers the question every telemetry path asks: `isGranted(category)`.
 
