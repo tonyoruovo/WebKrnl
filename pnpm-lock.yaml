@@ -213,6 +213,54 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.11.0(supports-color@7.2.0))
+      '@platform/analytics':
+        specifier: workspace:*
+        version: link:packages/analytics
+      '@platform/auth':
+        specifier: workspace:*
+        version: link:packages/auth
+      '@platform/consent':
+        specifier: workspace:*
+        version: link:packages/consent
+      '@platform/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@platform/crypto':
+        specifier: workspace:*
+        version: link:packages/crypto
+      '@platform/global-state':
+        specifier: workspace:*
+        version: link:packages/global-state
+      '@platform/hub':
+        specifier: workspace:*
+        version: link:packages/hub
+      '@platform/logger':
+        specifier: workspace:*
+        version: link:packages/logger
+      '@platform/network':
+        specifier: workspace:*
+        version: link:packages/network
+      '@platform/notification':
+        specifier: workspace:*
+        version: link:packages/notification
+      '@platform/queue':
+        specifier: workspace:*
+        version: link:packages/queue
+      '@platform/realtime':
+        specifier: workspace:*
+        version: link:packages/realtime
+      '@platform/settings':
+        specifier: workspace:*
+        version: link:packages/settings
+      '@platform/storage':
+        specifier: workspace:*
+        version: link:packages/storage
+      '@platform/sync':
+        specifier: workspace:*
+        version: link:packages/sync
+      '@platform/translation':
+        specifier: workspace:*
+        version: link:packages/translation
       '@types/lodash':
         specifier: ^4.17.25
         version: 4.17.25
