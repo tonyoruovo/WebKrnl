@@ -391,7 +391,7 @@ Packet
      └─ onLog          called on completion AND on error
 ```
 
-This keeps the split already implemented in `src/managers/packet.dto.ts`. The `BasePacket` in `global_PROPOSAL.md` (with `eventId: symbol` and inline callbacks) is replaced by it.
+This keeps the split of the old `src/managers/packet.dto.ts` (ported to `@platform/core`; the old code was deleted in M9). The `BasePacket` in `global_PROPOSAL.md` (with `eventId: symbol` and inline callbacks) is replaced by it.
 
 ### 9.2 Read-once payload
 
