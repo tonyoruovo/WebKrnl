@@ -539,12 +539,38 @@ export class Kernel {
   async start(): Promise<void> {
     if (this.#started) return;
     this.#started = true;
+
+    /**
+     * Returns the index (pointer) for a runtime based on its kind.
+     * @param kind the kind of the runtime ('centralized' or 'featurized')
+     * @returns The index (0 for centralized, 1 for featurized)
+     */
+    const runtimePtr = (kind: 'centralized' | 'featurized') => kind === 'centralized' ? 0 : 1;
+
+    /**
+     * Groups a runtime by its root, by pushing it to the destination array if it has no parent.
+     * @param src the runtime being checked
+     * @param dst the array to which the runtime should be pushed if it has no parent
+     */
+    const groupByRoot = (src: UnitRuntime, dst: UnitRuntime[]) => { if (!src.parent) dst.push(src); };
+
+    /**
+     * Aggregates runtimes by their root, grouping them into centralized and featurized arrays.
+     * @param aggregated The current aggregated arrays of centralized and featurized runtimes
+     * @param current The current runtime being processed
+     * @returns The updated aggregated arrays of centralized and featurized runtimes
+     */
+    const aggregateRootRuntimes = (aggregated: [UnitRuntime[], UnitRuntime[]], current: UnitRuntime): typeof aggregated => {
+      groupByRoot(current, aggregated[runtimePtr(current.subsystem.kind)]);
+      return aggregated;
+    };
+
     // Centralized subsystems first (ARCHITECTURE §12), each group in dependency order.
-    const roots = this.#order.filter((runtime) => !runtime.parent);
-    for (const runtime of roots)
-      if (runtime.subsystem.kind === 'centralized') await runtime.start();
-    for (const runtime of roots)
-      if (runtime.subsystem.kind !== 'centralized') await runtime.start();
+    const [centralized, featurized] = this.#order.reduce<[UnitRuntime[], UnitRuntime[]]>(aggregateRootRuntimes, [[], []]);
+    for (const runtime of centralized)
+      await runtime.start();
+    for (const runtime of featurized)
+      await runtime.start();
     await this.settled();
   }
 
