@@ -144,7 +144,7 @@ One state machine applies to every unit. It replaces `PlatformManagerExecutionSt
 
 - **Owned:** only the owning unit mutates its state. No other code path writes it.
 - **Serializable:** state must survive `structuredClone`. No functions, symbols, DOM nodes, or class instances that lose their prototype.
-- **Exposure policy:** each state key is declared `private`, `readable` (through the control interface), or `persisted` (written by the destructor or by a persistence feature). A key can be both `readable` and `persisted`.
+- **Exposure policy:** each state key is declared `private`, `readable` (through the control interface), or `persisted` (the kernel saves the persisted keys after each change of them, once for the changes of one task, and again at destroy). A key can be both `readable` and `persisted`.
 - **Restoration:** initializers fill state from defaults, then from persisted state when a compatible schema version exists. Volatile keys (pending work, status, timestamps) are never restored.
 
 ```ts

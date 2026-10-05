@@ -205,6 +205,7 @@ export class UnitRuntime {
   #abort: AbortController | null = null;
   #suspendedForDependencies = false;
   #initialized = false;
+  #stopAutosave: (() => Promise<void> | undefined) | null = null;
   #startRequested = false;
 
   /**
@@ -350,6 +351,7 @@ export class UnitRuntime {
       for (const feature of this.features) await feature.start();
       this.#control = this.definition.control(context);
       this.#initialized = true;
+      this.#stopAutosave = this.#autosave();
       this.#settle();
     } catch (error) {
       await this.#teardown();
@@ -478,10 +480,57 @@ export class UnitRuntime {
   }
 
   /**
+   * @summary Saves the persisted keys after each change of them, so a tab that closes without `destroy` keeps them.
+   * @description Changes in one task make one save, and saves run one after
+   * the other. A failed save is reported. The returned disposer saves a
+   * waiting change, then stops.
+   * @returns {() => (Promise<void> | undefined)} Stops saving; returns a promise only while a save runs.
+   * @internal
+   */
+  #autosave(): () => Promise<void> | undefined {
+    const persistence = this.host.persistence;
+    const keys = Object.entries(this.definition.state.policy ?? {}).filter(
+      ([, exposure]) => (exposure as { persisted?: boolean } | undefined)?.persisted === true,
+    );
+    if (!persistence || keys.length === 0) return () => undefined;
+    let last = persistedText(this.state.persist().data);
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let chain: Promise<void> = Promise.resolve();
+    let saving = 0;
+    const save = () => {
+      timer = null;
+      const persisted = this.state.persist();
+      const text = persistedText(persisted.data);
+      if (text === last) return;
+      last = text;
+      saving++;
+      chain = chain
+        .then(() => persistence.save(this.id, persisted))
+        .catch((error: unknown) => this.host.reportError(error, this.id))
+        .finally(() => void saving--);
+    };
+    const stop = this.state.view.subscribe(() => {
+      timer ??= setTimeout(save, 0);
+    });
+    return () => {
+      stop();
+      if (timer !== null) {
+        clearTimeout(timer);
+        save();
+      }
+      // Wait only when a save runs: a teardown without one stays synchronous.
+      return saving > 0 ? chain : undefined;
+    };
+  }
+
+  /**
    * @summary Halts features, runs disposers, stops processors and aborts the signal, in that order.
    * @internal
    */
   async #teardown(): Promise<void> {
+    const saving = this.#stopAutosave?.();
+    this.#stopAutosave = null;
+    if (saving) await saving;
     for (const feature of [...this.features].reverse()) {
       await feature.halt(`Parent ${this.id} stopped.`);
     }
@@ -587,4 +636,21 @@ export class UnitRuntime {
       },
     };
   }
+}
+
+/**
+ * @summary A text form of persisted data, to tell if it changed.
+ * @description Maps, sets and dates become arrays and strings, which `JSON.stringify` cannot show.
+ * @param {unknown} data The persisted keys.
+ * @returns {string} The text.
+ * @internal
+ */
+function persistedText(data: unknown): string {
+  return JSON.stringify(data, (_key, value: unknown) =>
+    value instanceof Map
+      ? { map: [...value.entries()] }
+      : value instanceof Set
+        ? { set: [...value.values()] }
+        : value,
+  );
 }

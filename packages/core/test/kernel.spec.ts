@@ -430,6 +430,44 @@ describe('Kernel — persistence', () => {
     await platform.stop();
     expect(persistence.saved.get('prefs')).toEqual({ version: 1, data: { theme: 'sepia' } });
   });
+
+  it('saves persisted keys after they change, once for the changes of one task', async () => {
+    const persistence = createMemoryPersistence();
+    const saves: unknown[] = [];
+    const save = persistence.save.bind(persistence);
+    persistence.save = (id, state) => {
+      saves.push(state.data);
+      save(id, state);
+    };
+    const prefs = defineSubsystem({
+      id: 'prefs',
+      scope: 'window',
+      kind: 'featurized',
+      state: {
+        initial: { theme: 'light', visits: 0 },
+        policy: { theme: { readable: true, persisted: true } },
+      },
+      control: (ctx) => ({
+        commands: {
+          set: (theme: string) => ctx.state.update((s) => void (s.theme = theme)),
+          visit: () => ctx.state.update((s) => void s.visits++),
+        },
+        views: {},
+      }),
+    });
+    const platform = createTestPlatform([prefs], { persistence });
+    await platform.start();
+    const { commands } = platform.unit<ReturnType<typeof prefs.control>>('prefs').control!;
+
+    commands.set('sepia');
+    commands.set('dark');
+    await vi.waitFor(() => expect(saves).toEqual([{ theme: 'dark' }]));
+    commands.visit(); // not a persisted key: no save
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(saves).toHaveLength(1);
+    await platform.stop();
+    expect(saves).toHaveLength(2); // the save of destroy
+  });
 });
 
 describe('Kernel — packets', () => {
