@@ -355,6 +355,8 @@ expect(platform.errors).toEqual([]);
 await platform.stop();
 ```
 
+`createTestPlatform` sets the worker handshake timeout to 30 s for processors that do not set their own (ARCHITECTURE §8.3). The dev server can be slow to load a worker module when many browsers run tests at the same time. Give `processors: { handshakeTimeoutMs }` to change it.
+
 `createTestAuth()` is a small Auth unit for the sign-out wipe (ARCHITECTURE §5.1): add `auth.unit` to the units, then call `auth.signIn('u1')` and `auth.signOut()`. A subsystem reacts with `watchSignOut(ctx, (reason) => wipe())`, where `reason` is `'sign-out'` or `'user-changed'`.
 
 ## Errors

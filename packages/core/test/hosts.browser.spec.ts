@@ -5,6 +5,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ProcessorRunner, WorkerBudget, type HostKind, type ProcessorDef } from '../src';
+import { TEST_HANDSHAKE_TIMEOUT_MS } from '../src/testing';
 
 import { configured, type ConfiguredConfig } from './browser/configured.processor';
 import { doubler, type DoublerInput } from './browser/doubler.processor';
@@ -29,10 +30,9 @@ function runner(overrides: Partial<ProcessorDef<DoublerInput, number | string>>)
       load: async () => doubler,
       dedicated: dedicatedWorker,
       shared: sharedWorker,
-      handshakeTimeoutMs: 5_000,
       ...overrides,
     },
-    { budget: new WorkerBudget(4) },
+    { budget: new WorkerBudget(4), handshakeTimeoutMs: TEST_HANDSHAKE_TIMEOUT_MS },
   );
   runners.push(r);
   return r;
@@ -138,7 +138,7 @@ describe('processor configuration (ARCHITECTURE §8.7)', () => {
             name: `configured-${crypto.randomUUID()}`,
           }),
       },
-      { budget: new WorkerBudget(4) },
+      { budget: new WorkerBudget(4), handshakeTimeoutMs: TEST_HANDSHAKE_TIMEOUT_MS },
     );
     runners.push(r as never);
     return r;

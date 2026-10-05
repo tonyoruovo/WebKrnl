@@ -617,8 +617,9 @@ export class WorkerHost<In, Out> implements Host<In, Out> {
  * @description
  * A {@linkcode VirtualHost} from the definition's `load`, or a
  * {@linkcode WorkerHost} from its `dedicated` or `shared` factory, with the
- * definition's handshake timeout and heartbeat. It is the default host
- * factory of `ProcessorRunner`.
+ * definition's handshake timeout and heartbeat. When the definition has no
+ * handshake timeout, the host uses `context.handshakeTimeoutMs`, then 5000.
+ * It is the default host factory of `ProcessorRunner`.
  *
  * @example
  * Example 1: A dedicated host
@@ -637,7 +638,7 @@ export class WorkerHost<In, Out> implements Host<In, Out> {
  * @template Out The result type.
  * @param {HostKind} kind The host to create.
  * @param {ProcessorDef<In, Out>} def The processor definition. Must have a factory for physical kinds.
- * @param {object} context The scheduler and the slice budget, for virtual hosts.
+ * @param {object} context The scheduler and the slice budget, for virtual hosts, and the default handshake timeout, for worker hosts.
  * @returns {Host<In, Out>} The host, not yet started.
  *
  * @public
@@ -645,13 +646,17 @@ export class WorkerHost<In, Out> implements Host<In, Out> {
 export function createHost<In, Out>(
   kind: HostKind,
   def: ProcessorDef<In, Out>,
-  context: { readonly scheduler: Scheduler; readonly sliceBudgetMs: number },
+  context: {
+    readonly scheduler: Scheduler;
+    readonly sliceBudgetMs: number;
+    readonly handshakeTimeoutMs?: number;
+  },
 ): Host<In, Out> {
   if (kind === 'virtual')
     return new VirtualHost(def.load, context.scheduler, context.sliceBudgetMs, def.config);
   return new WorkerHost(kind, def[kind]!, {
     processorId: def.id,
-    handshakeTimeoutMs: def.handshakeTimeoutMs,
+    handshakeTimeoutMs: def.handshakeTimeoutMs ?? context.handshakeTimeoutMs,
     heartbeat: def.heartbeat?.[kind],
     config: def.config,
   });

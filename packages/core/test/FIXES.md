@@ -1,0 +1,7 @@
+# Fixes: core tests
+
+> Temporary record of fixes. Delete it when the pull request merges.
+
+| File | Problem | Fix |
+|---|---|---|
+| `hosts.browser.spec.ts` | The runners of the test used a handshake timeout of 5 s (or the default of 5 s). In a full browser test run, the first load of a worker module took longer, and the processor moved to the virtual host. The test then failed on the expected host, or timed out. | The runners get `handshakeTimeoutMs: TEST_HANDSHAKE_TIMEOUT_MS` (30 s) as a runner option. The `handshake-timeout` test keeps its 300 ms timeout on the definition, which has precedence (`src/FIXES.md`). |

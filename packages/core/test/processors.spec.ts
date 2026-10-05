@@ -11,6 +11,7 @@ import {
   VirtualHost,
   WorkerBudget,
   WorkerHost,
+  createHost,
   createScheduler,
   defineProcessor,
   validateProcessorDef,
@@ -19,7 +20,7 @@ import {
   type PortLike,
   type ProcessorDef,
 } from '../src';
-import { createTestPlatform } from '../src/testing';
+import { TEST_HANDSHAKE_TIMEOUT_MS, createTestPlatform } from '../src/testing';
 
 import { FakeSharedWorker, FakeWorker } from './fixtures/fake-workers';
 
@@ -328,6 +329,30 @@ describe('WorkerHost — failover triggers', () => {
     expect(worker.terminated).toBe(true);
   });
 
+  it('3. handshake-timeout: the definition has precedence over the runner default', async () => {
+    vi.stubGlobal('Worker', FakeWorker);
+    const silent: ProcessorDef<number, number> = {
+      id: 'silent',
+      job: 'sink',
+      hosts: ['dedicated', 'virtual'],
+      load: async () => ({ handle: (n: number) => n }),
+      dedicated: () => new FakeWorker() as never, // never serves
+    };
+    const context = { scheduler: createScheduler(), sliceBudgetMs: 5 };
+    // Only the runner default: it applies.
+    await expect(
+      createHost('dedicated', silent, { ...context, handshakeTimeoutMs: 20 }).start(),
+    ).rejects.toMatchObject({ trigger: 'handshake-timeout' });
+    // Both: the short timeout of the definition applies, not the long default.
+    await expect(
+      createHost(
+        'dedicated',
+        { ...silent, handshakeTimeoutMs: 20 },
+        { ...context, handshakeTimeoutMs: 60_000 },
+      ).start(),
+    ).rejects.toMatchObject({ trigger: 'handshake-timeout' });
+  });
+
   it('4. heartbeat-missed: pings stop being answered', async () => {
     vi.stubGlobal('Worker', FakeWorker);
     const host = dedicated(() => new FakeWorker({ module: doubler as never, dropPings: true }), {
@@ -486,6 +511,31 @@ describe('ProcessorRunner — hybrid failover', () => {
 });
 
 describe('Kernel — processors', () => {
+  it('gives runners the handshake timeout of the test platform, or the one in the options', async () => {
+    const timeouts: (number | undefined)[] = [];
+    const record: typeof createHost = (kind, d, context) => {
+      timeouts.push(context.handshakeTimeoutMs);
+      return createHost(kind, d, context);
+    };
+    const unit = {
+      id: 'math',
+      scope: 'tab' as const,
+      kind: 'featurized' as const,
+      state: { initial: {} },
+      processors: [def()],
+      control: () => ({ commands: {}, views: {} }),
+    };
+    for (const processors of [
+      { createHost: record },
+      { createHost: record, handshakeTimeoutMs: 100 },
+    ]) {
+      const platform = createTestPlatform([unit], { processors });
+      await platform.start();
+      await platform.stop();
+    }
+    expect(timeouts).toEqual([TEST_HANDSHAKE_TIMEOUT_MS, 100]);
+  });
+
   it('starts processors before init and exposes them through the context', async () => {
     let result: Promise<unknown> | undefined;
     const platform = createTestPlatform([

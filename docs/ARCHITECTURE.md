@@ -333,6 +333,8 @@ Work in progress at failover is re-run once on the next host. From M3, the Queue
 
 The heartbeat (trigger 4) is on by default for shared hosts and off for dedicated hosts; both are configurable.
 
+The handshake timeout (trigger 3) is 5 s by default. A processor definition can set its own `handshakeTimeoutMs`. The kernel option `processors.handshakeTimeoutMs` sets the timeout for each processor that does not set its own. The order is: the definition, then the kernel option, then 5 s. `createTestPlatform` sets the kernel option to 30 s, because the dev server can take more than 5 s to transform a worker module the first time, when many browsers run tests at the same time. A test that checks the `handshake-timeout` failover sets a short timeout on its definition.
+
 ### 8.4 Jobs
 
 | Job | Behavior |

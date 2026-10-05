@@ -343,7 +343,9 @@ export interface ProcessorDef<In = unknown, Out = unknown> {
   readonly shared?: () => SharedWorker;
   /**
    * @summary The longest time for a worker to answer the handshake, in milliseconds.
-   * @description The default is 5000. After this time, the runner fails over to the next host.
+   * @description After this time, the runner fails over to the next host.
+   * Without it, the kernel option `processors.handshakeTimeoutMs` applies,
+   * then the default of 5000 (ARCHITECTURE §8.3).
    */
   readonly handshakeTimeoutMs?: number;
   /**

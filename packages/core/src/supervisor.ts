@@ -166,8 +166,9 @@ export interface ProcessorHandle<In = unknown, Out = unknown> {
  * @description
  * The `scheduler` for virtual hosts (default: a new one), the worker
  * `budget` (default: one per process, sized for the device), the virtual
- * hosts' `sliceBudgetMs` (default 5), and `createHost`, which replaces host
- * creation in tests.
+ * hosts' `sliceBudgetMs` (default 5), the worker hosts' `handshakeTimeoutMs`
+ * (default 5000, when the definition does not set one), and `createHost`,
+ * which replaces host creation in tests.
  *
  * Pass them to the kernel as `processors`; every unit's runners share them.
  *
@@ -201,6 +202,12 @@ export interface ProcessorRunnerOptions {
    * @description The default is 5.
    */
   readonly sliceBudgetMs?: number;
+  /**
+   * @summary The handshake timeout of worker hosts, in milliseconds (ARCHITECTURE §8.3).
+   * @description It applies to each processor that does not set its own
+   * `handshakeTimeoutMs`. The default is 5000. `createTestPlatform` sets 30000.
+   */
+  readonly handshakeTimeoutMs?: number;
   /**
    * @summary Replaces the function that makes hosts.
    * @description Tests use it to give fake hosts.
@@ -285,7 +292,7 @@ export class ProcessorRunner<In = unknown, Out = unknown> implements ProcessorHa
   /**
    * @summary Creates a runner for one processor. No host starts until `start`.
    * @param {ProcessorDef<In, Out>} def The processor definition.
-   * @param {ProcessorRunnerOptions} [options] Scheduler, budget, slice budget and host factory.
+   * @param {ProcessorRunnerOptions} [options] Scheduler, budget, slice budget, handshake timeout and host factory.
    * @throws {Error} When the definition is invalid (see `validateProcessorDef`).
    */
   constructor(
@@ -405,6 +412,7 @@ export class ProcessorRunner<In = unknown, Out = unknown> implements ProcessorHa
       const host = this.#create(kind, this.def, {
         scheduler: this.#scheduler,
         sliceBudgetMs: this.options.sliceBudgetMs ?? 5,
+        handshakeTimeoutMs: this.options.handshakeTimeoutMs,
       });
       try {
         await host.start();

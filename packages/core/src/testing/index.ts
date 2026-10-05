@@ -309,6 +309,27 @@ export interface TestPlatform {
 }
 
 /**
+ * @summary The worker handshake timeout of {@linkcode createTestPlatform}, in milliseconds.
+ *
+ * @description
+ * The production default is 5000. Under the load of a full browser test
+ * run, the first transform of a worker module by the dev server can take
+ * longer, and the runner then fails over to the virtual host. This longer
+ * timeout keeps a slow first load from looking like a failover. A test that
+ * checks the `handshake-timeout` failover sets a short `handshakeTimeoutMs`
+ * on its processor definition, which has precedence.
+ *
+ * @example
+ * Example 1: Using it for a runner outside the test platform
+ * ```ts
+ * new ProcessorRunner(def, { handshakeTimeoutMs: TEST_HANDSHAKE_TIMEOUT_MS });
+ * ```
+ *
+ * @public
+ */
+export const TEST_HANDSHAKE_TIMEOUT_MS = 30_000;
+
+/**
  * @summary Creates an in-memory test platform.
  *
  * @description
@@ -316,6 +337,12 @@ export interface TestPlatform {
  * ids, the test clock (a new one starting at 1000, or `options.clock`), and
  * an `onError` that records errors. Any other kernel option (persistence,
  * processors, schedule, ids) can be passed through.
+ *
+ * The worker handshake timeout is {@linkcode TEST_HANDSHAKE_TIMEOUT_MS} for
+ * processors that do not set their own (ARCHITECTURE §8.3). The dev server
+ * can take more than the production 5 s to transform a worker module the
+ * first time, when many browsers run tests at the same time. Give
+ * `processors.handshakeTimeoutMs` to change it.
  *
  * @example
  * Example 1: Boot, assert, stop
@@ -352,6 +379,7 @@ export function createTestPlatform(
   const kernel = new Kernel(subsystems as readonly SubsystemDefinition[], {
     ids: () => `id-${++counter}`,
     ...options,
+    processors: { handshakeTimeoutMs: TEST_HANDSHAKE_TIMEOUT_MS, ...options.processors },
     now: clock.now,
     onError: (error, unitId) => errors.push({ error, unitId }),
     router: (k) => {
