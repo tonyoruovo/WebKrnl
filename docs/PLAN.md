@@ -174,8 +174,12 @@ No code is written until both steps are done.
 
 ### M9 — Product subsystems
 
-- `translation`, `settings`, `analytics`
-- `design-system`: write its proposal first, then build it
+- `settings` (§21.1): definitions, persistence, Window sync, optional server handlers, `optimisticUpdate`, the analytics opt-out through Consent
+- `translation` (§21.2): an ICU subset parser, compile in a worker, the locale chain, catalogs from options, a loader or a URL, kept in Storage, `Intl` formatting
+- `analytics` (§21.3): consent first, session sampling, batches with idempotency keys, an offline outbox, the `pagehide` beacon
+- The tab count in Global State (§21.5); the old portal is dropped
+- `design-system` (§21.4): write its proposal first, agree it, then build it
+- Delete `src/managers/`
 
 **Gate:** all subsystems in the catalogue (§13) are ported, and `src/managers/` is empty.
 

@@ -593,14 +593,14 @@ Shutdown runs disposers in reverse order. Persisting state is part of each unit'
 | Crypto | featurized | Tab (key cache shared per origin) | shared → dedicated → virtual | — | `crypto` |
 | Storage | featurized | Tab (coordinator shared per origin) | shared → virtual | — (uses the key store of `@platform/crypto`) | `storage`, backends |
 | Consent | featurized | Window | virtual | — (grants persist through the kernel's persistence, which Storage backs from M6) | `consent` |
-| Settings | featurized | Window | virtual | Consent | `settings` |
+| Settings | featurized | Window | virtual | Consent (Auth optional, §21.1) | `settings` |
 | Network | featurized | Tab | virtual | — (GlobalState optional, §19.1) | `network` |
 | Auth | featurized | Window | virtual | — (Network optional; Storage and Crypto late-bound, §19.2) | `auth` |
 | Sync | featurized | Tab | virtual | Network (Storage late-bound, §19.3) | `sync` |
 | Realtime | featurized | Tab (hosts the Global transport) | dedicated → virtual | — (Auth optional, §19.4) | `realtime` |
-| Translation | featurized | Tab | virtual (compile: dedicated) | Storage, Network | `translation` |
-| Analytics | featurized | Tab | dedicated → virtual | Consent, Network | `analytics` |
-| Design System | featurized | Page | virtual | — | `design-system` (empty) |
+| Translation | featurized | Tab | virtual (compile: dedicated) | — (Storage, Network and Settings late-bound, §21.2) | `translation` |
+| Analytics | featurized | Tab | virtual | Consent (Network, Storage and Settings optional, §21.3) | `analytics` |
+| Design System | featurized | Page | virtual | — (Settings and Translation optional, §21.4) | `design-system` |
 
 The scopes here are proposals. They are confirmed when each subsystem's proposal is amended in its milestone.
 
@@ -672,7 +672,11 @@ An adapter exists only where a framework can do something better than the neutra
 | `realtime` | The protocol is pluggable. Network is not a dependency: the backoff comes from core (§19.4). |
 | `crypto` | Keep the rule that Crypto has no Network dependency (§7.1). Keys persist in IndexedDB as non-extractable `CryptoKey` objects (§18.1). |
 | `storage` | The backends run inside the coordinator processor, not as kernel features. Interactive transactions become atomic batches. The coordinator runs the pipeline with portable functions, and the caller validates with zod (§8.8, §18.2). |
-| `design-system` | The proposal is empty and must be written before its milestone. |
+| `design-system` | The proposal was empty. It is written in M9: tokens and theme only (§21.4). |
+| `settings` | Settings are definitions with defaults and validation, `device` or `user`; built-in and app settings share one store. Optional `load` and `save` handlers keep the user settings on the server (§21.1). |
+| `translation` | ICU MessageFormat only, parsed by the package; the `plurals` map is dropped. Storage, Network and Settings are optional. Catalogs refresh with `ETag` through Network, not Sync (§21.2). |
+| `analytics` | The main thread only, because the `pagehide` beacon needs the payload at once. Sampling is for each session. Batches carry an `Idempotency-Key` (§21.3). |
+| `tab-count` | A feature of Global State, with Web Locks and a `BroadcastChannel` fallback. The `SharedWorker` and `localStorage` strategies are dropped (§21.5). |
 
 ---
 
@@ -942,3 +946,76 @@ The M8 gate is a Node test with three devices (kernels), the in-memory server, a
 1. Device A is offline. A unit with Global scope broadcasts. The envelope waits in the outbox. A reloads (a new kernel on the same Storage), and the envelope is still there.
 2. A goes online. The server drops the first acknowledgement, so A sends the envelope again, and the server delivers it twice to B.
 3. Each subscriber on B and C receives the broadcast exactly once, and A's outbox is empty.
+
+## 21. Product subsystems (M9)
+
+This section is the design of milestone M9. It amends the proposals `settings`, `translation`, `analytics` and `tab-count`, and it starts the proposal `design-system`. The decisions of 2026-10-05: Translation parses its own ICU subset, the design system is tokens and theme only, the tab count moves into Global State, and the old "portal" is dropped. The final package name is decided before the alpha (M10).
+
+```text
+  Settings (Window) ---- settings:changed ----> Translation: the locale
+     |  persisted state, newer key wins           Design System: appearance
+     |  optional save/load handlers (server)      Analytics: data saver
+     +-- analytics on/off --> Consent <---------- Analytics: collects only with the grant
+  Translation: t() on the main thread; catalogs from options, a loader, or a URL (Network), cached in Storage
+  Analytics: buffer --> batches --> Network (Idempotency-Key); offline: Storage; pagehide: sendBeacon
+  Global State: tabs (Web Locks), and the tab id as before
+```
+
+### 21.1 Settings
+
+`@platform/settings` gives the subsystem `settings` (featurized, **Window** scope, requires Consent). It runs on the main thread.
+
+- **Definitions.** A setting has a key, a default, an optional `validate(value)`, and a kind: `device` (the default) or `user`. The built-in settings are `syncInterval` (300 000 ms), `bandwidthMode` (`FULL`, `CONSERVATIVE` or `MINIMAL`), `dataSaver` (`false`) and `locale` (`null`: the device decides). The app and other packages add their own (`createSettings({ definitions })`). The design system exports the definitions of its appearance settings (§21.4).
+- **Reading and writing.** `commands.get(key)`, `commands.set(key, value)`, `commands.reset(key?)`, and one view of all values. A value that fails `validate` is a `RangeError`. A change applies at once: no reload.
+- **Persistence and tabs.** The values are persisted state (the kernel's persistence, as Consent). Each key keeps the time of its last change. A change goes to the other tabs of the site as the Window broadcast `settings:changed`, and the newer value of each key wins. A tab that starts asks the open tabs (`settings:sync`), as Consent does.
+- **The server (optional).** `handlers: { load?, save? }`. `save(changes)` runs after each local change. When it fails, the change rolls back, and the error goes to `onError`. This is the `optimisticUpdate(apply, commit, rollback)` helper of the proposal, also exported. `load()` runs when a user signs in, so the preferences of the user follow them to each device.
+- **Sign-out (§5.1).** The `user` settings return to their defaults. The `device` settings stay: they belong to the device, not to the user.
+- **Consent.** `isAnalyticsEnabled()`, `enableAnalytics()` and `disableAnalytics()` read and change the `analytics` grant of Consent. Settings does not keep a copy. Opting out never stops the `necessary` and `functional` work.
+
+### 21.2 Translation
+
+`@platform/translation` gives the subsystem `translation` (featurized, Tab scope). Storage, Network and Settings are optional and late-bound. The processor `compile` runs on `dedicated`, then `virtual`.
+
+- **`t()` is synchronous.** It runs on the main thread, because templates call it while they render. `t(key, params?)` finds the key through the locale chain and formats the compiled message. `views.state` has the locale, the direction, the chain and the loaded namespaces, so an adapter renders again when they change.
+- **The message format** is an ICU MessageFormat subset, parsed by the package (no dependency): `{name}` arguments, `plural` and `selectordinal` (with `#`, `=N` and `offset`), `select`, `number`, `date` and `time` with their styles, nested messages, and apostrophe escaping. Plural categories come from `Intl.PluralRules`, and a missing category uses `other`. The separate `plurals` map of the proposal is dropped: ICU plural covers it.
+- **Compiling.** A catalog is parsed into plain data (an AST), so a worker can compile it and send it back. The processor `compile` parses a whole catalog. A syntax error in one message is reported, and that message falls back to its key.
+- **The locale.** The chain comes from the `locale` setting, then `navigator.languages`, then `defaultLocale`, each matched against `supportedLocales`. For `en-US` the chain is `en-US`, `en`, then the default. The direction comes from `Intl.Locale` text info where it exists, otherwise from a list of right-to-left languages. A change of locale loads the namespaces again and broadcasts `translation:locale-changed` (Tab scope).
+- **Catalogs.** A catalog is `{ locale, namespace, messages, version? }`. Sources, in order: catalogs in the options; `load(locale, namespace)`, a function of the app (for example a dynamic `import()`); or `url`, a template such as `/i18n/{locale}/{namespace}.json`, fetched through Network. The namespace `common` loads at start. The others load on `loadNamespace(ns)`, and the least recently used ones leave memory after `maxCatalogs`.
+- **Offline.** When Storage runs, fetched catalogs are kept in the collection `translation.catalogs` (not encrypted: catalogs are public). A cached catalog serves at once. When the platform is online, Translation asks the server again with the `ETag`, and a new version replaces the old one. Sync is not used: a catalog is server data that the client only reads.
+- **Missing keys.** A missing key returns the key (or throws in `strict` mode), is counted, and is broadcast once for each key and locale as `translation:missing-key` (LOW), for the Logger.
+- **Safety.** Parameter values are HTML-escaped by default (`escapeParams: true`), as the proposal says. A framework that escapes text itself (the Vue adapter) turns it off, so that text is not escaped twice.
+- **Formatting.** `formatNumber`, `formatCurrency`, `formatDate`, `formatRelativeTime`, `formatList` and `compare` wrap `Intl` with the active locale. Formatters are cached for each locale and set of options.
+- **Sign-out.** Translation keeps no user data.
+
+### 21.3 Analytics
+
+`@platform/analytics` gives the subsystem `analytics` (featurized, Tab scope, requires Consent). Network, Storage, Settings, Global State and Auth are optional.
+
+- **The main thread only.** The proposal asks for a dedicated worker. But the last batch goes out with `navigator.sendBeacon` in `pagehide`, and that handler must build the payload at once: it cannot wait for a worker. The aggregation is small, so it stays on the main thread (as Network, §19.1).
+- **Collecting.** `increment(name, n?)`, `gauge(name, value)`, `histogram(name, value)` and `track(name, properties?)`. Nothing is collected without the `analytics` grant of Consent. When the grant is revoked, the buffer and the stored batches are deleted.
+- **Sampling** is decided once for each session (`sampleRate`), not for each event, so a sampled session is complete and funnels stay correct.
+- **Batches.** A batch has counters, gauges, histogram summaries (count, sum, min, max, p50, p90, p99) and events, with a batch id and a session id. It goes out when `batchSize` events wait or every `flushIntervalMs`, as a `POST` to `endpoint` through Network with the batch id as `Idempotency-Key`, so a retry never counts twice.
+- **Offline.** A batch that cannot go out waits in the Storage collection `analytics.outbox` (bounded, oldest out first), and goes out when the platform is online.
+- **The data saver.** With `dataSaver` or a `bandwidthMode` that is not `FULL`, batches go out only when full or in `pagehide`.
+- **Sign-out (§5.1).** The buffer and the stored batches are deleted, and a new session id starts.
+- Dropped for now: automatic Web Vitals and platform health metrics. An app can record them with `gauge` and `histogram`.
+
+### 21.4 Design System
+
+`@platform/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) is written in M9 and agreed before the package is built.
+
+- **Tokens** are CSS custom properties, set on `document.documentElement` (or another root): color, space, size, radius, type, shadow, motion and z-index.
+- **The theme** comes from the appearance settings (color scheme, contrast, density, font scale, reduced motion) and the user agent (`prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-motion`). The direction comes from Translation (`dir` and `lang` on the root).
+
+### 21.5 The tab count (Global State)
+
+- Global State adds `tabs` to its state: the number of open tabs of this origin with the platform.
+- Each tab holds the Web Lock `platform:tab:<tabId>` while its page is shown. It releases the lock in `pagehide` (a page in the back-forward cache does not count) and takes it again in `pageshow`. The count is the number of these locks in `navigator.locks.query()`. The browser releases the lock of a tab that crashes, so the count never keeps a dead tab. A tab that changes the count tells the others on a `BroadcastChannel`, and they count again.
+- Without Web Locks, the tabs count each other with `hello` and `bye` messages on the `BroadcastChannel`.
+- The count is for one origin. A count for the whole site (all subdomains) is not supported.
+- The old "portal" (a stack of referrer paths and a busy flag) is dropped. The history of navigation belongs to the router, and Global State already reports `BUSY`.
+
+### 21.6 The gate
+
+1. Every subsystem of the catalogue (§13) is a package, and `src/managers/` is deleted. The code that it still has (the old Global State, Queue, Notification Center, bus and packets, already ported in M1 to M3) goes with it.
+2. A Node test boots the whole catalogue in one kernel, and a browser test boots it in two tabs: a setting changed in one tab changes the locale of Translation and the theme of the design system in the other, and Analytics sends nothing until the `analytics` grant.
