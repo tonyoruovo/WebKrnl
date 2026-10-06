@@ -61,7 +61,9 @@ const analytics = defineSubsystem({
   state: { initial: { collecting: false, events: [] as string[] } },
   init: (ctx) => {
     const consent = ctx.dependency<ConsentControl>('consent');
-    ctx.state.update((s) => void (s.collecting = consent?.commands.isGranted('analytics') ?? false));
+    ctx.state.update(
+      (s) => void (s.collecting = consent?.commands.isGranted('analytics') ?? false),
+    );
   },
   receive: (packet, ctx) => {
     for (const change of packet.take() as ConsentChange[]) {
@@ -163,7 +165,11 @@ Consent is Window-scoped. A decision in one tab reaches the other tabs, and a ta
 ```ts file=main.ts
 import { Kernel } from '@webkrnl/core';
 import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@webkrnl/hub';
+import {
+  WINDOW_TRANSPORT_ID,
+  createWindowTransport,
+  type WindowTransportControl,
+} from '@webkrnl/hub';
 import { createNotificationCenter } from '@webkrnl/notification';
 import { createQueue } from '@webkrnl/queue';
 

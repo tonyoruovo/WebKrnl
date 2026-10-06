@@ -16,7 +16,9 @@ import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/sett
 const kernel = new Kernel([
   createConsent(),
   createSettings({
-    definitions: { 'editor.fontSize': { default: 14, validate: (v) => v === 12 || v === 14 || v === 16 } },
+    definitions: {
+      'editor.fontSize': { default: 14, validate: (v) => v === 12 || v === 14 || v === 16 },
+    },
   }),
 ]);
 await kernel.start();

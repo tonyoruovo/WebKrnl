@@ -26,8 +26,8 @@ Retention rules and data-subject requests (export, erase) need Storage and arriv
 
 ## Entry points
 
-| Import              | Contents                                                                                                       |
-| ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Import             | Contents                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/consent` | `createConsent`, `isConsentGranted`, `CONSENT_ID`, `CONSENT_CHANGED`, `NECESSARY`, `DEFAULT_CATEGORIES`, types |
 
 ## Usage

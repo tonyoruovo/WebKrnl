@@ -12,12 +12,12 @@ The CacheStorage storage backend. Tertiary persistent backend in the fallback ch
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `cache.types.ts` | All cache-specific types: `CacheBackendConfig`, `CacheBufferedOp`, `ICacheTransaction`, `CACHE_KEY_NAMESPACE` |
-| `cache.ts` | `CacheBackend` class — implements `IStorageBackend<string>` |
-| `cache.transaction.ts` | `CacheTransaction` — best-effort buffered transaction |
-| `index.ts` | Barrel export |
+| File                   | Purpose                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `cache.types.ts`       | All cache-specific types: `CacheBackendConfig`, `CacheBufferedOp`, `ICacheTransaction`, `CACHE_KEY_NAMESPACE` |
+| `cache.ts`             | `CacheBackend` class — implements `IStorageBackend<string>`                                                   |
+| `cache.transaction.ts` | `CacheTransaction` — best-effort buffered transaction                                                         |
+| `index.ts`             | Barrel export                                                                                                 |
 
 ---
 
@@ -100,11 +100,11 @@ The Cache API provides no way to inspect entry metadata without fetching the ful
 
 ```ts
 interface CacheIndexEntry {
-  schema_version: number
-  written_at:     number
-  expires_at:     number | null
-  weight:         number
-  backend:        BackendKind
+  schema_version: number;
+  written_at: number;
+  expires_at: number | null;
+  weight: number;
+  backend: BackendKind;
 }
 ```
 
@@ -212,41 +212,41 @@ close()
 ## Usage example
 
 ```ts
-import { CacheBackend } from './backends/cache'
+import { CacheBackend } from './backends/cache';
 
-const backend = new CacheBackend({ cacheName: 'app-storage', maxEntries: 500 })
+const backend = new CacheBackend({ cacheName: 'app-storage', maxEntries: 500 });
 
-const probe = await backend.probe()
-if (!probe.available) throw new Error(probe.reason)
+const probe = await backend.probe();
+if (!probe.available) throw new Error(probe.reason);
 
-await backend.initialize()
+await backend.initialize();
 
 // Direct write (payload is already an encrypted string from the pipeline)
-const key = 'myapp:chrome:130:auth:session' as CanonicalKey
+const key = 'myapp:chrome:130:auth:session' as CanonicalKey;
 await backend.write(key, {
-  payload:        'AES-GCM-ENCRYPTED-STRING',
+  payload: 'AES-GCM-ENCRYPTED-STRING',
   schema_version: 1,
-  written_at:     Date.now(),
-  expires_at:     Date.now() + 3_600_000,
-  weight:         5,
-  backend:        'cache',
-})
+  written_at: Date.now(),
+  expires_at: Date.now() + 3_600_000,
+  weight: 5,
+  backend: 'cache',
+});
 
 // Read
-const envelope = await backend.read(key)
+const envelope = await backend.read(key);
 // envelope.payload === 'AES-GCM-ENCRYPTED-STRING'
 
 // Transactional write
-const tx = await backend.beginTransaction()
+const tx = await backend.beginTransaction();
 try {
-  await backend.write(keyA, envelopeA, { transactionId: tx.id })
-  await backend.delete(keyB,           { transactionId: tx.id })
-  await tx.commit()  // ops applied sequentially to the cache
+  await backend.write(keyA, envelopeA, { transactionId: tx.id });
+  await backend.delete(keyB, { transactionId: tx.id });
+  await tx.commit(); // ops applied sequentially to the cache
 } catch {
-  await tx.rollback()  // buffer discarded, zero cache changes
+  await tx.rollback(); // buffer discarded, zero cache changes
 }
 
-await backend.close()
+await backend.close();
 ```
 
 ---

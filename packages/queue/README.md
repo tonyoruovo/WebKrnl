@@ -26,8 +26,8 @@ The kernel owns delivery, and the Notification Center (`@webkrnl/notification`) 
 
 ## Entry points
 
-| Import            | Contents                                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Import           | Contents                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/queue` | `createQueue`, `QUEUE_ID`, `QueueRejectedError`, and the types `QueueOptions`, `QueueControl`, `SettledPacket`, `DeadLetter`, … |
 
 ## Usage
@@ -80,21 +80,21 @@ const stop = commands.observe((settled) => archive(settled));
 
 ## Behaviour
 
-| Situation                                             | Result                                                                    |
-| ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| Situation                                              | Result                                                                           |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | Sign-out, or another user signs in (ARCHITECTURE §5.1) | The dead letters are wiped, in memory, in the late-binding buffer and in Storage |
-| A broadcast outside its sender's scope                | `QueueRejectedError` (`scope`)                                            |
-| Global State does not admit the importance            | `QueueRejectedError` (`admission`)                                        |
-| `maxDepth` packets are waiting (not for `CRITICAL`)   | `QueueRejectedError` (`overflow`)                                         |
-| The target is waiting, starting, suspended or failed  | Retried with backoff (`retry-scheduled`, WARN); a dead letter at the end  |
-| The target is destroyed                               | A dead letter                                                             |
-| The packet's `ttl` has passed                         | A dead letter (`expired`)                                                 |
-| The target throws                                     | `failed` (ERROR); the error goes back to the sender; not retried          |
-| The target is unknown, a feature, or has no `receive` | `failed`; not retried                                                     |
-| The Queue is suspended                                | Packets wait; nothing is dispatched until it resumes                      |
-| The Queue is destroyed                                | Waiting packets, and any sent later, get `QueueRejectedError` (`stopped`) |
-| Storage starts (or the page reloads with Storage)     | Stored dead letters come back into `deadLetters`; new ones are stored     |
-| A dead letter is replayed                             | It is also deleted from Storage                                           |
+| A broadcast outside its sender's scope                 | `QueueRejectedError` (`scope`)                                                   |
+| Global State does not admit the importance             | `QueueRejectedError` (`admission`)                                               |
+| `maxDepth` packets are waiting (not for `CRITICAL`)    | `QueueRejectedError` (`overflow`)                                                |
+| The target is waiting, starting, suspended or failed   | Retried with backoff (`retry-scheduled`, WARN); a dead letter at the end         |
+| The target is destroyed                                | A dead letter                                                                    |
+| The packet's `ttl` has passed                          | A dead letter (`expired`)                                                        |
+| The target throws                                      | `failed` (ERROR); the error goes back to the sender; not retried                 |
+| The target is unknown, a feature, or has no `receive`  | `failed`; not retried                                                            |
+| The Queue is suspended                                 | Packets wait; nothing is dispatched until it resumes                             |
+| The Queue is destroyed                                 | Waiting packets, and any sent later, get `QueueRejectedError` (`stopped`)        |
+| Storage starts (or the page reloads with Storage)      | Stored dead letters come back into `deadLetters`; new ones are stored            |
+| A dead letter is replayed                              | It is also deleted from Storage                                                  |
 
 A completed request's trail reads `sent`, `enqueued`, `dispatched`, `delivered` (by the target), then whatever the target stamped, then `completed`. A broadcast's deliveries are recorded by the Notification Center.
 
@@ -102,19 +102,19 @@ Without Global State in the kernel, every packet is admitted. Without a `fanOut`
 
 ## Options
 
-| Option               | Default              | Purpose                                               |
-| -------------------- | -------------------- | ----------------------------------------------------- |
-| `fanOut`             | `kernel.broadcast`   | Where broadcasts go (the Notification Center's).      |
-| `maxRetries`         | `3`                  | Retries of a packet whose target is not running.      |
-| `retryBaseMs`        | `100`                | The first retry's base wait.                          |
-| `retryStrategy`      | `exponential-jitter` | The backoff formula (see `computeBackoff` in core).   |
-| `maxDepth`           | `1000`               | Waiting packets before non-critical ones are refused. |
-| `maxActive`          | `8`                  | Packets dispatched at the same time.                  |
-| `deadLetterCapacity` | `100`                | Dead letters kept in memory, buffered and stored.     |
+| Option               | Default              | Purpose                                                                            |
+| -------------------- | -------------------- | ---------------------------------------------------------------------------------- |
+| `fanOut`             | `kernel.broadcast`   | Where broadcasts go (the Notification Center's).                                   |
+| `maxRetries`         | `3`                  | Retries of a packet whose target is not running.                                   |
+| `retryBaseMs`        | `100`                | The first retry's base wait.                                                       |
+| `retryStrategy`      | `exponential-jitter` | The backoff formula (see `computeBackoff` in core).                                |
+| `maxDepth`           | `1000`               | Waiting packets before non-critical ones are refused.                              |
+| `maxActive`          | `8`                  | Packets dispatched at the same time.                                               |
+| `deadLetterCapacity` | `100`                | Dead letters kept in memory, buffered and stored.                                  |
 | `persistDeadLetters` | `true`               | Keep dead letters in Storage when Storage runs. Set `false` to bind your own sink. |
-| `trailHistory`       | `50`                 | Settled packets kept in `views.trails`.               |
-| `scheduler`          | `createScheduler()`  | Runs non-critical dispatches.                         |
-| `now`, `random`      | `Date.now`, crypto   | Clock and jitter source.                              |
+| `trailHistory`       | `50`                 | Settled packets kept in `views.trails`.                                            |
+| `scheduler`          | `createScheduler()`  | Runs non-critical dispatches.                                                      |
+| `now`, `random`      | `Date.now`, crypto   | Clock and jitter source.                                                           |
 
 ## Testing
 

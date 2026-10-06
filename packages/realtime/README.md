@@ -31,10 +31,10 @@ The package starts its worker with `new Worker(new URL('./socket.worker.ts', imp
 
 ## Entry points
 
-| Import                      | Contents                                                                         |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| `@webkrnl/realtime`        | `createRealtime`, `createSocketProcessor`, `JSON_PROTOCOL`, and the types         |
-| `@webkrnl/realtime/worker` | The worker entry. It serves the socket processor. You do not import it yourself.  |
+| Import                          | Contents                                                                                       |
+| ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `@webkrnl/realtime`             | `createRealtime`, `createSocketProcessor`, `JSON_PROTOCOL`, and the types                      |
+| `@webkrnl/realtime/worker`      | The worker entry. It serves the socket processor. You do not import it yourself.               |
 | `@webkrnl/realtime/conformance` | `runConformance`: checks your server against the [wire protocol](../../docs/WIRE-PROTOCOL.md). |
 
 ## Usage
@@ -42,9 +42,16 @@ The package starts its worker with `new Worker(new URL('./socket.worker.ts', imp
 ```ts
 import { createRealtime, type RealtimeControl } from '@webkrnl/realtime';
 
-const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' })], {
-  router: queue.router,
-});
+const kernel = new Kernel(
+  [
+    ...centralized,
+    createAuth({ handlers }),
+    createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' }),
+  ],
+  {
+    router: queue.router,
+  },
+);
 await kernel.start();
 
 const { commands, views } = kernel.unit<RealtimeControl>('realtime').control!;
@@ -72,9 +79,18 @@ const realtime = createRealtime({
   auth: 'message',
   global: { http: 'https://rt.shop.example/global' }, // the HTTP fallback is optional
 });
-const kernel = new Kernel([...centralized, createAuth({ handlers }), createNetwork(), realtime, createWindowTransport({ hubUrl })], {
-  router: queue.router,
-});
+const kernel = new Kernel(
+  [
+    ...centralized,
+    createAuth({ handlers }),
+    createNetwork(),
+    realtime,
+    createWindowTransport({ hubUrl }),
+  ],
+  {
+    router: queue.router,
+  },
+);
 
 // A Global broadcast now reaches every device of the user.
 await port.send({ eventId: 'settings:changed', payload: { theme: 'dark' } });
@@ -104,39 +120,39 @@ const results = await runConformance({ url: 'wss://staging.shop.example/socket',
 
 ## Behaviour
 
-| Situation                              | Result                                                                          |
-| -------------------------------------- | ------------------------------------------------------------------------------- |
+| Situation                                              | Result                                                                                                                                                                            |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Sign-out, or another user signs in (ARCHITECTURE §5.1) | The buffered publishes, the presence and the Global outbox (memory and Storage) are wiped. The listeners stay (they belong to the app). The socket opens again with the new token |
-| The socket drops                       | `reconnecting`, backoff, then `open`; every topic subscribes again             |
-| No `pong` within `heartbeatTimeoutMs`  | The socket closes and reconnects                                               |
-| The platform goes offline              | The socket closes; no reconnect attempts until online                          |
-| `publish` while disconnected           | Buffered; the oldest is dropped when full (`state.dropped`)                    |
-| `maxAttempts` reached                  | `closed`, `lastError: 'Gave up after N attempts.'` until `connect()`           |
-| The Auth token changes                 | The socket opens again with the new token                                      |
-| No `Worker` (or it fails)              | The socket runs on the main thread                                             |
-| Global: no ack in time, or a reconnect | The envelope goes again; receivers drop repeats |
-| Global: an envelope expires (`ttl`) | Dropped from the outbox (`dropped`) |
-| Global: the outbox is full (`maxOutbox`) | The oldest envelope is dropped (`dropped`) |
-| Global: an invalid envelope arrives | Dropped (`dropped`), never delivered |
-| Global: the socket cannot open | The HTTP fallback, when `global.http` is set |
+| The socket drops                                       | `reconnecting`, backoff, then `open`; every topic subscribes again                                                                                                                |
+| No `pong` within `heartbeatTimeoutMs`                  | The socket closes and reconnects                                                                                                                                                  |
+| The platform goes offline                              | The socket closes; no reconnect attempts until online                                                                                                                             |
+| `publish` while disconnected                           | Buffered; the oldest is dropped when full (`state.dropped`)                                                                                                                       |
+| `maxAttempts` reached                                  | `closed`, `lastError: 'Gave up after N attempts.'` until `connect()`                                                                                                              |
+| The Auth token changes                                 | The socket opens again with the new token                                                                                                                                         |
+| No `Worker` (or it fails)                              | The socket runs on the main thread                                                                                                                                                |
+| Global: no ack in time, or a reconnect                 | The envelope goes again; receivers drop repeats                                                                                                                                   |
+| Global: an envelope expires (`ttl`)                    | Dropped from the outbox (`dropped`)                                                                                                                                               |
+| Global: the outbox is full (`maxOutbox`)               | The oldest envelope is dropped (`dropped`)                                                                                                                                        |
+| Global: an invalid envelope arrives                    | Dropped (`dropped`), never delivered                                                                                                                                              |
+| Global: the socket cannot open                         | The HTTP fallback, when `global.http` is set                                                                                                                                      |
 
 ## Options
 
-| Option              | Default                  | Purpose                                                  |
-| ------------------- | ------------------------ | -------------------------------------------------------- |
-| `url`               | (required)               | The socket server.                                       |
-| `hosts`             | `['dedicated', 'virtual']` | The hosts of the socket processor.                     |
-| `socket`            | `WebSocket`              | A socket factory on the main thread (tests).             |
-| `protocol`          | JSON frames              | `{ encode, decode }`, self-contained functions.          |
-| `auth`              | `false`                  | `'query'` or `'message'` sends the token of Auth.        |
-| `autoConnect`       | `true`                   | Connect at start.                                        |
-| `heartbeatMs`       | `25_000`                 | The time between pings.                                  |
-| `heartbeatTimeoutMs`| `10_000`                 | The wait for a pong.                                     |
-| `maxAttempts`       | no limit                 | Reconnect attempts before giving up.                     |
-| `retryBaseMs`       | `500`                    | The base wait of the reconnect backoff.                  |
-| `publishBuffer`     | `100`                    | Messages kept while disconnected.                        |
-| `presenceTimeoutMs` | `60_000`                 | When a silent peer becomes `offline`.                    |
-| `global`            | none                     | Turns on the Global transport: `{ http?, ackTimeoutMs = 10_000, maxOutbox = 500, pollTimeoutMs = 25_000 }`. |
+| Option               | Default                    | Purpose                                                                                                     |
+| -------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `url`                | (required)                 | The socket server.                                                                                          |
+| `hosts`              | `['dedicated', 'virtual']` | The hosts of the socket processor.                                                                          |
+| `socket`             | `WebSocket`                | A socket factory on the main thread (tests).                                                                |
+| `protocol`           | JSON frames                | `{ encode, decode }`, self-contained functions.                                                             |
+| `auth`               | `false`                    | `'query'` or `'message'` sends the token of Auth.                                                           |
+| `autoConnect`        | `true`                     | Connect at start.                                                                                           |
+| `heartbeatMs`        | `25_000`                   | The time between pings.                                                                                     |
+| `heartbeatTimeoutMs` | `10_000`                   | The wait for a pong.                                                                                        |
+| `maxAttempts`        | no limit                   | Reconnect attempts before giving up.                                                                        |
+| `retryBaseMs`        | `500`                      | The base wait of the reconnect backoff.                                                                     |
+| `publishBuffer`      | `100`                      | Messages kept while disconnected.                                                                           |
+| `presenceTimeoutMs`  | `60_000`                   | When a silent peer becomes `offline`.                                                                       |
+| `global`             | none                       | Turns on the Global transport: `{ http?, ackTimeoutMs = 10_000, maxOutbox = 500, pollTimeoutMs = 25_000 }`. |
 
 ## Testing
 

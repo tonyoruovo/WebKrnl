@@ -32,17 +32,17 @@ Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeW
 }
 ```
 
-| Field | Rule |
-|---|---|
-| `v` | `1`. A receiver refuses another version. |
-| `eventId`, `actionName` | Not empty. |
-| `importance` | `CRITICAL`, `HIGH`, `MEDIUM` or `LOW`. |
-| `metadata.messageId` | Not empty, unique. Receivers drop repeats by it. **The server must not change it.** |
-| `metadata.scope` | `global` on `platform:global`, `window` on `platform:window:<id>`. |
-| `metadata.target` | `null` for a broadcast. |
-| `metadata.authToken` | Allowed only with a target. A broadcast with a token is invalid: it would reach every receiver. |
-| `metadata.ttl` | Optional, in milliseconds after `timestamp`. A client drops an expired envelope before it sends it. |
-| `fingerprints` | The trail of the sender. **The server must not add or change fingerprints**: a receiver starts its own trail with the same `traceId` (ARCHITECTURE §9.4). |
+| Field                   | Rule                                                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v`                     | `1`. A receiver refuses another version.                                                                                                                  |
+| `eventId`, `actionName` | Not empty.                                                                                                                                                |
+| `importance`            | `CRITICAL`, `HIGH`, `MEDIUM` or `LOW`.                                                                                                                    |
+| `metadata.messageId`    | Not empty, unique. Receivers drop repeats by it. **The server must not change it.**                                                                       |
+| `metadata.scope`        | `global` on `platform:global`, `window` on `platform:window:<id>`.                                                                                        |
+| `metadata.target`       | `null` for a broadcast.                                                                                                                                   |
+| `metadata.authToken`    | Allowed only with a target. A broadcast with a token is invalid: it would reach every receiver.                                                           |
+| `metadata.ttl`          | Optional, in milliseconds after `timestamp`. A client drops an expired envelope before it sends it.                                                       |
+| `fingerprints`          | The trail of the sender. **The server must not add or change fingerprints**: a receiver starts its own trail with the same `traceId` (ARCHITECTURE §9.4). |
 
 **Fixtures.** `@webkrnl/core/fixtures/wire/valid/*.json` and `…/invalid/*.json`. Each file has a `description`, the `envelope`, and for an invalid one the `reason` (the field that fails). Your server must accept every valid fixture and refuse every invalid one.
 
@@ -50,21 +50,21 @@ Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeW
 
 The socket uses the frames of Realtime: one JSON object for each frame.
 
-| Frame | Direction | Meaning |
-|---|---|---|
-| `{ "type": "auth", "data": "<token>" }` | client → server | The access token, as the first frame. Close a socket that sends no valid token within a few seconds. |
-| `{ "type": "subscribe", "topic": "…" }` | client → server | Receive the messages of a topic. |
-| `{ "type": "unsubscribe", "topic": "…" }` | client → server | Stop. |
-| `{ "type": "publish", "topic": "…", "data": … }` | client → server | Send. |
-| `{ "type": "message", "topic": "…", "data": … }` | server → client | A message of a topic. |
-| `{ "type": "ack", "data": "<messageId>" }` | server → client | The server accepted a publish on a reserved topic. |
-| `{ "type": "ping" }` / `{ "type": "pong" }` | both | Heartbeat. Answer each `ping` with a `pong`. |
+| Frame                                            | Direction       | Meaning                                                                                              |
+| ------------------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------- |
+| `{ "type": "auth", "data": "<token>" }`          | client → server | The access token, as the first frame. Close a socket that sends no valid token within a few seconds. |
+| `{ "type": "subscribe", "topic": "…" }`          | client → server | Receive the messages of a topic.                                                                     |
+| `{ "type": "unsubscribe", "topic": "…" }`        | client → server | Stop.                                                                                                |
+| `{ "type": "publish", "topic": "…", "data": … }` | client → server | Send.                                                                                                |
+| `{ "type": "message", "topic": "…", "data": … }` | server → client | A message of a topic.                                                                                |
+| `{ "type": "ack", "data": "<messageId>" }`       | server → client | The server accepted a publish on a reserved topic.                                                   |
+| `{ "type": "ping" }` / `{ "type": "pong" }`      | both            | Heartbeat. Answer each `ping` with a `pong`.                                                         |
 
 **Reserved topics:**
 
-| Topic | `data` | Audience |
-|---|---|---|
-| `platform:global` | A wire envelope, scope `global` | The other connections of the **same user** (from the token). |
+| Topic                        | `data`                          | Audience                                                         |
+| ---------------------------- | ------------------------------- | ---------------------------------------------------------------- |
+| `platform:global`            | A wire envelope, scope `global` | The other connections of the **same user** (from the token).     |
 | `platform:window:<windowId>` | A wire envelope, scope `window` | The other connections that subscribed to the **same window id**. |
 
 For a `publish` on a reserved topic, the server must, in this order:

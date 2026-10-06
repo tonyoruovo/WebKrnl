@@ -38,7 +38,12 @@ const kernel = new Kernel([queue.subsystem, app, sync], { router: queue.router }
 await kernel.start();
 
 const message = (text: string) =>
-  chat!.send({ eventId: 'chat:message', payload: text, target: 'sync', orderingKey: 'conversation:7' });
+  chat!.send({
+    eventId: 'chat:message',
+    payload: text,
+    target: 'sync',
+    orderingKey: 'conversation:7',
+  });
 await Promise.all([
   message('Hi'),
   message('Are you there?'),
@@ -148,7 +153,11 @@ const sink = defineSubsystem({
 const queue = createQueue();
 const kernel = new Kernel(
   [
-    createGlobalState({ busyThreshold: 0, environment: createStaticEnvironment(), tabIdentity: false }),
+    createGlobalState({
+      busyThreshold: 0,
+      environment: createStaticEnvironment(),
+      tabIdentity: false,
+    }),
     queue.subsystem,
     sender,
     sink,
@@ -161,7 +170,10 @@ await kernel.start();
 const global = kernel.unit<GlobalStateControl>(GLOBAL_STATE_ID).control!;
 global.commands.beginWork({ id: 'import', subsystemId: 'app', importance: 'CRITICAL' });
 
-for (const [eventId, importance] of [['analytics:track', 'LOW'], ['payment:confirm', 'CRITICAL']] as const) {
+for (const [eventId, importance] of [
+  ['analytics:track', 'LOW'],
+  ['payment:confirm', 'CRITICAL'],
+] as const) {
   try {
     await app!.send({ eventId, payload: null, target: 'sink', importance });
   } catch (error) {
@@ -214,7 +226,9 @@ async function pageLoad() {
 
 const first = await pageLoad();
 await first.kernel.unit('billing').suspend('Service down.');
-await first.port.send({ eventId: 'charge', payload: { amount: 30 }, target: 'billing' }).catch(() => {});
+await first.port
+  .send({ eventId: 'charge', payload: { amount: 30 }, target: 'billing' })
+  .catch(() => {});
 console.log('dead letters before the reload:', first.queue.views.deadLetters.getSnapshot().length);
 await new Promise((resolve) => setTimeout(resolve, 100)); // let the write finish
 await first.kernel.stop();

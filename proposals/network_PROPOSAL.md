@@ -503,161 +503,157 @@ Ordered by initialization priority:
 /**
  * Shared Type Definitions
  */
-export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS'
+export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 export type CacheStrategy =
-  | 'network-first'
-  | 'cache-first'
-  | 'cache-only'
-  | 'network-only'
-  | 'no-cache'
-export type RequestStatus = 'PENDING' | 'IN_FLIGHT' | 'COMPLETED' | 'FAILED' | 'ABORTED'
-export type Importance = 'HIGH' | 'MEDIUM' | 'LOW'
+  'network-first' | 'cache-first' | 'cache-only' | 'network-only' | 'no-cache';
+export type RequestStatus = 'PENDING' | 'IN_FLIGHT' | 'COMPLETED' | 'FAILED' | 'ABORTED';
+export type Importance = 'HIGH' | 'MEDIUM' | 'LOW';
 
 export interface BasePacket<P, R = any> {
-  eventId: symbol
-  actionName: string
-  payload: P
-  importance: Importance
-  onComplete: (result: R) => void
-  onError: (error: Error) => void
-  onLog: ((fingerprints: Fingerprint[]) => void) | null
-  fingerprints: Fingerprint[]
+  eventId: symbol;
+  actionName: string;
+  payload: P;
+  importance: Importance;
+  onComplete: (result: R) => void;
+  onError: (error: Error) => void;
+  onLog: ((fingerprints: Fingerprint[]) => void) | null;
+  fingerprints: Fingerprint[];
 }
 
 /**
  * 1. Request Packet
  */
 export interface RequestPayload {
-  requestId: string
-  url: string
-  method: HTTPMethod
-  headers: Record<string, string>
-  body: any
-  timeout: number
-  maxRetries: number
-  priority: number
-  cacheStrategy: CacheStrategy
-  cacheTTL: number | null
-  skipCache: boolean
-  batchable: boolean
-  critical: boolean
-  subsystemId: string
-  signal: AbortSignal | null
+  requestId: string;
+  url: string;
+  method: HTTPMethod;
+  headers: Record<string, string>;
+  body: any;
+  timeout: number;
+  maxRetries: number;
+  priority: number;
+  cacheStrategy: CacheStrategy;
+  cacheTTL: number | null;
+  skipCache: boolean;
+  batchable: boolean;
+  critical: boolean;
+  subsystemId: string;
+  signal: AbortSignal | null;
 }
 
 export interface RequestResult {
-  requestId: string
-  status: number
-  statusText: string
-  headers: Record<string, string>
-  data: any
-  fromCache: boolean
-  latency: number
-  timestamp: number
+  requestId: string;
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  data: any;
+  fromCache: boolean;
+  latency: number;
+  timestamp: number;
 }
 
-export type RequestPacket = BasePacket<RequestPayload, RequestResult>
+export type RequestPacket = BasePacket<RequestPayload, RequestResult>;
 
 /**
  * 2. Abort Request Packet
  */
 export interface AbortRequestPayload {
-  requestId?: string // Specific request
-  subsystemId?: string // All requests from subsystem
-  abortAll?: boolean // All requests
-  reason?: string
+  requestId?: string; // Specific request
+  subsystemId?: string; // All requests from subsystem
+  abortAll?: boolean; // All requests
+  reason?: string;
 }
 
-export type AbortRequestPacket = BasePacket<AbortRequestPayload, { aborted: string[] }>
+export type AbortRequestPacket = BasePacket<AbortRequestPayload, { aborted: string[] }>;
 
 /**
  * 3. Cache Operation Packet
  */
 export interface CacheOperationPayload {
-  operation: 'GET' | 'SET' | 'DELETE' | 'CLEAR' | 'INVALIDATE'
-  key?: string
-  pattern?: string // For invalidate
-  value?: any // For set
-  ttl?: number // For set
+  operation: 'GET' | 'SET' | 'DELETE' | 'CLEAR' | 'INVALIDATE';
+  key?: string;
+  pattern?: string; // For invalidate
+  value?: any; // For set
+  ttl?: number; // For set
 }
 
 export interface CacheOperationResult {
-  success: boolean
-  value?: any // For get
-  keysAffected?: string[] // For delete/invalidate/clear
+  success: boolean;
+  value?: any; // For get
+  keysAffected?: string[]; // For delete/invalidate/clear
 }
 
-export type CacheOperationPacket = BasePacket<CacheOperationPayload, CacheOperationResult>
+export type CacheOperationPacket = BasePacket<CacheOperationPayload, CacheOperationResult>;
 
 /**
  * 4. Request Progress Packet
  */
 export interface RequestProgressPayload {
-  requestId: string
-  loaded: number
-  total: number
-  progress: number // 0-100
-  phase: 'UPLOADING' | 'DOWNLOADING' | 'PROCESSING'
+  requestId: string;
+  loaded: number;
+  total: number;
+  progress: number; // 0-100
+  phase: 'UPLOADING' | 'DOWNLOADING' | 'PROCESSING';
 }
 
-export type RequestProgressPacket = BasePacket<RequestProgressPayload, void>
+export type RequestProgressPacket = BasePacket<RequestProgressPayload, void>;
 
 /**
  * 5. Connection Status Packet
  */
 export interface ConnectionStatusPayload {
-  type: 'none' | 'wifi' | 'cellular' | 'ethernet' | 'unknown'
-  effectiveType: 'slow-2g' | '2g' | '3g' | '4g'
-  downlink: number // Mbps
-  rtt: number // ms
-  saveData: boolean
-  timestamp: number
+  type: 'none' | 'wifi' | 'cellular' | 'ethernet' | 'unknown';
+  effectiveType: 'slow-2g' | '2g' | '3g' | '4g';
+  downlink: number; // Mbps
+  rtt: number; // ms
+  saveData: boolean;
+  timestamp: number;
 }
 
-export type ConnectionStatusPacket = BasePacket<ConnectionStatusPayload, void>
+export type ConnectionStatusPacket = BasePacket<ConnectionStatusPayload, void>;
 
 /**
  * 6. Batch Request Packet
  */
 export interface BatchRequestPayload {
-  batchId: string
-  requests: RequestPayload[]
-  batchEndpoint: string
-  priority: number
+  batchId: string;
+  requests: RequestPayload[];
+  batchEndpoint: string;
+  priority: number;
 }
 
 export interface BatchRequestResult {
-  batchId: string
-  responses: RequestResult[]
-  duration: number
+  batchId: string;
+  responses: RequestResult[];
+  duration: number;
 }
 
-export type BatchRequestPacket = BasePacket<BatchRequestPayload, BatchRequestResult>
+export type BatchRequestPacket = BasePacket<BatchRequestPayload, BatchRequestResult>;
 
 /**
  * 7. Interceptor Registration Packet
  */
 export interface InterceptorPayload {
-  operation: 'ADD' | 'REMOVE'
-  type: 'REQUEST' | 'RESPONSE' | 'ERROR'
-  interceptorId?: string // For remove
-  handler?: Function // For add
+  operation: 'ADD' | 'REMOVE';
+  type: 'REQUEST' | 'RESPONSE' | 'ERROR';
+  interceptorId?: string; // For remove
+  handler?: Function; // For add
 }
 
-export type InterceptorPacket = BasePacket<InterceptorPayload, { interceptorId: string }>
+export type InterceptorPacket = BasePacket<InterceptorPayload, { interceptorId: string }>;
 
 /**
  * 8. Rate Limit Status Packet
  */
 export interface RateLimitStatusPayload {
-  url: string
-  limit: number
-  remaining: number
-  reset: number // Timestamp
-  retryAfter: number | null // Seconds
+  url: string;
+  limit: number;
+  remaining: number;
+  reset: number; // Timestamp
+  retryAfter: number | null; // Seconds
 }
 
-export type RateLimitStatusPacket = BasePacket<RateLimitStatusPayload, void>
+export type RateLimitStatusPacket = BasePacket<RateLimitStatusPayload, void>;
 
 /**
  * Unified Network Packet Type
@@ -670,7 +666,7 @@ export type NetworkPacket =
   | ConnectionStatusPacket
   | BatchRequestPacket
   | InterceptorPacket
-  | RateLimitStatusPacket
+  | RateLimitStatusPacket;
 ```
 
 ### Special Considerations

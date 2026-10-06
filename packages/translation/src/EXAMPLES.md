@@ -18,8 +18,16 @@ const kernel = new Kernel([
     supportedLocales: ['en', 'fr', 'fr-CA'],
     languages: () => ['fr-CA', 'en'],
     catalogs: [
-      { locale: 'en', namespace: 'common', messages: { cart: '{count, plural, one {# item} other {# items}}', help: 'Help' } },
-      { locale: 'fr', namespace: 'common', messages: { cart: '{count, plural, one {# article} other {# articles}}' } },
+      {
+        locale: 'en',
+        namespace: 'common',
+        messages: { cart: '{count, plural, one {# item} other {# items}}', help: 'Help' },
+      },
+      {
+        locale: 'fr',
+        namespace: 'common',
+        messages: { cart: '{count, plural, one {# article} other {# articles}}' },
+      },
       { locale: 'fr-CA', namespace: 'common', messages: { hello: 'Allô, {name}!' } },
     ],
   }),
@@ -55,14 +63,28 @@ import { Kernel } from '@webkrnl/core';
 import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 
 const kernel = new Kernel([
-  createTranslation({ hosts: ['virtual'], supportedLocales: ['en', 'ar'], languages: () => ['en'] }),
+  createTranslation({
+    hosts: ['virtual'],
+    supportedLocales: ['en', 'ar'],
+    languages: () => ['en'],
+  }),
 ]);
 await kernel.start();
 const { commands, views } = kernel.unit<TranslationControl>(TRANSLATION_ID).control!;
 const show = () => {
   const { locale, direction } = views.state.getSnapshot();
-  console.log(`${locale} (${direction}):`, commands.formatNumber(1234.5), '|', commands.formatCurrency(9.99, 'EUR'));
-  console.log('  ', commands.formatDate(Date.UTC(2026, 9, 5), { dateStyle: 'long', timeZone: 'UTC' }), '|', commands.formatList(['A', 'B', 'C']));
+  console.log(
+    `${locale} (${direction}):`,
+    commands.formatNumber(1234.5),
+    '|',
+    commands.formatCurrency(9.99, 'EUR'),
+  );
+  console.log(
+    '  ',
+    commands.formatDate(Date.UTC(2026, 9, 5), { dateStyle: 'long', timeZone: 'UTC' }),
+    '|',
+    commands.formatList(['A', 'B', 'C']),
+  );
 };
 
 show();

@@ -7,11 +7,12 @@
 > - Dropped for now: the analytics aggregator, the real-time stream, CSV export, `maxAge`, and Visibility-based throttling. They return only if a later subsystem needs them.
 > - No worker: the Logger runs on the main thread (virtual host).
 
-
 # Logger Manager
+
 Soon to be integrated into the notification center
 
 ## Initial Proposal
+
 ### States
 
 The state object for the Logger subsystem contains:
@@ -193,28 +194,28 @@ Ordered by initialization priority:
 ### Message Packets
 
 ```ts
-export type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | 'FATAL'
-export type ExportFormat = 'json' | 'csv' | 'text'
-export type PacketImportance = 'LOW' | 'MEDIUM' | 'HIGH'
+export type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | 'FATAL';
+export type ExportFormat = 'json' | 'csv' | 'text';
+export type PacketImportance = 'LOW' | 'MEDIUM' | 'HIGH';
 
 export interface Fingerprint {
-  actionName: string
-  valueType: string
-  timestamp: number
-  subsystemId: string
-  componentId: string | null
-  counter: number | null
+  actionName: string;
+  valueType: string;
+  timestamp: number;
+  subsystemId: string;
+  componentId: string | null;
+  counter: number | null;
 }
 
 export interface BasePacket<TAction extends string, TPayload> {
-  eventId: symbol
-  actionName: TAction
-  payload: TPayload
-  importance: PacketImportance
-  onComplete: (result: any) => void
-  onError: (error: any) => void
-  onLog: ((fingerprints: Fingerprint[]) => void) | null
-  fingerprints: Fingerprint[]
+  eventId: symbol;
+  actionName: TAction;
+  payload: TPayload;
+  importance: PacketImportance;
+  onComplete: (result: any) => void;
+  onError: (error: any) => void;
+  onLog: ((fingerprints: Fingerprint[]) => void) | null;
+  fingerprints: Fingerprint[];
 }
 
 /**
@@ -223,15 +224,15 @@ export interface BasePacket<TAction extends string, TPayload> {
 export type LogEntryPacket = BasePacket<
   'LOG_ENTRY',
   {
-    level: LogLevel
-    message: string
-    context: Record<string, any>
-    subsystemId: string
-    componentId: string | null
-    timestamp: number
-    sessionId: string
+    level: LogLevel;
+    message: string;
+    context: Record<string, any>;
+    subsystemId: string;
+    componentId: string | null;
+    timestamp: number;
+    sessionId: string;
   }
->
+>;
 
 /**
  * Fingerprint Log Packet
@@ -239,11 +240,11 @@ export type LogEntryPacket = BasePacket<
 export type FingerprintLogPacket = BasePacket<
   'LOG_FINGERPRINTS',
   {
-    packetId: string
-    fingerprints: Fingerprint[]
-    originalEventId: symbol
+    packetId: string;
+    fingerprints: Fingerprint[];
+    originalEventId: symbol;
   }
->
+>;
 
 /**
  * Flush Buffer Packet
@@ -251,10 +252,10 @@ export type FingerprintLogPacket = BasePacket<
 export type FlushBufferPacket = BasePacket<
   'FLUSH_LOG_BUFFER',
   {
-    force: boolean
-    compress: boolean
+    force: boolean;
+    compress: boolean;
   }
->
+>;
 
 /**
  * Export Logs Packet
@@ -262,22 +263,19 @@ export type FlushBufferPacket = BasePacket<
 export type ExportLogsPacket = BasePacket<
   'EXPORT_LOGS',
   {
-    format: ExportFormat
+    format: ExportFormat;
     filters: {
-      startDate: number | null
-      endDate: number | null
-      levels: string[]
-      subsystems: string[]
-    }
-    includeFingerprints: boolean
+      startDate: number | null;
+      endDate: number | null;
+      levels: string[];
+      subsystems: string[];
+    };
+    includeFingerprints: boolean;
   }
->
+>;
 
 export type LoggerPacket =
-  | LogEntryPacket
-  | FingerprintLogPacket
-  | FlushBufferPacket
-  | ExportLogsPacket
+  LogEntryPacket | FingerprintLogPacket | FlushBufferPacket | ExportLogsPacket;
 ```
 
 ### Control Interface

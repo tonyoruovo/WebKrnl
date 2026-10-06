@@ -28,8 +28,8 @@ Design: [ARCHITECTURE §21.1](../../docs/ARCHITECTURE.md#211-settings) and the [
 
 ## Entry points
 
-| Import | Contents |
-|---|---|
+| Import              | Contents                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/settings` | `createSettings`, `BUILT_IN_SETTINGS`, `optimisticUpdate`, `mergeSettingRecords`, `SETTINGS_ID`, `SETTINGS_CHANGED`, `SETTINGS_SYNC`, `SETTINGS_STATE`, types |
 
 ## Usage
@@ -72,7 +72,8 @@ save.onclick = async () => {
   const saved = await commands.update({ 'mail.digest': digest.checked, locale: language.value });
   if (!saved) toast('Not saved. Try again.');
 };
-analytics.onchange = () => (analytics.checked ? commands.enableAnalytics() : commands.disableAnalytics());
+analytics.onchange = () =>
+  analytics.checked ? commands.enableAnalytics() : commands.disableAnalytics();
 ```
 
 From another subsystem, declare `{ target: 'settings', kind: 'optional' }` and follow a value:
@@ -86,36 +87,36 @@ init: (ctx) =>
 
 ## Behaviour
 
-| Situation | Result |
-|---|---|
-| `set` / `update` with a valid value | The value applies at once, `views.values` changes, the other tabs get it |
-| An unknown key, or a value that fails the check | `RangeError`; nothing changes |
-| The same value again | No change, no broadcast, no save |
-| A change of `user` settings, with `handlers.save`, while a user is signed in | Saved on the server. The promise resolves with `true` |
-| The save fails | The change rolls back in every tab, `lastError` is set, the error goes to `onError`, the promise resolves with `false` |
-| A change of `device` settings, or nobody signed in (with Auth) | Not saved on the server |
-| A user signs in (with Auth and `handlers.load`) | The `user` settings of the server apply. Other keys, and values that fail the check, are ignored |
-| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The `user` settings return to their defaults, and that is persisted at once. The `device` settings stay. A load that the sign-out overtook is dropped |
-| A change in another tab | Merged: for each key, the newer change wins |
-| This tab starts | Asks the open tabs (`settings:sync`), and merges their answers |
-| A reload, or a crash | The values come back from the kernel's persistence |
+| Situation                                                                    | Result                                                                                                                                                |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `set` / `update` with a valid value                                          | The value applies at once, `views.values` changes, the other tabs get it                                                                              |
+| An unknown key, or a value that fails the check                              | `RangeError`; nothing changes                                                                                                                         |
+| The same value again                                                         | No change, no broadcast, no save                                                                                                                      |
+| A change of `user` settings, with `handlers.save`, while a user is signed in | Saved on the server. The promise resolves with `true`                                                                                                 |
+| The save fails                                                               | The change rolls back in every tab, `lastError` is set, the error goes to `onError`, the promise resolves with `false`                                |
+| A change of `device` settings, or nobody signed in (with Auth)               | Not saved on the server                                                                                                                               |
+| A user signs in (with Auth and `handlers.load`)                              | The `user` settings of the server apply. Other keys, and values that fail the check, are ignored                                                      |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1)                       | The `user` settings return to their defaults, and that is persisted at once. The `device` settings stay. A load that the sign-out overtook is dropped |
+| A change in another tab                                                      | Merged: for each key, the newer change wins                                                                                                           |
+| This tab starts                                                              | Asks the open tabs (`settings:sync`), and merges their answers                                                                                        |
+| A reload, or a crash                                                         | The values come back from the kernel's persistence                                                                                                    |
 
 ## Options
 
-| Option | Default | Purpose |
-|---|---|---|
-| `definitions` | none | More settings, and changes to the built-in ones (same key). |
-| `handlers` | none | `load()` and `save(changes)` for the user settings on a server. |
-| `now` | `Date.now` | The clock. |
+| Option        | Default    | Purpose                                                         |
+| ------------- | ---------- | --------------------------------------------------------------- |
+| `definitions` | none       | More settings, and changes to the built-in ones (same key).     |
+| `handlers`    | none       | `load()` and `save(changes)` for the user settings on a server. |
+| `now`         | `Date.now` | The clock.                                                      |
 
 The built-in settings:
 
-| Key | Kind | Default | Values |
-|---|---|---|---|
-| `syncInterval` | device | `300000` | An integer of at least 1000 (ms) |
-| `bandwidthMode` | device | `'FULL'` | `'FULL'`, `'CONSERVATIVE'`, `'MINIMAL'` |
-| `dataSaver` | device | `false` | A boolean |
-| `locale` | user | `null` | A BCP 47 tag, or `null` (the device decides) |
+| Key             | Kind   | Default  | Values                                       |
+| --------------- | ------ | -------- | -------------------------------------------- |
+| `syncInterval`  | device | `300000` | An integer of at least 1000 (ms)             |
+| `bandwidthMode` | device | `'FULL'` | `'FULL'`, `'CONSERVATIVE'`, `'MINIMAL'`      |
+| `dataSaver`     | device | `false`  | A boolean                                    |
+| `locale`        | user   | `null`   | A BCP 47 tag, or `null` (the device decides) |
 
 ## Testing
 

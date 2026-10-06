@@ -24,8 +24,8 @@ Design: [ARCHITECTURE §7.2 and §13](../../docs/ARCHITECTURE.md#72-late-binding
 
 ## Entry points
 
-| Import             | Contents                                                                                                              |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Import            | Contents                                                                                                              |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/logger` | `createLogger`, `formatEntry`, `LEVEL_RANK`, `LOGGER_ID`, `sanitize`, `DEFAULT_SENSITIVE_PATTERNS`, `REDACTED`, types |
 
 ## Usage
@@ -82,7 +82,7 @@ commands.resetLevel('sync');
 
 | Situation                                               | Result                                                                                     |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The entries and the traces are wiped, in memory, in the buffers and in Storage |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1)  | The entries and the traces are wiped, in memory, in the buffers and in Storage             |
 | An entry below the threshold                            | Not kept; `log` returns `null`. Check `isEnabled` before costly context.                   |
 | A context key containing a sensitive pattern            | Its value becomes `'[REDACTED]'`, at any depth                                             |
 | A context value that cannot be cloned                   | Described: errors as `{ name, message }`, functions as `'[Function]'`, ...                 |
@@ -97,17 +97,17 @@ commands.resetLevel('sync');
 
 ## Options
 
-| Option         | Default                   | Purpose                                                |
-| -------------- | ------------------------- | ------------------------------------------------------ |
-| `minLevel`     | `INFO`                    | The threshold until `setLevel` changes it (persisted). |
-| `maxEntries`   | `1000`                    | Entries kept.                                          |
-| `maxTraces`    | `200`                     | Trace records kept.                                    |
-| `sinkCapacity` | `500`                     | Entries buffered until a sink is bound.                |
-| `persist`      | `{ maxEntries: 1000, minLevel: 'INFO' }` | Entries kept in Storage, or `false`. |
-| `console`      | `false`                   | Mirror entries at or above this level to the console.  |
-| `sanitize`     | default patterns, depth 6 | Extra sensitive patterns, or a different depth.        |
-| `sessionId`    | `crypto.randomUUID()`     | Identifies this run in every entry.                    |
-| `now`          | `Date.now`                | Clock.                                                 |
+| Option         | Default                                  | Purpose                                                |
+| -------------- | ---------------------------------------- | ------------------------------------------------------ |
+| `minLevel`     | `INFO`                                   | The threshold until `setLevel` changes it (persisted). |
+| `maxEntries`   | `1000`                                   | Entries kept.                                          |
+| `maxTraces`    | `200`                                    | Trace records kept.                                    |
+| `sinkCapacity` | `500`                                    | Entries buffered until a sink is bound.                |
+| `persist`      | `{ maxEntries: 1000, minLevel: 'INFO' }` | Entries kept in Storage, or `false`.                   |
+| `console`      | `false`                                  | Mirror entries at or above this level to the console.  |
+| `sanitize`     | default patterns, depth 6                | Extra sensitive patterns, or a different depth.        |
+| `sessionId`    | `crypto.randomUUID()`                    | Identifies this run in every entry.                    |
+| `now`          | `Date.now`                               | Clock.                                                 |
 
 ## Testing
 

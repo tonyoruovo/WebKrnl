@@ -13,14 +13,14 @@ Two concrete storage backends — `LocalStorageBackend` and `SessionStorageBacke
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `webstorage.types.ts` | Shared types: `WebStorageKind`, `WebStorageConfig`, `WebStorageBufferedOp`, `WebStorageSnapshot`, `IWebStorageTransaction` |
-| `webstorage.backend.ts` | `WebStorageBackend` abstract class — full implementation of `IStorageBackend<string>` |
-| `webstorage.transaction.ts` | `WebStorageTransaction` — snapshot-backed compensating transaction |
-| `localstorage.backend.ts` | `LocalStorageBackend` — injects `window.localStorage` |
-| `sessionstorage.backend.ts` | `SessionStorageBackend` — injects `window.sessionStorage` |
-| `index.ts` | Barrel export |
+| File                        | Purpose                                                                                                                    |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `webstorage.types.ts`       | Shared types: `WebStorageKind`, `WebStorageConfig`, `WebStorageBufferedOp`, `WebStorageSnapshot`, `IWebStorageTransaction` |
+| `webstorage.backend.ts`     | `WebStorageBackend` abstract class — full implementation of `IStorageBackend<string>`                                      |
+| `webstorage.transaction.ts` | `WebStorageTransaction` — snapshot-backed compensating transaction                                                         |
+| `localstorage.backend.ts`   | `LocalStorageBackend` — injects `window.localStorage`                                                                      |
+| `sessionstorage.backend.ts` | `SessionStorageBackend` — injects `window.sessionStorage`                                                                  |
+| `index.ts`                  | Barrel export                                                                                                              |
 
 ---
 
@@ -169,13 +169,13 @@ There is no WAL. If the process dies mid-commit (after some `setItem` calls have
 
 Both `WebStorageTransaction.rollback(token)` overloads support selective op removal without settling the transaction. Five token forms are available:
 
-| Token | Effect |
-|---|---|
-| *(none)* | Full rollback — restores snapshot, settles transaction |
-| `number` | Removes the op at that zero-based index |
-| `CanonicalKey` | Removes all ops whose `key` field equals the argument |
+| Token                   | Effect                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| _(none)_                | Full rollback — restores snapshot, settles transaction                                                              |
+| `number`                | Removes the op at that zero-based index                                                                             |
+| `CanonicalKey`          | Removes all ops whose `key` field equals the argument                                                               |
 | `ICanonicalKeySegments` | If `actualKey` is set, delegates to key overload; otherwise removes all ops whose key starts with the module prefix |
-| `ITxOpPredicate` | Removes all ops for which the predicate returns truthy |
+| `ITxOpPredicate`        | Removes all ops for which the predicate returns truthy                                                              |
 
 Partial rollbacks do NOT restore the snapshot. They are purely in-memory buffer mutations — no Storage interaction. Because no ops have been committed yet, there is nothing to undo.
 
@@ -260,12 +260,12 @@ Iterates all own keys. For each entry whose `expires_at < Date.now()`, calls `re
 
 Collects all remaining (non-expired) entries, parses their JSON envelopes, and sorts ascending by `weight`. Tie-breaking by `policy`:
 
-| Policy | Tie-break logic |
-|---|---|
-| `lru` | Oldest `written_at` first |
+| Policy | Tie-break logic                                               |
+| ------ | ------------------------------------------------------------- |
+| `lru`  | Oldest `written_at` first                                     |
 | `fifo` | Oldest `written_at` first (identical to LRU for this backend) |
-| `lfu` | Lowest `_readCount` first (in-session only; resets on reload) |
-| `user` | Custom `comparator` function |
+| `lfu`  | Lowest `_readCount` first (in-session only; resets on reload) |
+| `user` | Custom `comparator` function                                  |
 
 Unlike OPFS and CacheStorage — which pass stub envelopes with `payload: ''` to the user comparator — `WebStorageBackend` passes the full envelope including the actual payload string. Since JSON parsing is already required to iterate the store, there is no additional I/O cost to include the payload.
 
@@ -275,14 +275,14 @@ Byte estimation uses `(storageKey.length + rawJson.length) × 2` (UTF-16), match
 
 ## localStorage vs. sessionStorage — when to use each
 
-| Property | `LocalStorageBackend` | `SessionStorageBackend` |
-|---|---|---|
-| Priority | 3 | 4 |
-| Persistence | Survives tab/window/browser close | Cleared on tab close |
-| Scope | Shared across all tabs (same origin) | Tab-isolated |
-| Private browsing | Unavailable in Firefox (SecurityError) | Available everywhere |
-| Cross-tab writes | Via `storage` event | Not possible |
-| Best for | Persistent preferences, tokens | Ephemeral wizard state, per-tab auth |
+| Property         | `LocalStorageBackend`                  | `SessionStorageBackend`              |
+| ---------------- | -------------------------------------- | ------------------------------------ |
+| Priority         | 3                                      | 4                                    |
+| Persistence      | Survives tab/window/browser close      | Cleared on tab close                 |
+| Scope            | Shared across all tabs (same origin)   | Tab-isolated                         |
+| Private browsing | Unavailable in Firefox (SecurityError) | Available everywhere                 |
+| Cross-tab writes | Via `storage` event                    | Not possible                         |
+| Best for         | Persistent preferences, tokens         | Ephemeral wizard state, per-tab auth |
 
 `SessionStorageBackend` is preferred over `LocalStorageBackend` in the fallback chain when the stored data should not persist across browser sessions or when tab-isolation is a requirement. It is also the correct fallback when `localStorage` is unavailable in Firefox private browsing mode.
 
@@ -320,47 +320,47 @@ close()
 ## Usage example
 
 ```ts
-import { LocalStorageBackend }   from './backends/webstorage'
-import { SessionStorageBackend } from './backends/webstorage'
+import { LocalStorageBackend } from './backends/webstorage';
+import { SessionStorageBackend } from './backends/webstorage';
 
 // localStorage — persists across sessions
-const ls = new LocalStorageBackend({ keyPrefix: 'myapp__' })
+const ls = new LocalStorageBackend({ keyPrefix: 'myapp__' });
 
-const probe = await ls.probe()
-if (!probe.available) throw new Error(probe.reason)
+const probe = await ls.probe();
+if (!probe.available) throw new Error(probe.reason);
 
-await ls.initialize()
+await ls.initialize();
 
-const key = 'myapp:chrome:130:auth:session' as CanonicalKey
+const key = 'myapp:chrome:130:auth:session' as CanonicalKey;
 await ls.write(key, {
-  payload:        'AES-GCM-ENCRYPTED',
+  payload: 'AES-GCM-ENCRYPTED',
   schema_version: 1,
-  written_at:     Date.now(),
-  expires_at:     Date.now() + 3_600_000,
-  weight:         5,
-  backend:        'localstorage',
-})
+  written_at: Date.now(),
+  expires_at: Date.now() + 3_600_000,
+  weight: 5,
+  backend: 'localstorage',
+});
 
-const envelope = await ls.read(key)
+const envelope = await ls.read(key);
 // envelope.payload === 'AES-GCM-ENCRYPTED'
 
 // Compensating transaction
-const tx = await ls.beginTransaction()
+const tx = await ls.beginTransaction();
 try {
-  await ls.write(keyA, envelopeA, { transactionId: tx.id })
-  await ls.delete(keyB,           { transactionId: tx.id })
-  await tx.commit()  // ops applied; prior values were snapshotted
+  await ls.write(keyA, envelopeA, { transactionId: tx.id });
+  await ls.delete(keyB, { transactionId: tx.id });
+  await tx.commit(); // ops applied; prior values were snapshotted
 } catch {
-  await tx.rollback()  // snapshot restored; Storage is back to pre-tx state
+  await tx.rollback(); // snapshot restored; Storage is back to pre-tx state
 }
 
 // sessionStorage — tab-isolated, cleared on close
-const ss = new SessionStorageBackend()
-await ss.initialize()
-await ss.write(wizardKey, stepEnvelope)
+const ss = new SessionStorageBackend();
+await ss.initialize();
+await ss.write(wizardKey, stepEnvelope);
 
-await ls.close()
-await ss.close()
+await ls.close();
+await ss.close();
 ```
 
 ---

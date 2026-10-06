@@ -8,12 +8,12 @@ Tracks how many browser tabs have the platform open simultaneously. Exposes a mu
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `tab-count.ts` | `useTabCount()` - lifecycle orchestration, strategy delegation, double-increment guard |
-| `tab-count.strategy.ts` | Three strategy implementations: Worker, BroadcastChannel, localStorage |
-| `tab-count.worker.ts` | SharedWorker script - the coordinator for `useWorkerStrategy` |
-| `index.ts` | Barrel export |
+| File                    | Purpose                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| `tab-count.ts`          | `useTabCount()` - lifecycle orchestration, strategy delegation, double-increment guard |
+| `tab-count.strategy.ts` | Three strategy implementations: Worker, BroadcastChannel, localStorage                 |
+| `tab-count.worker.ts`   | SharedWorker script - the coordinator for `useWorkerStrategy`                          |
+| `index.ts`              | Barrel export                                                                          |
 
 ---
 
@@ -68,6 +68,7 @@ The SharedWorker (`tab-count.worker.ts`) is the single authoritative source of t
 **Why this works for cross-tab counting:** the worker process outlives any individual tab. State is never duplicated across tabs - there is exactly one copy, in the worker.
 
 **Lifecycle:**
+
 ```
 bootstrap()
   -> new TabCountWorker({ name: TAB_COUNTER_CHANNEL })
@@ -92,22 +93,22 @@ cleanup()
 
 ### `useBroadcastStrategy` - BroadcastChannel + leader election
 
-**The core problem with naive BroadcastChannel counting:** `BroadcastChannel.postMessage` delivers to every context on the same channel *except the sender*. Each tab also starts with its own empty in-memory state. If Tab B opens and creates its own `tabs: Set`, it counts itself as the only tab and never learns about Tab A.
+**The core problem with naive BroadcastChannel counting:** `BroadcastChannel.postMessage` delivers to every context on the same channel _except the sender_. Each tab also starts with its own empty in-memory state. If Tab B opens and creates its own `tabs: Set`, it counts itself as the only tab and never learns about Tab A.
 
 **The fix - leader election:** one tab owns all state. Others are followers that send requests to the leader.
 
 #### Protocol messages
 
-| Message | Direction | Meaning |
-|---|---|---|
-| `HELLO` | Any -> All | "I just opened, is there a leader?" |
-| `WELCOME` | Leader -> sender | "Yes, here's the current tab list" |
-| `INCR` | Follower -> All | "Register me as active" |
-| `DECR` | Follower -> All | "Remove me" |
-| `COUNT` | Leader -> All | "Updated count after a mutation" |
-| `HANDOFF` | Leader -> All | "I'm closing, here's your new leader" |
-| `ELECTION` | Any -> All | "Is there a leader?" |
-| `CLAIM` | Leader -> All | "I am the leader" |
+| Message    | Direction        | Meaning                               |
+| ---------- | ---------------- | ------------------------------------- |
+| `HELLO`    | Any -> All       | "I just opened, is there a leader?"   |
+| `WELCOME`  | Leader -> sender | "Yes, here's the current tab list"    |
+| `INCR`     | Follower -> All  | "Register me as active"               |
+| `DECR`     | Follower -> All  | "Remove me"                           |
+| `COUNT`    | Leader -> All    | "Updated count after a mutation"      |
+| `HANDOFF`  | Leader -> All    | "I'm closing, here's your new leader" |
+| `ELECTION` | Any -> All       | "Is there a leader?"                  |
+| `CLAIM`    | Leader -> All    | "I am the leader"                     |
 
 #### `show()` sequence
 
@@ -151,16 +152,16 @@ cleanup() [leader]
 
 Same leader-election model as BroadcastChannel but over `localStorage`. Used when BroadcastChannel is unavailable (some private-mode browsers, older environments).
 
-**Why `localStorage` instead of `sessionStorage`:** `sessionStorage` is completely isolated per tab - it cannot be shared. `localStorage` is shared across tabs from the same origin. The `storage` event fires in every tab *except* the one that wrote, which is exactly what enables the cross-tab messaging pattern.
+**Why `localStorage` instead of `sessionStorage`:** `sessionStorage` is completely isolated per tab - it cannot be shared. `localStorage` is shared across tabs from the same origin. The `storage` event fires in every tab _except_ the one that wrote, which is exactly what enables the cross-tab messaging pattern.
 
 #### Storage keys
 
-| Key | Writer | Purpose |
-|---|---|---|
-| `TAB_COUNTER_STORAGE_KEY:leader` | Leader | Holds the current leader's `tabId` |
-| `TAB_COUNTER_STORAGE_KEY:tabs` | Leader | JSON array of all live tab IDs |
-| `TAB_COUNTER_STORAGE_KEY:req` | Followers | INCR/DECR requests for the leader |
-| `TAB_COUNTER_STORAGE_KEY:res` | Leader | Response with updated count |
+| Key                              | Writer    | Purpose                            |
+| -------------------------------- | --------- | ---------------------------------- |
+| `TAB_COUNTER_STORAGE_KEY:leader` | Leader    | Holds the current leader's `tabId` |
+| `TAB_COUNTER_STORAGE_KEY:tabs`   | Leader    | JSON array of all live tab IDs     |
+| `TAB_COUNTER_STORAGE_KEY:req`    | Followers | INCR/DECR requests for the leader  |
+| `TAB_COUNTER_STORAGE_KEY:res`    | Leader    | Response with updated count        |
 
 #### `show()` sequence
 
@@ -203,6 +204,7 @@ readLeader()
 ## Tab identity (`getOrCreateTabId`)
 
 Each tab needs a stable identity that:
+
 - Survives **page refresh** (same tab, same ID)
 - Changes when a **tab is duplicated** (new tab, new ID)
 - Survives **back/forward navigation** (same tab, same ID)
@@ -250,12 +252,12 @@ state = {
 
 ## Events used and why
 
-| Event | Used for | Why not the alternative |
-|---|---|---|
-| `pageshow` | Tab becoming active / BFCache restore | `pagereveal` has worse support |
-| `pagehide` | Tab closing / navigating away | `beforeunload` is unreliable for postMessage during teardown; `pagehide` fires earlier |
-| `storage` | Sequential strategy cross-tab messaging | Only cross-tab event available without a SharedWorker or BroadcastChannel |
-| `visibilitychange` | *(commented out)* | Caused always-1 bug: incremented on focus but decremented on blur; pagehide/pageshow is more appropriate for tab lifecycle |
+| Event              | Used for                                | Why not the alternative                                                                                                    |
+| ------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `pageshow`         | Tab becoming active / BFCache restore   | `pagereveal` has worse support                                                                                             |
+| `pagehide`         | Tab closing / navigating away           | `beforeunload` is unreliable for postMessage during teardown; `pagehide` fires earlier                                     |
+| `storage`          | Sequential strategy cross-tab messaging | Only cross-tab event available without a SharedWorker or BroadcastChannel                                                  |
+| `visibilitychange` | _(commented out)_                       | Caused always-1 bug: incremented on focus but decremented on blur; pagehide/pageshow is more appropriate for tab lifecycle |
 
 ---
 

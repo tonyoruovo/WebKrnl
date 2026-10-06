@@ -41,7 +41,12 @@ const { commands, views } = kernel.unit<AuthControl<Credentials>>(AUTH_ID).contr
 try {
   await commands.login({ email: 'ada@example.com', password: 'guess' });
 } catch (error) {
-  console.log('first try:', (error as Error).message, 'failed attempts:', views.state.getSnapshot().failedAttempts);
+  console.log(
+    'first try:',
+    (error as Error).message,
+    'failed attempts:',
+    views.state.getSnapshot().failedAttempts,
+  );
 }
 const user = await commands.login({ email: 'ada@example.com', password: 'correct horse' });
 console.log('signed in:', user.name, views.state.getSnapshot().status);
@@ -81,7 +86,9 @@ const fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   const authorization = request.headers.get('authorization');
   sent.push(`${new URL(request.url).host} ${authorization ?? 'no token'}`);
   if (!request.url.startsWith('https://api.shop.example')) return Response.json('public');
-  return authorization === `Bearer ${valid}` ? Response.json('your orders') : new Response(null, { status: 401 });
+  return authorization === `Bearer ${valid}`
+    ? Response.json('your orders')
+    : new Response(null, { status: 401 });
 };
 
 let issued = 0;
@@ -97,7 +104,11 @@ const kernel = new Kernel([
         refreshToken: 'r',
         accessExpiresAt: null,
       }),
-      refresh: async () => ({ accessToken: `token-${++issued}`, refreshToken: 'r', accessExpiresAt: null }),
+      refresh: async () => ({
+        accessToken: `token-${++issued}`,
+        refreshToken: 'r',
+        accessExpiresAt: null,
+      }),
     },
   }),
 ]);
@@ -179,7 +190,13 @@ can refund later: false
 A user signs in on `shop.example.com`, then opens `account.example.com`. Storage is per origin, so the second site cannot read the first one's session, and tokens never travel between them. Instead, the server keeps an `HttpOnly` session cookie on `example.com`, and the `restore` handler asks the server for a session for this origin.
 
 ```ts file=main.ts
-import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@webkrnl/auth';
+import {
+  AUTH_ID,
+  createAuth,
+  type AuthControl,
+  type AuthHandlers,
+  type AuthSession,
+} from '@webkrnl/auth';
 import { Kernel } from '@webkrnl/core';
 
 // A fake server. In a browser, the cookie is HttpOnly on the apex domain: no script can read it.
@@ -217,8 +234,16 @@ const account = await site();
 while (account.auth.views.state.getSnapshot().status !== 'AUTHENTICATED') {
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
-console.log('account:', account.auth.views.state.getSnapshot().status, 'user:', account.auth.views.state.getSnapshot().user?.name);
-console.log('same token:', shop.auth.commands.accessToken() === account.auth.commands.accessToken());
+console.log(
+  'account:',
+  account.auth.views.state.getSnapshot().status,
+  'user:',
+  account.auth.views.state.getSnapshot().user?.name,
+);
+console.log(
+  'same token:',
+  shop.auth.commands.accessToken() === account.auth.commands.accessToken(),
+);
 
 await shop.auth.commands.logout();
 const later = await site();

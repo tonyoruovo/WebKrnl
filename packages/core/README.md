@@ -16,20 +16,20 @@ The kernel of the platform. Every other `@webkrnl/*` package is built on it.
 
 ## What is in the package
 
-| Area                   | Exports                                                                                 | Design reference                                                                             |
-| ---------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Units and the kernel   | `defineSubsystem`, `defineUnit`, `Kernel`, `UnitHandle`, `UnitContext`                  | [ARCHITECTURE §3](../../docs/ARCHITECTURE.md#3-the-unit-model)                               |
-| Lifecycle              | `Lifecycle`, `UnitStatus`, `TRANSITIONS`, `canTransition`                               | [§4](../../docs/ARCHITECTURE.md#4-lifecycle)                                                 |
-| State                  | `createStateCell`, `StateCell`, `StateDefinition`                                       | [§5](../../docs/ARCHITECTURE.md#5-state)                                                     |
-| Views                  | `View`, `createStore`, `deriveView`, `createRingBuffer`                                 | [§6.1](../../docs/ARCHITECTURE.md#61-observable-views)                                       |
-| Dependencies           | `DependencyGraph`, `LateBinding`, `Dependency`                                          | [§7](../../docs/ARCHITECTURE.md#7-dependencies)                                              |
-| Processors and workers | `ProcessorDef`, `defineProcessor`, `ProcessorRunner`, `WorkerBudget`, `createScheduler` | [§8](../../docs/ARCHITECTURE.md#8-processors-and-workers)                                    |
-| Packets                | `Packet`, `PacketEnvelope`, `createEnvelope`, `CorrelationRegistry`                     | [§9](../../docs/ARCHITECTURE.md#9-packets)                                                   |
-| Routing and retries    | `PacketRouter`, `directRouter`, `computeBackoff`, `BackoffStrategy`                     | [§10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) |
-| Transports             | `Transport`, `createChannelTransportPair`, `createInRealmTransportPair`, `RpcEndpoint`  | [§10](../../docs/ARCHITECTURE.md#10-messaging-topology)                                      |
-| Scopes and routes      | `Scope`, `reaches`, `assertSendAllowed`, `RouteSource`                                  | [§11](../../docs/ARCHITECTURE.md#11-scopes)                                                  |
+| Area                   | Exports                                                                                 | Design reference                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Units and the kernel   | `defineSubsystem`, `defineUnit`, `Kernel`, `UnitHandle`, `UnitContext`                  | [ARCHITECTURE §3](../../docs/ARCHITECTURE.md#3-the-unit-model)                                                |
+| Lifecycle              | `Lifecycle`, `UnitStatus`, `TRANSITIONS`, `canTransition`                               | [§4](../../docs/ARCHITECTURE.md#4-lifecycle)                                                                  |
+| State                  | `createStateCell`, `StateCell`, `StateDefinition`                                       | [§5](../../docs/ARCHITECTURE.md#5-state)                                                                      |
+| Views                  | `View`, `createStore`, `deriveView`, `createRingBuffer`                                 | [§6.1](../../docs/ARCHITECTURE.md#61-observable-views)                                                        |
+| Dependencies           | `DependencyGraph`, `LateBinding`, `Dependency`                                          | [§7](../../docs/ARCHITECTURE.md#7-dependencies)                                                               |
+| Processors and workers | `ProcessorDef`, `defineProcessor`, `ProcessorRunner`, `WorkerBudget`, `createScheduler` | [§8](../../docs/ARCHITECTURE.md#8-processors-and-workers)                                                     |
+| Packets                | `Packet`, `PacketEnvelope`, `createEnvelope`, `CorrelationRegistry`                     | [§9](../../docs/ARCHITECTURE.md#9-packets)                                                                    |
+| Routing and retries    | `PacketRouter`, `directRouter`, `computeBackoff`, `BackoffStrategy`                     | [§10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3)                  |
+| Transports             | `Transport`, `createChannelTransportPair`, `createInRealmTransportPair`, `RpcEndpoint`  | [§10](../../docs/ARCHITECTURE.md#10-messaging-topology)                                                       |
+| Scopes and routes      | `Scope`, `reaches`, `assertSendAllowed`, `RouteSource`                                  | [§11](../../docs/ARCHITECTURE.md#11-scopes)                                                                   |
 | Global wire protocol   | `encodeWire`, `decodeWire`, `WireEnvelopeSchema`, the fixtures                          | [§11.4](../../docs/ARCHITECTURE.md#114-global-scope-the-server), [WIRE-PROTOCOL](../../docs/WIRE-PROTOCOL.md) |
-| Sign-out               | `watchSignOut`                                                                          | [§5.1](../../docs/ARCHITECTURE.md#51-data-of-the-signed-in-user-each-subsystem-wipes-its-own)                                    |
+| Sign-out               | `watchSignOut`                                                                          | [§5.1](../../docs/ARCHITECTURE.md#51-data-of-the-signed-in-user-each-subsystem-wipes-its-own)                 |
 
 ## Installation
 
@@ -49,11 +49,11 @@ Runs in the supported browsers (see the [root README](../../README.md#supported-
 
 ## Entry points
 
-| Import                   | Use it for                                                                        |
-| ------------------------ | --------------------------------------------------------------------------------- |
-| `@webkrnl/core`         | Everything an app or a subsystem package needs.                                   |
-| `@webkrnl/core/testing` | `createTestPlatform` and helpers: boot real units in tests, without browser APIs. |
-| `@webkrnl/core/worker`  | `serveProcessor`: the one call a worker entry file makes.                         |
+| Import                          | Use it for                                                                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `@webkrnl/core`                 | Everything an app or a subsystem package needs.                                                                |
+| `@webkrnl/core/testing`         | `createTestPlatform` and helpers: boot real units in tests, without browser APIs.                              |
+| `@webkrnl/core/worker`          | `serveProcessor`: the one call a worker entry file makes.                                                      |
 | `@webkrnl/core/fixtures/wire/*` | JSON fixtures of the wire protocol: `valid/*.json` and `invalid/*.json` (with the `reason`). For server tests. |
 
 ## Quick start

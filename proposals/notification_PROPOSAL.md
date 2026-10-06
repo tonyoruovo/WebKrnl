@@ -24,7 +24,9 @@ The Notification Center subsystem serves as the central event dispatcher and com
 The state object maintains comprehensive event management state with strict ordering and delivery guarantees:
 
 #### Core Event Registry
+
 - **eventRegistry**: `Map<string, EventDefinition>` - Central registry of all system events
+
   ```typescript
   interface EventDefinition {
     eventId: string; // UUID or Symbol
@@ -57,11 +59,12 @@ The state object maintains comprehensive event management state with strict orde
     errorCount: number;
     enabled: boolean;
   }
-  
+
   type EventHandler = (payload: any, metadata: EventMetadata) => void | Promise<void>;
   ```
 
 #### Event Queue & Dispatch
+
 - **eventQueue**: `PriorityQueue<QueuedEvent>` - Events awaiting dispatch
   ```typescript
   interface QueuedEvent {
@@ -75,7 +78,7 @@ The state object maintains comprehensive event management state with strict orde
     retryCount: number;
     maxRetries: number;
   }
-  
+
   interface EventMetadata {
     sourceSubsystemId: string;
     sourceComponentId: string | null; // Feature name, Worker URL, etc.
@@ -89,7 +92,9 @@ The state object maintains comprehensive event management state with strict orde
   ```
 
 #### Dispatch State & Performance
+
 - **dispatchState**: Object tracking dispatcher status
+
   ```typescript
   interface DispatchState {
     status: 'IDLE' | 'DISPATCHING' | 'PAUSED' | 'ERROR' | 'SHUTDOWN';
@@ -112,33 +117,35 @@ The state object maintains comprehensive event management state with strict orde
     eventsPerSecond: number;
     subscriptionsPerEvent: number;
     averageHandlerExecutionTime: number; // ms
-    
+
     // Queue metrics
     averageQueueWaitTime: number; // ms from enqueue to dispatch
     queueUtilization: number; // 0-1
     peakQueueSize: number;
-    
+
     // Reliability
     deliverySuccessRate: number; // 0-1
     handlerErrorRate: number; // 0-1
     retriedEvents: number;
     droppedEvents: number;
-    
+
     // Latency breakdown
     p50DispatchLatency: number;
     p95DispatchLatency: number;
     p99DispatchLatency: number;
-    
+
     // Resource usage
     activeHandlers: number;
     pendingPromises: number;
-    
+
     lastMetricsUpdate: number;
   }
   ```
 
 #### Event History & Debugging
+
 - **eventHistory**: `CircularBuffer<DispatchedEvent>` - Recent event history (last 1000 events)
+
   ```typescript
   interface DispatchedEvent {
     eventId: string;
@@ -173,6 +180,7 @@ The state object maintains comprehensive event management state with strict orde
   ```
 
 #### Error Tracking & Circuit Breaking
+
 - **errorTracking**: Object tracking handler failures
   ```typescript
   interface ErrorTracking {
@@ -187,7 +195,7 @@ The state object maintains comprehensive event management state with strict orde
     }>;
     errorRateLastMinute: number;
   }
-  
+
   interface HandlerErrorState {
     subscriptionId: string;
     consecutiveErrors: number;
@@ -199,7 +207,7 @@ The state object maintains comprehensive event management state with strict orde
     } | null;
     recoveredAt: number | null;
   }
-  
+
   interface CircuitBreakerState {
     subscriptionId: string;
     status: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
@@ -214,6 +222,7 @@ The state object maintains comprehensive event management state with strict orde
   ```
 
 #### Configuration
+
 - **notificationConfig**: Object containing runtime configuration
   ```typescript
   interface NotificationConfig {
@@ -242,10 +251,12 @@ The state object maintains comprehensive event management state with strict orde
 The Notification Center is composed of specialized features that manage different aspects of event-driven communication:
 
 #### 1. Event Registry Manager
+
 **Purpose**: Manages the central registry of all system events and their definitions.  
 **Weight**: CRITICAL - Required for all event operations
 
 **Responsibilities**:
+
 - Register new events with validation
 - Deregister events and cleanup subscriptions
 - Provide event lookups by ID or name
@@ -254,9 +265,11 @@ The Notification Center is composed of specialized features that manage differen
 - Prevent duplicate event registrations
 
 **State Fields Used**:
+
 - `eventRegistry`
 
 **Key Operations**:
+
 ```typescript
 registerEvent(definition: EventDefinition): Result<string, Error>
 deregisterEvent(eventId: string): Result<void, Error>
@@ -267,11 +280,13 @@ updateEventStats(eventId: string): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:event-registered` - When new event registered
 - `notification:event-deregistered` - When event removed
 - `notification:validation-error` - When payload validation fails
 
 **Fingerprint Actions**:
+
 - `event-registered`
 - `event-deregistered`
 - `event-lookup`
@@ -281,10 +296,12 @@ updateEventStats(eventId: string): void
 ---
 
 #### 2. Subscription Manager
+
 **Purpose**: Manages event subscriptions and subscriber lifecycle.  
 **Weight**: CRITICAL - Core subscription handling
 
 **Responsibilities**:
+
 - Subscribe handlers to events
 - Unsubscribe handlers
 - Manage subscription priorities
@@ -294,10 +311,12 @@ updateEventStats(eventId: string): void
 - Clean up orphaned subscriptions
 
 **State Fields Used**:
+
 - `subscriptions`
 - `eventRegistry`
 
 **Key Operations**:
+
 ```typescript
 subscribe(options: SubscribeOptions): Result<string, Error>
 unsubscribe(subscriptionId: string): Result<void, Error>
@@ -308,11 +327,13 @@ enableSubscription(subscriptionId: string, enabled: boolean): Result<void, Error
 ```
 
 **Message Packets Produced**:
+
 - `notification:subscription-added` - New subscription created
 - `notification:subscription-removed` - Subscription removed
 - `notification:subscription-limit-reached` - Max executions reached
 
 **Fingerprint Actions**:
+
 - `subscription-created`
 - `subscription-removed`
 - `subscription-executed`
@@ -321,10 +342,12 @@ enableSubscription(subscriptionId: string, enabled: boolean): Result<void, Error
 ---
 
 #### 3. Event Queue Manager
+
 **Purpose**: Manages priority-based event queuing and backpressure.  
 **Weight**: CRITICAL - Ensures reliable event ordering
 
 **Responsibilities**:
+
 - Enqueue events with priority
 - Dequeue events for dispatch
 - Handle queue overflow
@@ -334,11 +357,13 @@ enableSubscription(subscriptionId: string, enabled: boolean): Result<void, Error
 - Report queue metrics
 
 **State Fields Used**:
+
 - `eventQueue`
 - `dispatchState`
 - `notificationConfig`
 
 **Key Operations**:
+
 ```typescript
 enqueue(event: QueuedEvent): Result<void, QueueFullError>
 dequeue(): QueuedEvent | null
@@ -351,12 +376,14 @@ releaseBackpressure(): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:queue-full` - Queue capacity reached
 - `notification:backpressure-active` - Backpressure applied
 - `notification:backpressure-released` - Backpressure released
 - `notification:queue-cleared` - Queue manually cleared
 
 **Fingerprint Actions**:
+
 - `event-enqueued`
 - `event-dequeued`
 - `queue-overflow`
@@ -365,10 +392,12 @@ releaseBackpressure(): void
 ---
 
 #### 4. Event Dispatcher
+
 **Purpose**: Core dispatch loop that executes event handlers.  
 **Weight**: CRITICAL - Handles all event delivery
 
 **Responsibilities**:
+
 - Run dispatch loop
 - Execute handlers in priority order
 - Handle async handlers
@@ -379,6 +408,7 @@ releaseBackpressure(): void
 - Update performance metrics
 
 **State Fields Used**:
+
 - `eventQueue`
 - `subscriptions`
 - `dispatchState`
@@ -386,6 +416,7 @@ releaseBackpressure(): void
 - `eventHistory`
 
 **Key Operations**:
+
 ```typescript
 startDispatchLoop(): void
 stopDispatchLoop(): void
@@ -397,12 +428,14 @@ recordDispatch(event: DispatchedEvent): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:dispatch-started` - Dispatcher started
 - `notification:dispatch-paused` - Dispatcher paused
 - `notification:dispatch-error` - Critical dispatch error
 - `notification:handler-timeout` - Handler exceeded timeout
 
 **Fingerprint Actions**:
+
 - `dispatch-started`
 - `dispatch-completed`
 - `handler-executed`
@@ -412,10 +445,12 @@ recordDispatch(event: DispatchedEvent): void
 ---
 
 #### 5. Correlation Tracker
+
 **Purpose**: Tracks relationships between events for debugging and analysis.  
 **Weight**: MEDIUM - Debugging and observability
 
 **Responsibilities**:
+
 - Create correlation chains
 - Track causation relationships
 - Link related events
@@ -424,11 +459,13 @@ recordDispatch(event: DispatchedEvent): void
 - Generate correlation reports
 
 **State Fields Used**:
+
 - `correlationRegistry`
 - `eventHistory`
 - `notificationConfig`
 
 **Key Operations**:
+
 ```typescript
 startCorrelation(rootEventId: string): string
 addToCorrelation(correlationId: string, eventId: string): void
@@ -439,10 +476,12 @@ cleanupExpiredCorrelations(): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:correlation-started` - New correlation chain
 - `notification:correlation-completed` - Chain completed
 
 **Fingerprint Actions**:
+
 - `correlation-created`
 - `event-linked`
 - `correlation-completed`
@@ -450,10 +489,12 @@ cleanupExpiredCorrelations(): void
 ---
 
 #### 6. Circuit Breaker Manager
+
 **Purpose**: Protects system from cascading failures due to faulty handlers.  
 **Weight**: HIGH - System resilience
 
 **Responsibilities**:
+
 - Monitor handler failures
 - Open circuits on threshold
 - Attempt recovery in half-open state
@@ -462,11 +503,13 @@ cleanupExpiredCorrelations(): void
 - Report breaker status
 
 **State Fields Used**:
+
 - `errorTracking`
 - `subscriptions`
 - `notificationConfig`
 
 **Key Operations**:
+
 ```typescript
 recordHandlerSuccess(subscriptionId: string): void
 recordHandlerFailure(subscriptionId: string, error: Error): void
@@ -479,12 +522,14 @@ resetCircuitBreaker(subscriptionId: string): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:circuit-opened` - Circuit breaker opened
 - `notification:circuit-half-open` - Attempting recovery
 - `notification:circuit-closed` - Circuit recovered
 - `notification:circuit-reset` - Manually reset
 
 **Fingerprint Actions**:
+
 - `failure-recorded`
 - `circuit-opened`
 - `recovery-attempted`
@@ -493,10 +538,12 @@ resetCircuitBreaker(subscriptionId: string): void
 ---
 
 #### 7. Performance Monitor
+
 **Purpose**: Tracks and reports notification center performance metrics.  
 **Weight**: LOW - Observability
 
 **Responsibilities**:
+
 - Calculate throughput metrics
 - Track latency percentiles
 - Monitor queue utilization
@@ -505,11 +552,13 @@ resetCircuitBreaker(subscriptionId: string): void
 - Export metrics for analytics
 
 **State Fields Used**:
+
 - `performanceMetrics`
 - `dispatchState`
 - `eventHistory`
 
 **Key Operations**:
+
 ```typescript
 updateMetrics(): void
 calculateLatencyPercentiles(): { p50: number; p95: number; p99: number }
@@ -521,10 +570,12 @@ resetMetrics(): void
 ```
 
 **Message Packets Produced**:
+
 - `notification:performance-degraded` - Performance below threshold
 - `notification:metrics-updated` - Periodic metrics update
 
 **Fingerprint Actions**:
+
 - `metrics-calculated`
 - `degradation-detected`
 - `metrics-exported`
@@ -532,10 +583,12 @@ resetMetrics(): void
 ---
 
 #### 8. Event Validator
+
 **Purpose**: Validates event payloads against registered schemas.  
 **Weight**: MEDIUM - Data integrity
 
 **Responsibilities**:
+
 - Validate payloads against JSON schemas
 - Sanitize event data
 - Enforce payload size limits
@@ -544,10 +597,12 @@ resetMetrics(): void
 - Report validation errors
 
 **State Fields Used**:
+
 - `eventRegistry`
 - `notificationConfig`
 
 **Key Operations**:
+
 ```typescript
 validatePayload(eventId: string, payload: any): ValidationResult
 sanitizePayload(payload: any): any
@@ -557,10 +612,12 @@ validateMetadata(metadata: EventMetadata): ValidationResult
 ```
 
 **Message Packets Produced**:
+
 - `notification:validation-failed` - Payload validation failed
 - `notification:payload-too-large` - Payload exceeds size limit
 
 **Fingerprint Actions**:
+
 - `payload-validated`
 - `validation-failed`
 - `payload-sanitized`
@@ -577,10 +634,10 @@ validateMetadata(metadata: EventMetadata): ValidationResult
 async function initialize(): Promise<void> {
   // 1. Validate dependencies
   await validateDependencies();
-  
+
   // 2. Initialize state
   initializeState();
-  
+
   // 3. Initialize features in order
   await EventRegistryManager.initialize();
   await SubscriptionManager.initialize();
@@ -590,20 +647,20 @@ async function initialize(): Promise<void> {
   await CorrelationTracker.initialize();
   await PerformanceMonitor.initialize();
   await EventDispatcher.initialize(); // Last - starts dispatch loop
-  
+
   // 4. Register system events
   registerSystemEvents();
-  
+
   // 5. Subscribe to dependencies
   subscribeToGlobalState();
   subscribeToMessageQueue();
-  
+
   // 6. Notify subsystems
   fireEvent('notification:ready', {
     timestamp: Date.now(),
     queueCapacity: notificationConfig.maxQueueSize
   });
-  
+
   // 7. Start dispatch loop
   EventDispatcher.startDispatchLoop();
 }
@@ -615,16 +672,16 @@ async function initialize(): Promise<void> {
 async function destroy(): Promise<void> {
   // 1. Stop accepting new events
   EventQueueManager.applyBackpressure();
-  
+
   // 2. Stop dispatch loop
   EventDispatcher.stopDispatchLoop();
-  
+
   // 3. Wait for in-flight events (with timeout)
   await waitForPendingDispatches(5000);
-  
+
   // 4. Unsubscribe from all events
   unsubscribeFromAll();
-  
+
   // 5. Destroy features in reverse order
   await EventDispatcher.destroy();
   await PerformanceMonitor.destroy();
@@ -634,13 +691,13 @@ async function destroy(): Promise<void> {
   await EventQueueManager.destroy();
   await SubscriptionManager.destroy();
   await EventRegistryManager.destroy();
-  
+
   // 6. Persist critical state
   await persistState();
-  
+
   // 7. Clear state
   clearState();
-  
+
   // 8. Notify shutdown complete
   // (Use Message Queue directly since Notification Center is shutting down)
 }
@@ -653,6 +710,7 @@ async function destroy(): Promise<void> {
 **Type**: Virtual Worker (No Web Worker - runs on main thread due to synchronous event dispatch requirements)
 
 The Notification Center does not use a Web Worker because:
+
 1. Event handlers need synchronous access to subsystem state
 2. Events must be dispatched in strict order on the main thread
 3. Minimal computation - primarily dispatching callbacks
@@ -661,6 +719,7 @@ The Notification Center does not use a Web Worker because:
 However, it implements the Worker interface conceptually:
 
 #### Receiver
+
 - Receives `fireEvent` requests from subsystems
 - Accepts subscription registration requests
 - Receives configuration updates
@@ -670,6 +729,7 @@ However, it implements the Worker interface conceptually:
 #### Processor
 
 **Event Processing Pipeline**:
+
 1. Receive event fire request
 2. Validate event payload (if enabled)
 3. Add fingerprint for enqueue action
@@ -677,6 +737,7 @@ However, it implements the Worker interface conceptually:
 5. Wake dispatch loop if sleeping
 
 **Dispatch Processing Pipeline**:
+
 1. Dequeue next event(s)
 2. Lookup subscriptions for event
 3. Filter subscriptions by predicate
@@ -688,6 +749,7 @@ However, it implements the Worker interface conceptually:
 9. Update performance metrics
 
 **Subscription Processing Pipeline**:
+
 1. Receive subscription request
 2. Validate event exists
 3. Create subscription record
@@ -696,6 +758,7 @@ However, it implements the Worker interface conceptually:
 6. Notify subscriber confirmed
 
 #### Dispatcher
+
 - Posts event delivery confirmations to subscribers
 - Emits performance metrics to Analytics Manager
 - Sends error notifications for handler failures
@@ -706,6 +769,7 @@ However, it implements the Worker interface conceptually:
 #### Additional Virtual Worker Requirements
 
 **Pausable**: Can pause dispatch loop during critical operations
+
 ```javascript
 function pauseDispatch() {
   dispatchState.status = 'PAUSED';
@@ -714,6 +778,7 @@ function pauseDispatch() {
 ```
 
 **Resumable**: Resumes dispatch from paused state
+
 ```javascript
 function resumeDispatch() {
   dispatchState.status = 'DISPATCHING';
@@ -722,29 +787,30 @@ function resumeDispatch() {
 ```
 
 **Abortable**: Can abort in-flight dispatches cleanly
+
 ```javascript
 async function abortDispatch() {
   dispatchState.status = 'SHUTDOWN';
   // Wait for current handler executions with timeout
-  await Promise.race([
-    waitForCurrentHandlers(),
-    timeout(5000)
-  ]);
+  await Promise.race([waitForCurrentHandlers(), timeout(5000)]);
 }
 ```
 
 **Error Handling**:
+
 - Isolates handler errors to prevent cascade failures
 - Circuit breaker prevents repeated execution of failing handlers
 - Error events fire to notify system of issues
 - Graceful degradation if critical features fail
 
 **Visibility API Management**:
+
 - Pauses dispatch when page hidden (optional config)
 - Resumes on page visible
 - Adjusts dispatch interval based on visibility
 
 **Cleanup Protocols**:
+
 - Clears expired correlations periodically
 - Removes disabled subscriptions
 - Purges old event history
@@ -758,8 +824,10 @@ async function abortDispatch() {
 The Notification Center relies on these subsystems:
 
 #### 1. Global State (CRITICAL)
+
 **Purpose**: Read platform status, subsystem health, and configuration  
 **Used For**:
+
 - Checking if platform is STOPPED (reject new events)
 - Checking if platform is BUSY (apply backpressure)
 - Reading subsystem registry for validation
@@ -769,25 +837,26 @@ The Notification Center relies on these subsystems:
 **Initialization Order**: Global State must initialize BEFORE Notification Center
 
 **Functional Predicates**:
+
 ```javascript
 function shouldAcceptEvent(event): boolean {
   const platformStatus = GlobalState.getPlatformStatus();
-  
+
   // Always reject if stopped
   if (platformStatus === 'STOPPED' || platformStatus === 'CRASHED') {
     return false;
   }
-  
+
   // Accept CRITICAL events even when BUSY
   if (event.importance === 'CRITICAL') {
     return true;
   }
-  
+
   // Reject non-critical events when BUSY
   if (platformStatus === 'BUSY' && event.importance !== 'CRITICAL') {
     return false;
   }
-  
+
   return true;
 }
 ```
@@ -795,8 +864,10 @@ function shouldAcceptEvent(event): boolean {
 ---
 
 #### 2. Message Queue (HIGH)
+
 **Purpose**: Handle cross-subsystem message routing  
 **Used For**:
+
 - Receiving event fire requests from other subsystems
 - Sending subscription confirmations
 - Routing events that require queuing semantics
@@ -805,18 +876,19 @@ function shouldAcceptEvent(event): boolean {
 **Initialization Order**: Message Queue must initialize BEFORE Notification Center
 
 **Functional Predicates**:
+
 ```javascript
 function shouldUseQueue(event): boolean {
   // Use queue for events from remote subsystems
   if (event.metadata.sourceSubsystemId !== 'notification-center') {
     return true;
   }
-  
+
   // Use queue for delayed events
   if (event.scheduledFor !== null) {
     return true;
   }
-  
+
   return false;
 }
 ```
@@ -824,8 +896,10 @@ function shouldUseQueue(event): boolean {
 ---
 
 #### 3. Logger (MEDIUM)
+
 **Purpose**: Log event dispatches and errors  
 **Used For**:
+
 - Logging event history with fingerprints
 - Recording handler errors
 - Tracking performance metrics
@@ -834,20 +908,21 @@ function shouldUseQueue(event): boolean {
 **Initialization Order**: Logger can initialize concurrently
 
 **Functional Predicates**:
+
 ```javascript
 function shouldLogEvent(event): boolean {
   const config = notificationConfig;
-  
+
   // Always log CRITICAL events
   if (event.importance === 'CRITICAL') {
     return true;
   }
-  
+
   // Skip logging if disabled
   if (!config.enableEventHistory) {
     return false;
   }
-  
+
   // Log based on log level
   return shouldLog(event.importance, config.logLevel);
 }
@@ -856,8 +931,10 @@ function shouldLogEvent(event): boolean {
 ---
 
 #### 4. Storage Manager (LOW)
+
 **Purpose**: Persist event registry and subscriptions  
 **Used For**:
+
 - Persisting event definitions across sessions
 - Storing subscription preferences
 - Saving correlation data for analysis
@@ -868,8 +945,10 @@ function shouldLogEvent(event): boolean {
 ---
 
 #### 5. Analytics Manager (LOW)
+
 **Purpose**: Track event and performance analytics  
 **Used For**:
+
 - Reporting event throughput
 - Tracking handler performance
 - Monitoring error rates
@@ -884,6 +963,7 @@ function shouldLogEvent(event): boolean {
 The Notification Center exposes these control methods:
 
 #### Event Management
+
 ```javascript
 // Register new event type
 registerEvent(definition: EventDefinition): string
@@ -902,6 +982,7 @@ cancelScheduledEvent(scheduledEventId: string): boolean
 ```
 
 #### Subscription Management
+
 ```javascript
 // Subscribe to event
 subscribe(eventId: string, handler: EventHandler, options?: SubscribeOptions): string
@@ -917,6 +998,7 @@ unsubscribeAllForSubsystem(subsystemId: string): number
 ```
 
 #### Control Operations
+
 ```javascript
 // Pause event dispatch
 pauseDispatch(): void
@@ -935,6 +1017,7 @@ getMetrics(): NotificationPerformanceMetrics
 ```
 
 #### Debugging & Observability
+
 ```javascript
 // Get event history
 getEventHistory(filter?: EventFilter): DispatchedEvent[]
@@ -959,26 +1042,27 @@ exportDebugInfo(): NotificationDebugBundle
 Message packets in the Notification Center follow the standard packet structure with specialized event-specific fields:
 
 #### Basic Packet Structure
+
 ```typescript
 interface NotificationPacket {
   // Event identification
   eventId: string;
   eventName: string;
-  
+
   // Payload
   payload: any;
-  
+
   // Metadata
   metadata: EventMetadata;
-  
+
   // Fingerprints (array of actions taken)
   fingerprints: Fingerprint[];
-  
+
   // Callbacks
   onComplete?: (result: any) => void;
   onError?: (error: Error) => void;
   onLog?: (fingerprints: Fingerprint[]) => void;
-  
+
   // Permissions (for elevated events)
   permissionToken?: string;
 }
@@ -998,6 +1082,7 @@ interface Fingerprint {
 #### Packet Types
 
 ###### 1. Event Fire Packet
+
 ```typescript
 interface EventFirePacket extends NotificationPacket {
   eventId: string;
@@ -1020,6 +1105,7 @@ interface EventFirePacket extends NotificationPacket {
 **Consumed By**: Event Queue Manager → Event Dispatcher
 
 **Fingerprints Added**:
+
 - `event-created` (by originating subsystem)
 - `event-enqueued` (by Event Queue Manager)
 - `event-dispatched` (by Event Dispatcher)
@@ -1029,6 +1115,7 @@ interface EventFirePacket extends NotificationPacket {
 ---
 
 ###### 2. Subscription Packet
+
 ```typescript
 interface SubscriptionPacket extends NotificationPacket {
   eventId: string;
@@ -1046,6 +1133,7 @@ interface SubscriptionPacket extends NotificationPacket {
 **Consumed By**: Subscription Manager
 
 **Fingerprints Added**:
+
 - `subscription-requested`
 - `subscription-validated`
 - `subscription-created`
@@ -1053,13 +1141,14 @@ interface SubscriptionPacket extends NotificationPacket {
 ---
 
 ###### 3. Event Notification Packet (Dispatched to Handlers)
+
 ```typescript
 interface EventNotificationPacket {
   eventId: string;
   eventName: string;
   payload: any;
   metadata: EventMetadata;
-  
+
   // Handler-specific
   subscriptionId: string;
   executionNumber: number; // Nth execution of this subscription
@@ -1070,12 +1159,14 @@ interface EventNotificationPacket {
 **Consumed By**: Event handlers in subscribing subsystems
 
 **Fingerprints Added**:
+
 - `handler-invoked`
 - `handler-completed` OR `handler-errored`
 
 ---
 
 ###### 4. Performance Metrics Packet
+
 ```typescript
 interface PerformanceMetricsPacket extends NotificationPacket {
   eventId: 'notification:metrics-updated';
@@ -1093,12 +1184,14 @@ interface PerformanceMetricsPacket extends NotificationPacket {
 **Consumed By**: Analytics Manager, Global State
 
 **Fingerprints Added**:
+
 - `metrics-calculated`
 - `metrics-broadcasted`
 
 ---
 
 ###### 5. Error Notification Packet
+
 ```typescript
 interface ErrorNotificationPacket extends NotificationPacket {
   eventId: 'notification:error' | 'notification:handler-error' | 'notification:circuit-opened';
@@ -1120,6 +1213,7 @@ interface ErrorNotificationPacket extends NotificationPacket {
 **Consumed By**: Logger, Analytics Manager, affected subsystem
 
 **Fingerprints Added**:
+
 - `error-occurred`
 - `error-logged`
 - `circuit-state-changed`
@@ -1142,16 +1236,16 @@ class FingerprintManager {
       componentId: options.componentId || null,
       counter: options.counter || null,
       level: options.level || 'INFO',
-      message: options.message || null
+      message: options.message || null,
     };
   }
-  
+
   // Add fingerprint to packet
   addFingerprint(packet: NotificationPacket, action: string, options: FingerprintOptions): void {
     const fingerprint = this.createFingerprint(action, options);
     packet.fingerprints.push(fingerprint);
   }
-  
+
   // Strip fingerprints (if needed for payload size reduction)
   stripFingerprints(packet: NotificationPacket): Fingerprint[] {
     const fingerprints = packet.fingerprints;
@@ -1170,45 +1264,60 @@ The Notification Center subscribes to these events from other subsystems:
 #### From Global State
 
 ###### 1. `global-state:platform-status-changed`
+
 ```typescript
-subscribe('global-state:platform-status-changed', (payload) => {
-  const { newStatus, oldStatus } = payload;
-  
-  if (newStatus === 'STOPPED' || newStatus === 'CRASHED') {
-    // Stop accepting new events
-    EventQueueManager.applyBackpressure();
-    EventDispatcher.pauseDispatch();
-  } else if (newStatus === 'BUSY') {
-    // Apply backpressure for non-critical events
-    EventQueueManager.applyBackpressure();
-  } else if (newStatus === 'IDLE' && oldStatus === 'BUSY') {
-    // Release backpressure
-    EventQueueManager.releaseBackpressure();
-  }
-}, { priority: 100 }); // High priority
+subscribe(
+  'global-state:platform-status-changed',
+  (payload) => {
+    const { newStatus, oldStatus } = payload;
+
+    if (newStatus === 'STOPPED' || newStatus === 'CRASHED') {
+      // Stop accepting new events
+      EventQueueManager.applyBackpressure();
+      EventDispatcher.pauseDispatch();
+    } else if (newStatus === 'BUSY') {
+      // Apply backpressure for non-critical events
+      EventQueueManager.applyBackpressure();
+    } else if (newStatus === 'IDLE' && oldStatus === 'BUSY') {
+      // Release backpressure
+      EventQueueManager.releaseBackpressure();
+    }
+  },
+  { priority: 100 },
+); // High priority
 ```
 
 ###### 2. `global-state:subsystem-registered`
+
 ```typescript
-subscribe('global-state:subsystem-registered', (payload) => {
-  const { subsystemId, subsystemType } = payload;
-  
-  // Track new subsystem for event validation
-  EventValidator.registerSubsystem(subsystemId, subsystemType);
-}, { priority: 50 });
+subscribe(
+  'global-state:subsystem-registered',
+  (payload) => {
+    const { subsystemId, subsystemType } = payload;
+
+    // Track new subsystem for event validation
+    EventValidator.registerSubsystem(subsystemId, subsystemType);
+  },
+  { priority: 50 },
+);
 ```
 
 ###### 3. `global-state:subsystem-destroyed`
+
 ```typescript
-subscribe('global-state:subsystem-destroyed', (payload) => {
-  const { subsystemId } = payload;
-  
-  // Clean up subscriptions from destroyed subsystem
-  SubscriptionManager.unsubscribeAll(subsystemId);
-  
-  // Deregister events owned by subsystem
-  EventRegistryManager.deregisterSubsystemEvents(subsystemId);
-}, { priority: 100 });
+subscribe(
+  'global-state:subsystem-destroyed',
+  (payload) => {
+    const { subsystemId } = payload;
+
+    // Clean up subscriptions from destroyed subsystem
+    SubscriptionManager.unsubscribeAll(subsystemId);
+
+    // Deregister events owned by subsystem
+    EventRegistryManager.deregisterSubsystemEvents(subsystemId);
+  },
+  { priority: 100 },
+);
 ```
 
 ---
@@ -1216,28 +1325,38 @@ subscribe('global-state:subsystem-destroyed', (payload) => {
 #### From Message Queue
 
 ###### 1. `queue:overflow`
+
 ```typescript
-subscribe('queue:overflow', (payload) => {
-  // Coordinate with message queue on backpressure
-  if (!dispatchState.backpressureActive) {
-    EventQueueManager.applyBackpressure();
-    
-    fireEvent('notification:backpressure-coordinated', {
-      reason: 'message-queue-overflow',
-      timestamp: Date.now()
-    });
-  }
-}, { priority: 100 });
+subscribe(
+  'queue:overflow',
+  (payload) => {
+    // Coordinate with message queue on backpressure
+    if (!dispatchState.backpressureActive) {
+      EventQueueManager.applyBackpressure();
+
+      fireEvent('notification:backpressure-coordinated', {
+        reason: 'message-queue-overflow',
+        timestamp: Date.now(),
+      });
+    }
+  },
+  { priority: 100 },
+);
 ```
 
 ###### 2. `queue:space-available`
+
 ```typescript
-subscribe('queue:space-available', (payload) => {
-  // Release backpressure if queue has space
-  if (dispatchState.backpressureActive) {
-    EventQueueManager.releaseBackpressure();
-  }
-}, { priority: 100 });
+subscribe(
+  'queue:space-available',
+  (payload) => {
+    // Release backpressure if queue has space
+    if (dispatchState.backpressureActive) {
+      EventQueueManager.releaseBackpressure();
+    }
+  },
+  { priority: 100 },
+);
 ```
 
 ---
@@ -1245,19 +1364,24 @@ subscribe('queue:space-available', (payload) => {
 #### From Logger
 
 ###### 1. `logger:storage-full`
+
 ```typescript
-subscribe('logger:storage-full', (payload) => {
-  // Reduce event history storage
-  notificationConfig.enableEventHistory = false;
-  
-  // Clear old history
-  eventHistory.clear();
-  
-  fireEvent('notification:history-disabled', {
-    reason: 'logger-storage-full',
-    timestamp: Date.now()
-  });
-}, { priority: 80 });
+subscribe(
+  'logger:storage-full',
+  (payload) => {
+    // Reduce event history storage
+    notificationConfig.enableEventHistory = false;
+
+    // Clear old history
+    eventHistory.clear();
+
+    fireEvent('notification:history-disabled', {
+      reason: 'logger-storage-full',
+      timestamp: Date.now(),
+    });
+  },
+  { priority: 80 },
+);
 ```
 
 ---
@@ -1671,12 +1795,14 @@ subscribe('logger:storage-full', (payload) => {
 **Challenge**: Events must be dispatched in strict order while maintaining high throughput.
 
 **Solution**:
+
 - Priority queue ensures CRITICAL events dispatch first
 - Within same priority, FIFO ordering maintained
 - Sequential dispatch to same subscriber preserves causality
 - Correlation IDs track event chains across subsystems
 
 **Implementation**:
+
 ```javascript
 class PriorityQueue {
   constructor() {
@@ -1684,14 +1810,14 @@ class PriorityQueue {
       CRITICAL: [],
       HIGH: [],
       MEDIUM: [],
-      LOW: []
+      LOW: [],
     };
   }
-  
+
   enqueue(event) {
     this.queues[event.importance].push(event);
   }
-  
+
   dequeue() {
     // Always dequeue from highest priority first
     for (const priority of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']) {
@@ -1711,6 +1837,7 @@ class PriorityQueue {
 **Challenge**: Event dispatch is on critical path for all subsystem communication.
 
 **Optimizations**:
+
 - **Async Handlers**: Non-blocking handler execution with Promise.all
 - **Handler Caching**: Cache subscription lookups by eventId
 - **Batch Dispatch**: Process multiple events per loop iteration
@@ -1718,21 +1845,23 @@ class PriorityQueue {
 - **Event Pooling**: Reuse event objects to reduce GC pressure
 
 **Example**:
+
 ```javascript
 async function dispatchEvent(event) {
   // Cached subscription lookup
   const subscriptions = subscriptionCache.get(event.eventId);
-  
+
   if (!subscriptions || subscriptions.length === 0) {
     return; // Fast path: no subscribers
   }
-  
+
   // Parallel handler execution
-  const handlers = subscriptions.map(sub => {
-    return executeHandler(sub, event.payload, event.metadata)
-      .catch(error => recordHandlerError(sub, error));
+  const handlers = subscriptions.map((sub) => {
+    return executeHandler(sub, event.payload, event.metadata).catch((error) =>
+      recordHandlerError(sub, error),
+    );
   });
-  
+
   await Promise.allSettled(handlers); // Don't block on individual failures
 }
 ```
@@ -1744,6 +1873,7 @@ async function dispatchEvent(event) {
 **Challenge**: Event history and correlation data can grow unbounded.
 
 **Memory Controls**:
+
 - **Circular Buffers**: Fixed-size history (last 1000 events)
 - **TTL Expiration**: Auto-cleanup old correlations
 - **Payload Sanitization**: Remove sensitive data from history
@@ -1751,6 +1881,7 @@ async function dispatchEvent(event) {
 - **Queue Capacity**: Hard limit on queue size
 
 **Example**:
+
 ```javascript
 class CircularBuffer {
   constructor(maxSize) {
@@ -1759,13 +1890,13 @@ class CircularBuffer {
     this.size = 0;
     this.maxSize = maxSize;
   }
-  
+
   add(item) {
     this.buffer[this.index] = item;
     this.index = (this.index + 1) % this.maxSize;
     this.size = Math.min(this.size + 1, this.maxSize);
   }
-  
+
   getAll() {
     if (this.size < this.maxSize) {
       return this.buffer.slice(0, this.size);
@@ -1782,6 +1913,7 @@ class CircularBuffer {
 **Challenge**: Handler failures must not crash the dispatcher or affect other handlers.
 
 **Resilience Mechanisms**:
+
 - **Try-Catch Isolation**: Each handler wrapped in try-catch
 - **Circuit Breakers**: Auto-disable failing handlers
 - **Error Rate Limiting**: Throttle error notifications
@@ -1789,34 +1921,34 @@ class CircularBuffer {
 - **Handler Timeouts**: Kill long-running handlers
 
 **Example**:
+
 ```javascript
 async function executeHandler(subscription, payload, metadata) {
   const { handler, subscriptionId } = subscription;
-  
+
   // Check circuit breaker
   if (!shouldExecuteHandler(subscriptionId)) {
     return; // Circuit is open, skip execution
   }
-  
+
   try {
     // Execute with timeout
     await Promise.race([
       handler(payload, metadata),
-      timeout(notificationConfig.maxHandlerExecutionTime)
+      timeout(notificationConfig.maxHandlerExecutionTime),
     ]);
-    
+
     // Record success
     CircuitBreakerManager.recordSuccess(subscriptionId);
-    
   } catch (error) {
     // Record failure
     CircuitBreakerManager.recordFailure(subscriptionId, error);
-    
+
     // Emit error event
     fireEvent('notification:handler-error', {
       subscriptionId,
       error: sanitizeError(error),
-      eventId: metadata.eventId
+      eventId: metadata.eventId,
     });
   }
 }
@@ -1829,6 +1961,7 @@ async function executeHandler(subscription, payload, metadata) {
 **Challenge**: Debugging event flows across multiple subsystems is complex.
 
 **Observability Tools**:
+
 - **Event History**: Circular buffer of recent events
 - **Correlation Tracking**: Link related events across subsystems
 - **Performance Metrics**: Real-time dispatch metrics
@@ -1837,6 +1970,7 @@ async function executeHandler(subscription, payload, metadata) {
 - **Event Replay**: Reconstruct event sequences
 
 **Example**:
+
 ```javascript
 function exportDebugBundle() {
   return {
@@ -1844,25 +1978,27 @@ function exportDebugBundle() {
     dispatchState,
     queueSize: eventQueue.size(),
     activeSubscriptions: Array.from(subscriptions.values()).flat().length,
-    
+
     // Event history
     recentEvents: eventHistory.getAll(),
-    
+
     // Correlation chains
-    activeCorrelations: Array.from(correlationRegistry.values())
-      .filter(c => c.status === 'ACTIVE'),
-    
+    activeCorrelations: Array.from(correlationRegistry.values()).filter(
+      (c) => c.status === 'ACTIVE',
+    ),
+
     // Circuit breakers
-    openCircuits: Array.from(errorTracking.circuitBreakers.values())
-      .filter(cb => cb.status === 'OPEN'),
-    
+    openCircuits: Array.from(errorTracking.circuitBreakers.values()).filter(
+      (cb) => cb.status === 'OPEN',
+    ),
+
     // Performance
     metrics: performanceMetrics,
-    
+
     // Event registry
     registeredEvents: Array.from(eventRegistry.values()),
-    
-    timestamp: Date.now()
+
+    timestamp: Date.now(),
   };
 }
 ```
@@ -1874,6 +2010,7 @@ function exportDebugBundle() {
 **Challenge**: Prevent unauthorized event firing or subscription.
 
 **Security Measures**:
+
 - **Permission Tokens**: Validate tokens for privileged events
 - **Event ACLs**: Control which subsystems can fire which events
 - **Payload Sanitization**: Strip sensitive data from logs
@@ -1881,30 +2018,29 @@ function exportDebugBundle() {
 - **Audit Trail**: Log all privileged operations
 
 **Example**:
+
 ```javascript
 function fireEvent(eventId, payload, metadata = {}) {
   const eventDef = eventRegistry.get(eventId);
-  
+
   // Check if event requires elevated permissions
   if (eventDef.requiresPermission) {
     const token = metadata.permissionToken;
-    
+
     if (!validatePermission(token, eventDef.requiredPermissionLevel)) {
-      throw new PermissionError(
-        `Insufficient permissions to fire event: ${eventDef.eventName}`
-      );
+      throw new PermissionError(`Insufficient permissions to fire event: ${eventDef.eventName}`);
     }
-    
+
     // Audit log
     Logger.log({
       action: 'privileged-event-fired',
       eventId,
       eventName: eventDef.eventName,
       userId: extractUserId(token),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
-  
+
   // Proceed with event dispatch
   enqueueEvent({ eventId, payload, metadata });
 }
@@ -1917,6 +2053,7 @@ function fireEvent(eventId, payload, metadata = {}) {
 **Challenge**: Testing event flows requires coordinating multiple subsystems.
 
 **Testing Strategies**:
+
 - **Event Mocking**: Mock event firing for unit tests
 - **Handler Spies**: Verify handler invocations
 - **Queue Inspection**: Assert queue state during tests
@@ -1925,6 +2062,7 @@ function fireEvent(eventId, payload, metadata = {}) {
 - **Integration Tests**: Test complete event chains
 
 **Example**:
+
 ```javascript
 // Test helper for mocking events
 class EventTestHelper {
@@ -1932,31 +2070,31 @@ class EventTestHelper {
     this.firedEvents = [];
     this.handlerCalls = new Map();
   }
-  
+
   // Mock event firing
   mockFireEvent(eventId, payload, metadata) {
     this.firedEvents.push({ eventId, payload, metadata, timestamp: Date.now() });
   }
-  
+
   // Spy on handler
   spyOnHandler(subscriptionId, handler) {
     const spy = jest.fn(handler);
     this.handlerCalls.set(subscriptionId, spy);
     return spy;
   }
-  
+
   // Assert event was fired
   assertEventFired(eventId, times = 1) {
-    const count = this.firedEvents.filter(e => e.eventId === eventId).length;
+    const count = this.firedEvents.filter((e) => e.eventId === eventId).length;
     expect(count).toBe(times);
   }
-  
+
   // Assert handler was called
   assertHandlerCalled(subscriptionId, times = 1) {
     const spy = this.handlerCalls.get(subscriptionId);
     expect(spy).toHaveBeenCalledTimes(times);
   }
-  
+
   // Reset for next test
   reset() {
     this.firedEvents = [];
@@ -1982,6 +2120,7 @@ This comprehensive redesign of the Notification Center subsystem:
 5. **Establishes Notification Center as the backbone** for all event-driven inter-subsystem communication
 
 The design emphasizes:
+
 - **Reliability**: Guaranteed event delivery with retry and circuit breaking
 - **Performance**: Optimized for high-throughput event dispatch
 - **Observability**: Comprehensive tracking of event flows and handler performance

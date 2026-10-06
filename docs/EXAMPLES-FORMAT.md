@@ -6,11 +6,11 @@ This document is the contract between the authors of the examples and the doc co
 
 ## Where the files are
 
-| Directory | Doc page | Import path in the examples |
-|---|---|---|
-| `packages/core/src` | `@webkrnl/core` | `@webkrnl/core`, `@webkrnl/core/worker` |
-| `packages/core/src/testing` | `@webkrnl/core/testing` | `@webkrnl/core/testing` |
-| `packages/<name>/src` | `@webkrnl/<name>` | `@webkrnl/<name>` |
+| Directory                   | Doc page                | Import path in the examples             |
+| --------------------------- | ----------------------- | --------------------------------------- |
+| `packages/core/src`         | `@webkrnl/core`         | `@webkrnl/core`, `@webkrnl/core/worker` |
+| `packages/core/src/testing` | `@webkrnl/core/testing` | `@webkrnl/core/testing`                 |
+| `packages/<name>/src`       | `@webkrnl/<name>`       | `@webkrnl/<name>`                       |
 
 Test directories (`test/`) have no `EXAMPLES.md`. They are not published and have no doc page.
 
@@ -50,10 +50,10 @@ console.log(count);
 <!-- example id="core/boot-two-subsystems" runtime="any" -->
 ```
 
-| Attribute | Required | Values |
-|---|---|---|
-| `id` | yes | Unique in the repository. Use `<package>/<name>` in kebab case. The compiler uses it for the sandbox URL. |
-| `runtime` | yes | `any`: runs in Node and in a browser. `browser`: needs the DOM or other browser APIs. `none`: the compiler shows the code but does not run it (for example, it needs several origins or a server). |
+| Attribute | Required | Values                                                                                                                                                                                             |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`      | yes      | Unique in the repository. Use `<package>/<name>` in kebab case. The compiler uses it for the sandbox URL.                                                                                          |
+| `runtime` | yes      | `any`: runs in Node and in a browser. `browser`: needs the DOM or other browser APIs. `none`: the compiler shows the code but does not run it (for example, it needs several origins or a server). |
 
 ## Code blocks
 

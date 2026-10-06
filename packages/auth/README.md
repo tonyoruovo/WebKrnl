@@ -28,9 +28,9 @@ Network is optional; Storage and Crypto are late-bound. Design: [ARCHITECTURE §
 
 ## Entry points
 
-| Import           | Contents                                                              |
-| ---------------- | --------------------------------------------------------------------- |
-| `@webkrnl/auth` | `createAuth`, `meetsRequirement`, `AuthLockedError`, and the types     |
+| Import          | Contents                                                           |
+| --------------- | ------------------------------------------------------------------ |
+| `@webkrnl/auth` | `createAuth`, `meetsRequirement`, `AuthLockedError`, and the types |
 
 ## Usage
 
@@ -41,21 +41,33 @@ const handlers: AuthHandlers<{ email: string; password: string }> = {
   login: async (credentials, { network }) =>
     (await network!.commands.post<AuthSession>('/auth/login', credentials)).data,
   refresh: async (session, { network }) =>
-    (await network!.commands.post<AuthSession>('/auth/refresh', { token: session.refreshToken })).data,
+    (await network!.commands.post<AuthSession>('/auth/refresh', { token: session.refreshToken }))
+      .data,
   // A session for this origin, from the session cookie on the apex domain (other subdomains, a new tab).
   restore: async ({ network }) => {
-    const response = await network!.commands.request<AuthSession>({ url: '/auth/restore', method: 'POST', allowErrorStatus: true });
+    const response = await network!.commands.request<AuthSession>({
+      url: '/auth/restore',
+      method: 'POST',
+      allowErrorStatus: true,
+    });
     return response.status === 200 ? response.data : null;
   },
 };
 
 const kernel = new Kernel(
-  [...centralized, createCrypto(), createStorage(), createNetwork(), createAuth({ handlers, protectedOrigins: ['https://api.shop.example'] })],
+  [
+    ...centralized,
+    createCrypto(),
+    createStorage(),
+    createNetwork(),
+    createAuth({ handlers, protectedOrigins: ['https://api.shop.example'] }),
+  ],
   { router: queue.router },
 );
 await kernel.start();
 
-const { commands, views } = kernel.unit<AuthControl<{ email: string; password: string }>>('auth').control!;
+const { commands, views } =
+  kernel.unit<AuthControl<{ email: string; password: string }>>('auth').control!;
 await commands.login({ email, password });
 commands.hasPermission('orders:refund');
 commands.check({ roles: ['ADMIN'], level: 50 });
@@ -92,34 +104,34 @@ This is the flow that the platform is designed for. Your server does its part of
 
 ## Behaviour
 
-| Situation                                           | Result                                                                                    |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `login` succeeds                                    | `AUTHENTICATED`; the session is stored (encrypted); `auth:changed` to every tab           |
-| `login` fails `lockout.maxAttempts` times in a row  | `AuthLockedError` until `lockedUntil`                                                     |
-| The access token is near its expiry                 | Refresh `refreshBeforeMs` before it                                                       |
-| The API answers `401`                               | One refresh, then the request is sent again                                               |
-| The refresh is refused (4xx) or keeps failing       | `EXPIRED`; `auth:changed` with `reason: 'expired'`                                        |
-| Two tabs refresh at the same time                   | One refresh; the other tab takes the stored session                                       |
-| Another tab signs in or refreshes (same origin)     | This tab loads the session from Storage                                                   |
-| Another tab signs out                               | This tab signs out too, also when a restore or a Storage read was under way               |
-| Another subdomain signs in (no session in Storage here) | `restore`: the server gives this origin its own session (the apex cookie)             |
-| A tab starts without a stored session               | `restore` (unless `restoreOnStart: false`); `null` keeps it signed out, with no lockout count |
-| No Web Locks API (outside the supported browsers, §1.1) | Two tabs can refresh at the same time; with rotating refresh tokens, one of them can become `EXPIRED` |
-| Auth stops                                          | Tokens and elevations leave memory                                                        |
-| Sign-out (the user data that Auth keeps)            | The session, the tokens and the elevations are wiped, in memory and in `auth.session`. Other subsystems wipe their own data (ARCHITECTURE §5.1) |
+| Situation                                               | Result                                                                                                                                          |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `login` succeeds                                        | `AUTHENTICATED`; the session is stored (encrypted); `auth:changed` to every tab                                                                 |
+| `login` fails `lockout.maxAttempts` times in a row      | `AuthLockedError` until `lockedUntil`                                                                                                           |
+| The access token is near its expiry                     | Refresh `refreshBeforeMs` before it                                                                                                             |
+| The API answers `401`                                   | One refresh, then the request is sent again                                                                                                     |
+| The refresh is refused (4xx) or keeps failing           | `EXPIRED`; `auth:changed` with `reason: 'expired'`                                                                                              |
+| Two tabs refresh at the same time                       | One refresh; the other tab takes the stored session                                                                                             |
+| Another tab signs in or refreshes (same origin)         | This tab loads the session from Storage                                                                                                         |
+| Another tab signs out                                   | This tab signs out too, also when a restore or a Storage read was under way                                                                     |
+| Another subdomain signs in (no session in Storage here) | `restore`: the server gives this origin its own session (the apex cookie)                                                                       |
+| A tab starts without a stored session                   | `restore` (unless `restoreOnStart: false`); `null` keeps it signed out, with no lockout count                                                   |
+| No Web Locks API (outside the supported browsers, §1.1) | Two tabs can refresh at the same time; with rotating refresh tokens, one of them can become `EXPIRED`                                           |
+| Auth stops                                              | Tokens and elevations leave memory                                                                                                              |
+| Sign-out (the user data that Auth keeps)                | The session, the tokens and the elevations are wiped, in memory and in `auth.session`. Other subsystems wipe their own data (ARCHITECTURE §5.1) |
 
 ## Options
 
-| Option             | Default                                   | Purpose                                                   |
-| ------------------ | ----------------------------------------- | --------------------------------------------------------- |
-| `handlers`         | (required)                                | `login`, `refresh`, `logout?`, `elevate?`, `restore?`.    |
-| `restoreOnStart`   | `true`                                    | Call `restore` at start when no session is stored.        |
-| `protectedOrigins` | the page origin                           | The origins that get the token.                           |
-| `refreshBeforeMs`  | `60_000`                                  | How early to refresh.                                     |
-| `refreshRetries`   | `3`                                       | Retries of a failed refresh.                              |
-| `lockout`          | `{ maxAttempts: 5, durationMs: 300_000 }` | The login lockout, or `false`.                            |
-| `persist`          | `'encrypted'`                             | How the session is kept in Storage, or `false`.           |
-| `fetch`            | the global `fetch`                        | Given to handlers when Network does not run.              |
+| Option             | Default                                   | Purpose                                                |
+| ------------------ | ----------------------------------------- | ------------------------------------------------------ |
+| `handlers`         | (required)                                | `login`, `refresh`, `logout?`, `elevate?`, `restore?`. |
+| `restoreOnStart`   | `true`                                    | Call `restore` at start when no session is stored.     |
+| `protectedOrigins` | the page origin                           | The origins that get the token.                        |
+| `refreshBeforeMs`  | `60_000`                                  | How early to refresh.                                  |
+| `refreshRetries`   | `3`                                       | Retries of a failed refresh.                           |
+| `lockout`          | `{ maxAttempts: 5, durationMs: 300_000 }` | The login lockout, or `false`.                         |
+| `persist`          | `'encrypted'`                             | How the session is kept in Storage, or `false`.        |
+| `fetch`            | the global `fetch`                        | Given to handlers when Network does not run.           |
 
 ## Testing
 

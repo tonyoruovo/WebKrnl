@@ -7,8 +7,8 @@
 > - Every change in the outbox is pending work in Global State.
 > - Dropped for now: delta computation, checksums, compression and bandwidth modes.
 
-
 # Sync manager
+
 ## Initial Proposal
 
 ### States
@@ -40,100 +40,100 @@
 /**
  * Shared Type Definitions
  */
-export type Importance = 'HIGH' | 'MEDIUM' | 'LOW'
+export type Importance = 'HIGH' | 'MEDIUM' | 'LOW';
 
 export interface BasePacket<P, R = any> {
-  eventId: symbol
-  actionName: string
-  payload: P
-  importance: Importance
-  onComplete: (result: R) => void
-  onError: (error: Error) => void
-  onLog: ((fingerprints: string[]) => void) | null
-  fingerprints: string[]
+  eventId: symbol;
+  actionName: string;
+  payload: P;
+  importance: Importance;
+  onComplete: (result: R) => void;
+  onError: (error: Error) => void;
+  onLog: ((fingerprints: string[]) => void) | null;
+  fingerprints: string[];
 }
 
 /**
  * 1. Sync Request
  */
 export interface SyncRequestPayload {
-  syncType: 'FULL' | 'DELTA' | 'ENTITY'
-  entityTypes: string[] | null
-  entityIds: string[] | null
-  direction: 'PULL' | 'PUSH' | 'BOTH'
-  force: boolean
-  priority: number
-  userId: string
-  authToken: string
+  syncType: 'FULL' | 'DELTA' | 'ENTITY';
+  entityTypes: string[] | null;
+  entityIds: string[] | null;
+  direction: 'PULL' | 'PUSH' | 'BOTH';
+  force: boolean;
+  priority: number;
+  userId: string;
+  authToken: string;
 }
 
-export type SyncRequestPacket = BasePacket<SyncRequestPayload>
+export type SyncRequestPacket = BasePacket<SyncRequestPayload>;
 
 /**
  * 2. Conflict Resolution
  */
 export interface ConflictResolutionPayload {
-  conflictId: string
-  entityType: string
-  entityId: string
-  localVersion: Record<string, any>
-  remoteVersion: Record<string, any>
-  resolution: 'CLIENT_WINS' | 'SERVER_WINS' | 'MERGE' | 'MANUAL'
-  mergedData: Record<string, any> | null
-  userId: string
+  conflictId: string;
+  entityType: string;
+  entityId: string;
+  localVersion: Record<string, any>;
+  remoteVersion: Record<string, any>;
+  resolution: 'CLIENT_WINS' | 'SERVER_WINS' | 'MERGE' | 'MANUAL';
+  mergedData: Record<string, any> | null;
+  userId: string;
 }
 
-export type ConflictResolutionPacket = BasePacket<ConflictResolutionPayload>
+export type ConflictResolutionPacket = BasePacket<ConflictResolutionPayload>;
 
 /**
  * 3. Offline Change
  */
 export interface OfflineChangePayload {
-  operation: 'CREATE' | 'UPDATE' | 'DELETE'
-  entityType: string
-  entityId: string
-  data: Record<string, any>
-  timestamp: number
-  userId: string
-  dependencies: string[]
+  operation: 'CREATE' | 'UPDATE' | 'DELETE';
+  entityType: string;
+  entityId: string;
+  data: Record<string, any>;
+  timestamp: number;
+  userId: string;
+  dependencies: string[];
 }
 
-export type OfflineChangePacket = BasePacket<OfflineChangePayload>
+export type OfflineChangePacket = BasePacket<OfflineChangePayload>;
 
 /**
  * 4. Sync Progress
  */
 export interface SyncProgressPayload {
-  operationId: string
-  entityType: string
-  phase: 'PREPARING' | 'UPLOADING' | 'DOWNLOADING' | 'APPLYING' | 'COMPLETE'
-  progress: number // 0-100
-  itemsProcessed: number
-  itemsTotal: number
-  currentItem: string | null
-  startTime: number
-  estimatedCompletion: number | null
+  operationId: string;
+  entityType: string;
+  phase: 'PREPARING' | 'UPLOADING' | 'DOWNLOADING' | 'APPLYING' | 'COMPLETE';
+  progress: number; // 0-100
+  itemsProcessed: number;
+  itemsTotal: number;
+  currentItem: string | null;
+  startTime: number;
+  estimatedCompletion: number | null;
 }
 
-export type SyncProgressPacket = BasePacket<SyncProgressPayload>
+export type SyncProgressPacket = BasePacket<SyncProgressPayload>;
 
 /**
  * 5. Sync Complete
  */
 export interface SyncCompletePayload {
-  operationId: string
-  syncType: string
-  success: boolean
-  entityTypes: string[]
-  itemsSynced: number
-  conflictsDetected: number
-  conflictsResolved: number
-  duration: number
-  timestamp: number
-  errors: Record<string, any>[] | null
+  operationId: string;
+  syncType: string;
+  success: boolean;
+  entityTypes: string[];
+  itemsSynced: number;
+  conflictsDetected: number;
+  conflictsResolved: number;
+  duration: number;
+  timestamp: number;
+  errors: Record<string, any>[] | null;
 }
 
-export type SyncCompletePacket = BasePacket<SyncCompletePayload>
+export type SyncCompletePacket = BasePacket<SyncCompletePayload>;
 
 /**
  * Unified Sync Packet Type
@@ -143,7 +143,7 @@ export type SyncPacket =
   | ConflictResolutionPacket
   | OfflineChangePacket
   | SyncProgressPacket
-  | SyncCompletePacket
+  | SyncCompletePacket;
 ```
 
 ### Dependencies

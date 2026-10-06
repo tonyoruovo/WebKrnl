@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,html,css}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,html,css}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,html,css,md,yaml,yml,vue}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,html,css,md,yaml,yml,vue}\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",

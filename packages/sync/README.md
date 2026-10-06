@@ -29,16 +29,18 @@ Network is required; Storage is late-bound. Design: [ARCHITECTURE §19.3](../../
 
 ## Entry points
 
-| Import           | Contents                                                                   |
-| ---------------- | -------------------------------------------------------------------------- |
-| `@webkrnl/sync` | `createSync`, `Outbox`, `mergeOps`, `isPermanent`, and the types            |
+| Import          | Contents                                                         |
+| --------------- | ---------------------------------------------------------------- |
+| `@webkrnl/sync` | `createSync`, `Outbox`, `mergeOps`, `isPermanent`, and the types |
 
 ## Usage
 
 ```ts
 import { createSync, type SyncControl } from '@webkrnl/sync';
 
-const kernel = new Kernel([...centralized, createStorage(), createNetwork(), createSync()], { router: queue.router });
+const kernel = new Kernel([...centralized, createStorage(), createNetwork(), createSync()], {
+  router: queue.router,
+});
 await kernel.start();
 
 const { commands, views } = kernel.unit<SyncControl>('sync').control!;
@@ -53,7 +55,8 @@ const todos = commands.entity<Todo>({
       allowErrorStatus: true,
     });
     if (response.status === 409) return { conflict: response.data };
-    if (response.status >= 400) throw Object.assign(new Error('push failed'), { status: response.status });
+    if (response.status >= 400)
+      throw Object.assign(new Error('push failed'), { status: response.status });
   },
   conflict: 'server-wins',
 });
@@ -75,28 +78,28 @@ The push handler decides how a change reaches your API. Throw an error with a `s
 
 ## Behaviour
 
-| Situation                                   | Result                                                                                       |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The outbox (waiting, failed and conflicting changes) and the pull cursors are wiped, in memory and in Storage |
-| A change while online                       | Sent at once                                                                                 |
-| A change while offline                      | Waits; `status` is `OFFLINE`; the pending work shows the count                               |
-| Back online                                 | The outbox is sent, oldest first, then a pull                                                |
-| A response is lost and the request is sent again | The server applies the change once (same idempotency key)                              |
-| Transient failure (offline, timeout, 5xx, 429) | The change stays; retry with backoff; later changes of the entity wait                    |
-| Permanent failure (other 4xx)               | `failed`; `sync:failed`; `retryFailed()` puts it back                                        |
-| The server answers with a conflict          | The entity's strategy decides; `manual` waits for `resolve`                                  |
-| Two tabs with the same outbox               | One tab sends it at a time                                                                   |
-| A reload with changes in the outbox (Storage) | The changes come back and are sent                                                         |
-| No Web Locks API (outside the supported browsers, §1.1) | Two tabs can push the same change at the same time; the idempotency key still makes the server apply it once |
-| `pause()`                                   | No automatic runs until `resume()`                                                           |
+| Situation                                               | Result                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1)  | The outbox (waiting, failed and conflicting changes) and the pull cursors are wiped, in memory and in Storage |
+| A change while online                                   | Sent at once                                                                                                  |
+| A change while offline                                  | Waits; `status` is `OFFLINE`; the pending work shows the count                                                |
+| Back online                                             | The outbox is sent, oldest first, then a pull                                                                 |
+| A response is lost and the request is sent again        | The server applies the change once (same idempotency key)                                                     |
+| Transient failure (offline, timeout, 5xx, 429)          | The change stays; retry with backoff; later changes of the entity wait                                        |
+| Permanent failure (other 4xx)                           | `failed`; `sync:failed`; `retryFailed()` puts it back                                                         |
+| The server answers with a conflict                      | The entity's strategy decides; `manual` waits for `resolve`                                                   |
+| Two tabs with the same outbox                           | One tab sends it at a time                                                                                    |
+| A reload with changes in the outbox (Storage)           | The changes come back and are sent                                                                            |
+| No Web Locks API (outside the supported browsers, §1.1) | Two tabs can push the same change at the same time; the idempotency key still makes the server apply it once  |
+| `pause()`                                               | No automatic runs until `resume()`                                                                            |
 
 ## Options
 
-| Option        | Default             | Purpose                                                       |
-| ------------- | ------------------- | ------------------------------------------------------------- |
-| `intervalMs`  | `300_000`           | Automatic runs while visible, or `false`.                     |
-| `retryBaseMs` | `1_000`             | The base wait after a transient failure.                      |
-| `name`        | `default`           | The name of the outbox and of the Web Lock.                   |
+| Option        | Default   | Purpose                                     |
+| ------------- | --------- | ------------------------------------------- |
+| `intervalMs`  | `300_000` | Automatic runs while visible, or `false`.   |
+| `retryBaseMs` | `1_000`   | The base wait after a transient failure.    |
+| `name`        | `default` | The name of the outbox and of the Web Lock. |
 
 ## Testing
 

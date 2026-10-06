@@ -10,7 +10,12 @@ A chat room listens to its topic and sends messages to it. One socket carries ev
 
 ```ts file=main.ts
 import { Kernel } from '@webkrnl/core';
-import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@webkrnl/realtime';
+import {
+  REALTIME_ID,
+  createRealtime,
+  type RealtimeControl,
+  type SocketLike,
+} from '@webkrnl/realtime';
 
 // A fake echo server: each publish comes back as a message to its topic.
 function echoSocket(): SocketLike {
@@ -23,7 +28,13 @@ function echoSocket(): SocketLike {
     send(data) {
       const frame = JSON.parse(String(data)) as { type: string; topic?: string; data?: unknown };
       if (frame.type === 'publish') {
-        setTimeout(() => socket.onmessage?.({ data: JSON.stringify({ type: 'message', topic: frame.topic, data: frame.data }) }), 1);
+        setTimeout(
+          () =>
+            socket.onmessage?.({
+              data: JSON.stringify({ type: 'message', topic: frame.topic, data: frame.data }),
+            }),
+          1,
+        );
       }
     },
     close() {
@@ -37,7 +48,9 @@ function echoSocket(): SocketLike {
   return socket;
 }
 
-const kernel = new Kernel([createRealtime({ url: 'wss://chat.example/socket', hosts: ['virtual'], socket: echoSocket })]);
+const kernel = new Kernel([
+  createRealtime({ url: 'wss://chat.example/socket', hosts: ['virtual'], socket: echoSocket }),
+]);
 await kernel.start();
 const realtime = kernel.unit<RealtimeControl>(REALTIME_ID).control!;
 
@@ -63,7 +76,12 @@ The connection drops. Realtime reconnects with backoff and subscribes every topi
 
 ```ts file=main.ts
 import { Kernel } from '@webkrnl/core';
-import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@webkrnl/realtime';
+import {
+  REALTIME_ID,
+  createRealtime,
+  type RealtimeControl,
+  type SocketLike,
+} from '@webkrnl/realtime';
 
 const sockets: SocketLike[] = [];
 const subscribes: string[] = [];
@@ -76,7 +94,8 @@ function fakeSocket(): SocketLike {
     onerror: null,
     send(data) {
       const frame = JSON.parse(String(data)) as { type: string; topic?: string };
-      if (frame.type === 'subscribe') subscribes.push(`socket ${sockets.indexOf(socket) + 1}: ${frame.topic}`);
+      if (frame.type === 'subscribe')
+        subscribes.push(`socket ${sockets.indexOf(socket) + 1}: ${frame.topic}`);
     },
     close() {},
   };
@@ -90,7 +109,12 @@ function fakeSocket(): SocketLike {
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const kernel = new Kernel([
-  createRealtime({ url: 'wss://rt.example/socket', hosts: ['virtual'], socket: fakeSocket, retryBaseMs: 5 }),
+  createRealtime({
+    url: 'wss://rt.example/socket',
+    hosts: ['virtual'],
+    socket: fakeSocket,
+    retryBaseMs: 5,
+  }),
 ]);
 await kernel.start();
 const realtime = kernel.unit<RealtimeControl>(REALTIME_ID).control!;
@@ -128,12 +152,18 @@ The user changes a setting on the laptop. The phone gets the change. Each device
 import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@webkrnl/core';
 import { createNotificationCenter } from '@webkrnl/notification';
 import { createQueue } from '@webkrnl/queue';
-import { REALTIME_ID, createRealtime, type GlobalControl, type SocketLike } from '@webkrnl/realtime';
+import {
+  REALTIME_ID,
+  createRealtime,
+  type GlobalControl,
+  type SocketLike,
+} from '@webkrnl/realtime';
 
 // A fake server: it forwards a reserved topic to the other subscribers, then sends an ack.
 const subscribers = new Map<SocketLike, Set<string>>();
 function connect(): SocketLike {
-  const deliver = (to: SocketLike, frame: unknown) => setTimeout(() => to.onmessage?.({ data: JSON.stringify(frame) }), 1);
+  const deliver = (to: SocketLike, frame: unknown) =>
+    setTimeout(() => to.onmessage?.({ data: JSON.stringify(frame) }), 1);
   const socket: SocketLike = {
     readyState: 0,
     onopen: null,
@@ -141,11 +171,16 @@ function connect(): SocketLike {
     onclose: null,
     onerror: null,
     send(data) {
-      const frame = JSON.parse(String(data)) as { type: string; topic?: string; data?: { metadata: { messageId: string } } };
+      const frame = JSON.parse(String(data)) as {
+        type: string;
+        topic?: string;
+        data?: { metadata: { messageId: string } };
+      };
       if (frame.type === 'subscribe') subscribers.get(socket)!.add(frame.topic!);
       if (frame.type !== 'publish') return;
       for (const [other, topics] of subscribers) {
-        if (other !== socket && topics.has(frame.topic!)) deliver(other, { type: 'message', topic: frame.topic, data: frame.data });
+        if (other !== socket && topics.has(frame.topic!))
+          deliver(other, { type: 'message', topic: frame.topic, data: frame.data });
       }
       deliver(socket, { type: 'ack', data: frame.data!.metadata.messageId });
     },
@@ -177,7 +212,12 @@ async function device(name: string) {
     [
       queue.subsystem,
       notification.subsystem,
-      createRealtime({ url: 'wss://rt.example/socket', hosts: ['virtual'], socket: connect, global: {} }),
+      createRealtime({
+        url: 'wss://rt.example/socket',
+        hosts: ['virtual'],
+        socket: connect,
+        global: {},
+      }),
       settings,
     ] as SubsystemDefinition[],
     { router: queue.router },

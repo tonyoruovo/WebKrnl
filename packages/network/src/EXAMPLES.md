@@ -23,14 +23,20 @@ const fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   return Response.json({ ok: true, key: request.headers.get('idempotency-key') });
 };
 
-const kernel = new Kernel([createNetwork({ baseUrl: 'https://api.shop.example/', fetch, retryBaseMs: 1 })]);
+const kernel = new Kernel([
+  createNetwork({ baseUrl: 'https://api.shop.example/', fetch, retryBaseMs: 1 }),
+]);
 await kernel.start();
 const { commands } = kernel.unit<NetworkControl>(NETWORK_ID).control!;
 
 const products = await commands.get('/products');
 console.log('GET attempts:', products.attempts);
 
-const pay = await commands.post<{ key: string }>('/payments', { amount: 30 }, { idempotencyKey: 'order-42' });
+const pay = await commands.post<{ key: string }>(
+  '/payments',
+  { amount: 30 },
+  { idempotencyKey: 'order-42' },
+);
 console.log('POST attempts:', pay.attempts, 'key:', pay.data.key);
 await kernel.stop();
 ```
@@ -59,7 +65,9 @@ const fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 };
 
 let clock = 0;
-const kernel = new Kernel([createNetwork({ baseUrl: 'https://api.shop.example/', fetch, now: () => clock })]);
+const kernel = new Kernel([
+  createNetwork({ baseUrl: 'https://api.shop.example/', fetch, now: () => clock }),
+]);
 await kernel.start();
 const { commands } = kernel.unit<NetworkControl>(NETWORK_ID).control!;
 
@@ -70,7 +78,14 @@ console.log('fresh from cache:', fresh.fromCache, 'requests:', requests);
 
 clock = 5000; // the entry is stale now
 const checked = await commands.get<{ theme: string }>('/settings', options);
-console.log('revalidated:', checked.revalidated, 'theme:', checked.data.theme, 'requests:', requests);
+console.log(
+  'revalidated:',
+  checked.revalidated,
+  'theme:',
+  checked.data.theme,
+  'requests:',
+  requests,
+);
 await kernel.stop();
 ```
 
@@ -153,10 +168,18 @@ for (let i = 0; i < 4; i++) {
   try {
     await commands.get('/for-you');
   } catch (error) {
-    console.log(`request ${i + 1}:`, error instanceof CircuitOpenError ? 'refused at once' : 'failed');
+    console.log(
+      `request ${i + 1}:`,
+      error instanceof CircuitOpenError ? 'refused at once' : 'failed',
+    );
   }
 }
-console.log('breaker:', views.state.getSnapshot().breakers?.['https://recs.example']?.state, 'calls:', calls);
+console.log(
+  'breaker:',
+  views.state.getSnapshot().breakers?.['https://recs.example']?.state,
+  'calls:',
+  calls,
+);
 
 clock = 20_000;
 up = true;
@@ -192,13 +215,17 @@ const { commands } = kernel.unit<NetworkControl>(NETWORK_ID).control!;
 
 const remove = commands.intercept({
   request: (request) => ({ ...request, headers: { ...request.headers, 'x-app-version': '2.4.0' } }),
-  response: (response) => void console.log('response:', response.status, new URL(response.url).pathname),
+  response: (response) =>
+    void console.log('response:', response.status, new URL(response.url).pathname),
 });
 const { data } = await commands.get<{ version: string }>('/status');
 console.log('server saw version:', data.version);
 
 remove();
-console.log('after removal:', (await commands.get<{ version: string | null }>('/status')).data.version);
+console.log(
+  'after removal:',
+  (await commands.get<{ version: string | null }>('/status')).data.version,
+);
 await kernel.stop();
 ```
 

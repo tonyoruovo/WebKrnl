@@ -192,22 +192,23 @@ The state object for the Auth Manager subsystem contains:
 ### Message Packets
 
 ```typescript
-export type AuthState = 'UNAUTHENTICATED' | 'AUTHENTICATING' | 'AUTHENTICATED' | 'EXPIRED' | 'ERROR'
-export type Importance = 'HIGH' | 'MEDIUM' | 'LOW'
-export type AuthProvider = 'JWT' | 'OAuth' | 'Basic'
-export type Role = 'GUEST' | 'USER' | 'ADMIN' | 'CORPORATE' | string // Extendable
-export type PermissionType = 'PAGE' | 'ELEMENT' | 'SUBSYSTEM' | 'EVENT'
+export type AuthState =
+  'UNAUTHENTICATED' | 'AUTHENTICATING' | 'AUTHENTICATED' | 'EXPIRED' | 'ERROR';
+export type Importance = 'HIGH' | 'MEDIUM' | 'LOW';
+export type AuthProvider = 'JWT' | 'OAuth' | 'Basic';
+export type Role = 'GUEST' | 'USER' | 'ADMIN' | 'CORPORATE' | string; // Extendable
+export type PermissionType = 'PAGE' | 'ELEMENT' | 'SUBSYSTEM' | 'EVENT';
 
 export interface BasePacket<P, R = any> {
-  eventId: symbol
-  actionName: string
-  payload: P
-  importance: Importance
-  onComplete: (result: R) => void
-  onError: (error: Error) => void
-  onLog: ((fingerprints: string[]) => void) | null
-  fingerprints: string[]
-  authToken?: string // Optional elevation token for protected operations
+  eventId: symbol;
+  actionName: string;
+  payload: P;
+  importance: Importance;
+  onComplete: (result: R) => void;
+  onError: (error: Error) => void;
+  onLog: ((fingerprints: string[]) => void) | null;
+  fingerprints: string[];
+  authToken?: string; // Optional elevation token for protected operations
 }
 
 /**
@@ -215,180 +216,180 @@ export interface BasePacket<P, R = any> {
  */
 export interface LoginPayload {
   credentials: {
-    username?: string
-    email?: string
-    password: string
-    rememberMe?: boolean
-  }
-  mfaToken?: string
-  provider?: string // For OAuth
-  redirectUri?: string
+    username?: string;
+    email?: string;
+    password: string;
+    rememberMe?: boolean;
+  };
+  mfaToken?: string;
+  provider?: string; // For OAuth
+  redirectUri?: string;
 }
 
 export interface LoginResult {
   user: {
-    id: string
-    username: string
-    email: string
-    roles: string[]
-    permissions: string[]
-  }
+    id: string;
+    username: string;
+    email: string;
+    roles: string[];
+    permissions: string[];
+  };
   tokens: {
-    accessToken: string
-    refreshToken: string
-    accessTokenExpiry: number
-    refreshTokenExpiry: number
-    tokenType: string
-  }
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpiry: number;
+    refreshTokenExpiry: number;
+    tokenType: string;
+  };
   session: {
-    id: string
-    timeout: number
-  }
+    id: string;
+    timeout: number;
+  };
 }
 
-export type LoginPacket = BasePacket<LoginPayload, LoginResult>
+export type LoginPacket = BasePacket<LoginPayload, LoginResult>;
 
 /**
  * 2. Logout Request
  */
 export interface LogoutPayload {
-  everywhere?: boolean
-  reason?: string
+  everywhere?: boolean;
+  reason?: string;
 }
 
-export type LogoutPacket = BasePacket<LogoutPayload, void>
+export type LogoutPacket = BasePacket<LogoutPayload, void>;
 
 /**
  * 3. Token Refresh
  */
 export interface TokenRefreshPayload {
-  refreshToken: string
-  force?: boolean
+  refreshToken: string;
+  force?: boolean;
 }
 
 export interface TokenRefreshResult {
-  accessToken: string
-  refreshToken: string
-  accessTokenExpiry: number
-  refreshTokenExpiry: number
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiry: number;
+  refreshTokenExpiry: number;
 }
 
-export type TokenRefreshPacket = BasePacket<TokenRefreshPayload, TokenRefreshResult>
+export type TokenRefreshPacket = BasePacket<TokenRefreshPayload, TokenRefreshResult>;
 
 /**
  * 4. Permission Check
  */
 export interface PermissionCheckPayload {
-  resourceType: PermissionType
-  resourceIdentifier: string
-  requiredPermissions: string[]
-  requiredRoles: Role[]
+  resourceType: PermissionType;
+  resourceIdentifier: string;
+  requiredPermissions: string[];
+  requiredRoles: Role[];
 }
 
-export type PermissionCheckPacket = BasePacket<PermissionCheckPayload, { registered: boolean }>
+export type PermissionCheckPacket = BasePacket<PermissionCheckPayload, { registered: boolean }>;
 
 /**
  * 5. Elevation Request
  */
 export interface ElevationRequestPayload {
-  subsystemId: string
-  requestedPermissions: string[] // scopes?
-  duration: number // ms
-  reason: string
-  context: Record<string, any>
+  subsystemId: string;
+  requestedPermissions: string[]; // scopes?
+  duration: number; // ms
+  reason: string;
+  context: Record<string, any>;
 }
 
 export interface ElevationRequestResult {
-  elevationToken: string
-  expiresAt: number
-  grantedPermissions: string[]
+  elevationToken: string;
+  expiresAt: number;
+  grantedPermissions: string[];
 }
 
-export type ElevationRequestPacket = BasePacket<ElevationRequestPayload, ElevationRequestResult>
+export type ElevationRequestPacket = BasePacket<ElevationRequestPayload, ElevationRequestResult>;
 
 /**
  * 6. Auth Status Request
  */
 export interface AuthStatusPayload {
-  includeTokens?: boolean
-  includePermissions?: boolean
+  includeTokens?: boolean;
+  includePermissions?: boolean;
 }
 
 export interface AuthStatusResult {
-  status: AuthState
+  status: AuthState;
   user: {
-    id: string | null
-    username: string | null
-    email: string | null
-    roles: string[]
-  }
+    id: string | null;
+    username: string | null;
+    email: string | null;
+    roles: string[];
+  };
   session: {
-    startTime: number | null
-    remainingTime: number | null
-  }
-  hasElevation: boolean
+    startTime: number | null;
+    remainingTime: number | null;
+  };
+  hasElevation: boolean;
 }
 
-export type AuthStatusPacket = BasePacket<AuthStatusPayload, AuthStatusResult>
+export type AuthStatusPacket = BasePacket<AuthStatusPayload, AuthStatusResult>;
 
 /**
  * 7. Protected Resource Registration
  */
 export interface ProtectedResourceRegistrationPayload {
-  resourceType: PermissionType
-  resourceIdentifier: string
-  requiredPermissions: string[]
-  requiredRoles?: string[]
-  minimumAuthLevel?: number
-  fallbackAction?: string
+  resourceType: PermissionType;
+  resourceIdentifier: string;
+  requiredPermissions: string[];
+  requiredRoles?: string[];
+  minimumAuthLevel?: number;
+  fallbackAction?: string;
 }
 
 export type ProtectedResourceRegistrationPacket = BasePacket<
   ProtectedResourceRegistrationPayload,
   { registered: boolean }
->
+>;
 
 /**
  * 8. MFA Verification
  */
 export interface MFAVerificationPayload {
-  method: 'TOTP' | 'SMS' | 'EMAIL' | 'BIOMETRIC'
-  token: string
-  rememberDevice?: boolean
+  method: 'TOTP' | 'SMS' | 'EMAIL' | 'BIOMETRIC';
+  token: string;
+  rememberDevice?: boolean;
 }
 
-export type MFAVerificationPacket = BasePacket<MFAVerificationPayload, { verified: boolean }>
+export type MFAVerificationPacket = BasePacket<MFAVerificationPayload, { verified: boolean }>;
 
 /**
  * 9. Session Management
  */
 export interface SessionManagementPayload {
-  action: 'RENEW' | 'TERMINATE' | 'LIST' | 'INVALIDATE_OTHER'
-  sessionId?: string
+  action: 'RENEW' | 'TERMINATE' | 'LIST' | 'INVALIDATE_OTHER';
+  sessionId?: string;
 }
 
 export interface SessionManagementResult {
-  success: boolean
+  success: boolean;
   sessions?: Array<{
-    id: string
-    device: string
-    lastActivity: number
-    expiresAt: number
-  }>
+    id: string;
+    device: string;
+    lastActivity: number;
+    expiresAt: number;
+  }>;
 }
 
-export type SessionManagementPacket = BasePacket<SessionManagementPayload, SessionManagementResult>
+export type SessionManagementPacket = BasePacket<SessionManagementPayload, SessionManagementResult>;
 
 /**
  * 10. Password Change
  */
 export interface PasswordChangePayload {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
-export type PasswordChangePacket = BasePacket<PasswordChangePayload, { changed: boolean }>
+export type PasswordChangePacket = BasePacket<PasswordChangePayload, { changed: boolean }>;
 
 export type AuthPacket =
   | LoginPacket
@@ -400,7 +401,7 @@ export type AuthPacket =
   | ProtectedResourceRegistrationPacket
   | MFAVerificationPacket
   | SessionManagementPacket
-  | PasswordChangePacket
+  | PasswordChangePacket;
 ```
 
 ### Dependencies

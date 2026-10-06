@@ -17,7 +17,10 @@ const kernel = new Kernel([
   createConsent(),
   createAnalytics({
     send: async (batch) => {
-      console.log('sent:', JSON.stringify({ counters: batch.counters, events: batch.events.map((e) => e.name) }));
+      console.log(
+        'sent:',
+        JSON.stringify({ counters: batch.counters, events: batch.events.map((e) => e.name) }),
+      );
       console.log('route.ms:', JSON.stringify(batch.histograms['route.ms']));
     },
   }),
@@ -39,7 +42,13 @@ await commands.flush();
 commands.track('after');
 consent.commands.revoke('analytics');
 await kernel.settled();
-console.log('after the revoke:', JSON.stringify({ buffered: views.state.getSnapshot().buffered, collecting: views.state.getSnapshot().collecting }));
+console.log(
+  'after the revoke:',
+  JSON.stringify({
+    buffered: views.state.getSnapshot().buffered,
+    collecting: views.state.getSnapshot().collecting,
+  }),
+);
 await kernel.stop();
 ```
 

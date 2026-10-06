@@ -181,6 +181,7 @@ Exposed subroutines that gives readonly access to state, execution of initializa
 A "setter" on the control interface is a **command**: the subsystem validates it and changes its own state. Callers never receive a mutable reference to state. _(A9)_
 
 ## Diagrams
+
 The global state, notification center, queue are all subsystems. These are _centralized_ subsystems, as such, their anatomy may be slightly different from _featurized_ subsystems. The biggest difference is that some do not adhere to message protocols, cannot be shutdown down manually (global state) etc
 
 Turn off 'word wrap' to see the diagram clearly

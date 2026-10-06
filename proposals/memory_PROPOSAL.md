@@ -13,12 +13,12 @@ The in-process, Map-backed storage backend. Operates entirely in the JavaScript 
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `memory.ts` | `MemoryBackend` class - implements `IStorageBackend<unknown>` |
+| File              | Purpose                                                                          |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `memory.ts`       | `MemoryBackend` class - implements `IStorageBackend<unknown>`                    |
 | `memory.store.ts` | Plain singleton store holding all runtime state (Map, transactions, read counts) |
-| `transaction.ts` | `MemoryTransaction<TRaw>` - best-effort, buffer-then-apply transaction |
-| `index.ts` | Barrel export + architecture diagram |
+| `transaction.ts`  | `MemoryTransaction<TRaw>` - best-effort, buffer-then-apply transaction           |
+| `index.ts`        | Barrel export + architecture diagram                                             |
 
 ---
 
@@ -117,12 +117,12 @@ Eviction runs in two phases:
 
 **Phase 2 - Weighted eviction.** Remaining entries are sorted ascending by `weight` (lower = evicted first). Ties are broken by the chosen policy:
 
-| Policy | Tie-break logic |
-|---|---|
-| `lru` | Oldest `written_at` first |
+| Policy | Tie-break logic                                          |
+| ------ | -------------------------------------------------------- |
+| `lru`  | Oldest `written_at` first                                |
 | `fifo` | Oldest `written_at` first (same as LRU for this backend) |
-| `lfu` | Lowest `_readCount` first |
-| `user` | Custom comparator function supplied by the caller |
+| `lfu`  | Lowest `_readCount` first                                |
+| `user` | Custom comparator function supplied by the caller        |
 
 Entries are deleted in sort order until `freed >= targetBytes` or the store is empty.
 
@@ -131,31 +131,31 @@ Entries are deleted in sort order until `freed >= targetBytes` or the store is e
 ## Usage example
 
 ```ts
-import { MemoryBackend } from './memory'
+import { MemoryBackend } from './memory';
 
-const backend = new MemoryBackend()
+const backend = new MemoryBackend();
 
-await backend.probe()       // { available: true, latency: ~0 }
-await backend.initialize()
+await backend.probe(); // { available: true, latency: ~0 }
+await backend.initialize();
 
 // Direct write/read
-const key = 'myapp:chrome:130:auth:session' as CanonicalKey
+const key = 'myapp:chrome:130:auth:session' as CanonicalKey;
 await backend.write(key, {
-  payload:        { userId: 'abc' },
+  payload: { userId: 'abc' },
   schema_version: 1,
-  written_at:     Date.now(),
-  expires_at:     Date.now() + 60_000,
-  weight:         3,
-  backend:        'memory',
-})
-const envelope = await backend.read(key)
+  written_at: Date.now(),
+  expires_at: Date.now() + 60_000,
+  weight: 3,
+  backend: 'memory',
+});
+const envelope = await backend.read(key);
 
 // Transactional write
-const tx = await backend.beginTransaction()
-await backend.write(keyA, envelopeA, { transactionId: tx.id })
-await backend.write(keyB, envelopeB, { transactionId: tx.id })
-await tx.commit()   // both land atomically, or
-await tx.rollback() // both discarded
+const tx = await backend.beginTransaction();
+await backend.write(keyA, envelopeA, { transactionId: tx.id });
+await backend.write(keyB, envelopeB, { transactionId: tx.id });
+await tx.commit(); // both land atomically, or
+await tx.rollback(); // both discarded
 ```
 
 ---

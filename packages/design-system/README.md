@@ -26,8 +26,8 @@ Design: [ARCHITECTURE §21.4](../../docs/ARCHITECTURE.md#214-design-system) and 
 
 ## Entry points
 
-| Import | Contents |
-|---|---|
+| Import                   | Contents                                                                                                                                                                                                                               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/design-system` | `createDesignSystem`, `DEFAULT_TOKENS`, `token`, `cssVar`, `checkTokens`, `contrastRatio`, `APPEARANCE_SETTINGS`, `APPEARANCE_KEYS`, `DEFAULT_APPEARANCE`, `resolveTheme`, `themeValues`, `renderThemeCss`, `renderThemeScript`, types |
 
 ## Usage
@@ -43,16 +43,27 @@ const head = `<style>${renderThemeCss(DEFAULT_TOKENS)}</style>${renderThemeScrip
 In the app:
 
 ```ts
-import { APPEARANCE_SETTINGS, createDesignSystem, type DesignSystemControl } from '@webkrnl/design-system';
+import {
+  APPEARANCE_SETTINGS,
+  createDesignSystem,
+  type DesignSystemControl,
+} from '@webkrnl/design-system';
 
 const kernel = new Kernel(
-  [...centralized, createConsent(), createSettings({ definitions: APPEARANCE_SETTINGS }), createTranslation(options), createDesignSystem()],
+  [
+    ...centralized,
+    createConsent(),
+    createSettings({ definitions: APPEARANCE_SETTINGS }),
+    createTranslation(options),
+    createDesignSystem(),
+  ],
   { router: queue.router, persistence },
 );
 await kernel.start();
 
 const ds = kernel.unit<DesignSystemControl>('design-system').control!;
-darkSwitch.onchange = () => ds.commands.setAppearance({ colorScheme: darkSwitch.checked ? 'dark' : 'light' });
+darkSwitch.onchange = () =>
+  ds.commands.setAppearance({ colorScheme: darkSwitch.checked ? 'dark' : 'light' });
 const end = ds.commands.preview({ fontScale: 1.25 }); // a settings page tries a value; end() undoes it
 ```
 
@@ -64,52 +75,57 @@ In CSS:
   color: var(--ds-color-on-primary);
   padding: var(--ds-space-2) var(--ds-space-4);
   border-radius: var(--ds-radius-md);
-  font: var(--ds-font-weight-medium) var(--ds-font-size-md) / var(--ds-line-height-tight) var(--ds-font-family-sans);
+  font: var(--ds-font-weight-medium) var(--ds-font-size-md) / var(--ds-line-height-tight)
+    var(--ds-font-family-sans);
   transition: background var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
-  margin-inline-start: var(--ds-space-2); /* logical properties: right to left needs no other token */
+  margin-inline-start: var(
+    --ds-space-2
+  ); /* logical properties: right to left needs no other token */
 }
-:root[data-color-scheme='dark'] .logo { filter: invert(1); }
+:root[data-color-scheme='dark'] .logo {
+  filter: invert(1);
+}
 ```
 
 ## Appearance preferences
 
-| Preference | Settings key | Values | Default |
-|---|---|---|---|
-| `colorScheme` | `appearance.colorScheme` | `system`, `light`, `dark` | `system` |
-| `contrast` | `appearance.contrast` | `system`, `normal`, `more` | `system` |
-| `density` | `appearance.density` | `compact`, `comfortable`, `spacious` | `comfortable` |
-| `fontScale` | `appearance.fontScale` | 0.875 to 1.5 | `1` |
-| `reducedMotion` | `appearance.reducedMotion` | `system`, `reduce`, `no-preference` | `system` |
+| Preference      | Settings key               | Values                               | Default       |
+| --------------- | -------------------------- | ------------------------------------ | ------------- |
+| `colorScheme`   | `appearance.colorScheme`   | `system`, `light`, `dark`            | `system`      |
+| `contrast`      | `appearance.contrast`      | `system`, `normal`, `more`           | `system`      |
+| `density`       | `appearance.density`       | `compact`, `comfortable`, `spacious` | `comfortable` |
+| `fontScale`     | `appearance.fontScale`     | 0.875 to 1.5                         | `1`           |
+| `reducedMotion` | `appearance.reducedMotion` | `system`, `reduce`, `no-preference`  | `system`      |
 
 All are `device` settings: they stay after sign-out.
 
 ## Behaviour
 
-| Situation | Result |
-|---|---|
-| Start | Resolves the theme and writes it at once: every `--ds-*` property, `color-scheme`, and the attributes `data-color-scheme`, `data-contrast`, `data-density`, `data-reduced-motion`, `dir`, `lang` |
-| A preference is `system` | The media query of the device decides, and a change of the device changes the theme |
-| `setAppearance` with Settings (and `APPEARANCE_SETTINGS`) | Saved in Settings; every tab of the site follows |
-| `setAppearance` without Settings | This page only |
-| `preview(changes)` | Applies without saving; the returned function ends it |
-| `fontScale` | Multiplies the font sizes (`font.size.*`); line heights are ratios and do not change |
-| Reduced motion | `motion.duration.*` become `0ms` |
-| The locale changes (Translation) | `dir` and `lang` on the root |
-| Each change | Only the changed properties are written, in one frame. `design-system:theme-changed` (Page scope, LOW) carries the theme. The preferences go to `localStorage` (`platform:theme`) for the head script |
-| A bad token name, an unknown token, a value out of range | `RangeError` |
-| No DOM (Node, a worker), or `root: null` | The theme is resolved; nothing is written |
-| The subsystem stops | The properties stay, so the page does not change |
-| Sign-out (ARCHITECTURE §5.1) | Nothing to wipe: the preferences belong to the device |
+| Situation                                                 | Result                                                                                                                                                                                                |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start                                                     | Resolves the theme and writes it at once: every `--ds-*` property, `color-scheme`, and the attributes `data-color-scheme`, `data-contrast`, `data-density`, `data-reduced-motion`, `dir`, `lang`      |
+| A preference is `system`                                  | The media query of the device decides, and a change of the device changes the theme                                                                                                                   |
+| `setAppearance` with Settings (and `APPEARANCE_SETTINGS`) | Saved in Settings; every tab of the site follows                                                                                                                                                      |
+| `setAppearance` without Settings                          | This page only                                                                                                                                                                                        |
+| `preview(changes)`                                        | Applies without saving; the returned function ends it                                                                                                                                                 |
+| `fontScale`                                               | Multiplies the font sizes (`font.size.*`); line heights are ratios and do not change                                                                                                                  |
+| Reduced motion                                            | `motion.duration.*` become `0ms`                                                                                                                                                                      |
+| The locale changes (Translation)                          | `dir` and `lang` on the root                                                                                                                                                                          |
+| Each change                                               | Only the changed properties are written, in one frame. `design-system:theme-changed` (Page scope, LOW) carries the theme. The preferences go to `localStorage` (`platform:theme`) for the head script |
+| A bad token name, an unknown token, a value out of range  | `RangeError`                                                                                                                                                                                          |
+| No DOM (Node, a worker), or `root: null`                  | The theme is resolved; nothing is written                                                                                                                                                             |
+| The subsystem stops                                       | The properties stay, so the page does not change                                                                                                                                                      |
+| Sign-out (ARCHITECTURE §5.1)                              | Nothing to wipe: the preferences belong to the device                                                                                                                                                 |
 
 ## Options
 
-| Option | Default | Purpose |
-|---|---|---|
-| `tokens` | `DEFAULT_TOKENS` | The token set: `base`, and `modes` (`dark`, `contrast`, `darkContrast`, `density.compact`, `density.spacious`). |
-| `root` | `document.documentElement` | The element that gets the theme. `null` writes nothing. |
-| `matchMedia` | `matchMedia` | The media queries (tests). |
-| `storage` | `localStorage` | Where the preferences are kept for the head script. `null` keeps nothing. |
-| `schedule` | `requestAnimationFrame` | When a write runs (tests). |
+| Option       | Default                    | Purpose                                                                                                         |
+| ------------ | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `tokens`     | `DEFAULT_TOKENS`           | The token set: `base`, and `modes` (`dark`, `contrast`, `darkContrast`, `density.compact`, `density.spacious`). |
+| `root`       | `document.documentElement` | The element that gets the theme. `null` writes nothing.                                                         |
+| `matchMedia` | `matchMedia`               | The media queries (tests).                                                                                      |
+| `storage`    | `localStorage`             | Where the preferences are kept for the head script. `null` keeps nothing.                                       |
+| `schedule`   | `requestAnimationFrame`    | When a write runs (tests).                                                                                      |
 
 ## Testing
 

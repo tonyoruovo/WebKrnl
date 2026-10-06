@@ -13,10 +13,23 @@ import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new MemoryBackend();
 await backend.initialize();
-const key = buildCanonicalKey({ domain: 'shop', platform: 'browser', platformVersion: 1, callingModule: 'auth', actualKey: 'otp' });
+const key = buildCanonicalKey({
+  domain: 'shop',
+  platform: 'browser',
+  platformVersion: 1,
+  callingModule: 'auth',
+  actualKey: 'otp',
+});
 
 const now = Date.now();
-await backend.write(key, { payload: '481516', schema_version: 1, written_at: now, expires_at: now + 50, weight: 1, backend: 'memory' });
+await backend.write(key, {
+  payload: '481516',
+  schema_version: 1,
+  written_at: now,
+  expires_at: now + 50,
+  weight: 1,
+  backend: 'memory',
+});
 console.log('before expiry:', (await backend.read(key))?.payload);
 
 await new Promise((resolve) => setTimeout(resolve, 80));
@@ -43,7 +56,13 @@ import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new MemoryBackend();
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'shop', platform: 'browser', platformVersion: 1, callingModule: 'pages', actualKey: name });
+  buildCanonicalKey({
+    domain: 'shop',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'pages',
+    actualKey: name,
+  });
 const page = (weight: number) => ({
   payload: 'x'.repeat(100),
   schema_version: 1,
@@ -81,8 +100,21 @@ import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new MemoryBackend();
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'shop', platform: 'browser', platformVersion: 1, callingModule: 'cart', actualKey: name });
-const envelope = { payload: '1', schema_version: 1, written_at: 1, expires_at: null, weight: 1, backend: 'memory' as const };
+  buildCanonicalKey({
+    domain: 'shop',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'cart',
+    actualKey: name,
+  });
+const envelope = {
+  payload: '1',
+  schema_version: 1,
+  written_at: 1,
+  expires_at: null,
+  weight: 1,
+  backend: 'memory' as const,
+};
 
 const tx = await backend.beginTransaction();
 await backend.write(key('tea'), envelope, { transactionId: tx.id });

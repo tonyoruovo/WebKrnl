@@ -88,7 +88,10 @@ await platform.unit<ReturnType<typeof cart.control>>('cart').control!.commands.c
 const [sent] = platform.routed;
 console.log('event:', sent.eventId, 'target:', sent.metadata.target);
 console.log('message id:', sent.metadata.messageId);
-console.log('trail:', JSON.stringify(sent.fingerprints.entries.map((e) => `${e.actionName}:${e.subsystemId}`)));
+console.log(
+  'trail:',
+  JSON.stringify(sent.fingerprints.entries.map((e) => `${e.actionName}:${e.subsystemId}`)),
+);
 await platform.stop();
 ```
 

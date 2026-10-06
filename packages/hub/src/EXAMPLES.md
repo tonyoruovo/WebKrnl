@@ -10,7 +10,11 @@ A single-origin app needs no hub page. Without `hubUrl`, the Window transport us
 
 ```ts file=main.ts
 import { Kernel, defineSubsystem, type PacketPort } from '@webkrnl/core';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@webkrnl/hub';
+import {
+  WINDOW_TRANSPORT_ID,
+  createWindowTransport,
+  type WindowTransportControl,
+} from '@webkrnl/hub';
 import { createNotificationCenter } from '@webkrnl/notification';
 import { createQueue } from '@webkrnl/queue';
 
@@ -42,7 +46,11 @@ async function openTab(name: string) {
   while (transport.views.state.getSnapshot().connection !== 'connected') {
     await new Promise((resolve) => setTimeout(resolve, 5));
   }
-  return { kernel, transport, setTheme: (value: string) => port!.send({ eventId: 'theme:changed', payload: value }) };
+  return {
+    kernel,
+    transport,
+    setTheme: (value: string) => port!.send({ eventId: 'theme:changed', payload: value }),
+  };
 }
 
 const a = await openTab('tab A');
@@ -69,7 +77,12 @@ On `shop.example.com` and `blog.example.com`, the transport frames the hub page 
 
 ```ts file=main.ts
 import { Kernel } from '@webkrnl/core';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowRelay, type WindowTransportControl } from '@webkrnl/hub';
+import {
+  WINDOW_TRANSPORT_ID,
+  createWindowTransport,
+  type WindowRelay,
+  type WindowTransportControl,
+} from '@webkrnl/hub';
 import { createNotificationCenter } from '@webkrnl/notification';
 import { createQueue } from '@webkrnl/queue';
 
@@ -81,7 +94,10 @@ const kernel = new Kernel(
   [
     queue.subsystem,
     notification.subsystem,
-    createWindowTransport({ hubUrl: 'https://example.com/__platform/hub.html', relay: globalRelay }),
+    createWindowTransport({
+      hubUrl: 'https://example.com/__platform/hub.html',
+      relay: globalRelay,
+    }),
   ],
   { router: queue.router },
 );
@@ -91,7 +107,8 @@ const { views } = kernel.unit<WindowTransportControl>(WINDOW_TRANSPORT_ID).contr
 views.state.subscribe(() => {
   const { connection, hub, reach } = views.state.getSnapshot();
   console.log(`hub ${connection}, partition ${hub}, Window broadcasts reach: ${reach}`);
-  if (reach === 'origin') console.warn('This browser partitions the hub: other subdomains are not reached.');
+  if (reach === 'origin')
+    console.warn('This browser partitions the hub: other subdomains are not reached.');
 });
 ```
 

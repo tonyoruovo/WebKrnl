@@ -29,18 +29,21 @@ It runs on the main thread: a response body is a stream that callers need in the
 
 ## Entry points
 
-| Import              | Contents                                                                          |
-| ------------------- | --------------------------------------------------------------------------------- |
-| `@webkrnl/network` | `createNetwork`, the errors, `ResponseCache`, `Breakers`, and the types            |
+| Import             | Contents                                                                |
+| ------------------ | ----------------------------------------------------------------------- |
+| `@webkrnl/network` | `createNetwork`, the errors, `ResponseCache`, `Breakers`, and the types |
 
 ## Usage
 
 ```ts
 import { createNetwork, HttpError, type NetworkControl } from '@webkrnl/network';
 
-const kernel = new Kernel([...centralized, createNetwork({ baseUrl: 'https://api.shop.example/' })], {
-  router: queue.router,
-});
+const kernel = new Kernel(
+  [...centralized, createNetwork({ baseUrl: 'https://api.shop.example/' })],
+  {
+    router: queue.router,
+  },
+);
 await kernel.start();
 
 const { commands } = kernel.unit<NetworkControl>('network').control!;
@@ -77,36 +80,36 @@ From another subsystem, declare `{ target: 'network' }` in `requires` and use `c
 
 ## Behaviour
 
-| Situation                                        | Result                                                                                   |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Sign-out, or another user signs in (ARCHITECTURE §5.1) | The requests in flight are aborted, and every cached response is wiped, in memory and in Storage |
-| A status that is not 2xx                          | `HttpError` with the parsed response, or the response with `allowErrorStatus: true`     |
-| A retryable failure of an idempotent request      | Retried up to `retries` times with backoff                                              |
-| A `POST` or `PATCH` without `idempotencyKey` fails | Not retried                                                                             |
-| Offline, `network-only`                           | `OfflineError` at once                                                                  |
-| Offline, `network-first` or `cache-first`         | The cached answer, even when it is stale                                                |
-| A stale `cache-first` entry with an `ETag`        | A conditional request; a `304` reuses the body (`revalidated: true`)                    |
-| `threshold` failures in a row to one origin       | `CircuitOpenError` at once until the cool-down ends; then one trial request             |
-| A response interceptor returns `'retry'`          | The request goes out one more time                                                      |
-| `abort(id)`, `abortAll()` or the caller's signal  | `RequestAbortedError`                                                                    |
-| The Network stops                                 | Every running request is aborted                                                         |
-| A cached response with `cachePersist: { encrypt: true }` and no Storage keys | Kept in memory only, never in plain text                        |
-| `cachePersist: false`                             | Kept in memory only                                                                      |
+| Situation                                                                    | Result                                                                                           |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Sign-out, or another user signs in (ARCHITECTURE §5.1)                       | The requests in flight are aborted, and every cached response is wiped, in memory and in Storage |
+| A status that is not 2xx                                                     | `HttpError` with the parsed response, or the response with `allowErrorStatus: true`              |
+| A retryable failure of an idempotent request                                 | Retried up to `retries` times with backoff                                                       |
+| A `POST` or `PATCH` without `idempotencyKey` fails                           | Not retried                                                                                      |
+| Offline, `network-only`                                                      | `OfflineError` at once                                                                           |
+| Offline, `network-first` or `cache-first`                                    | The cached answer, even when it is stale                                                         |
+| A stale `cache-first` entry with an `ETag`                                   | A conditional request; a `304` reuses the body (`revalidated: true`)                             |
+| `threshold` failures in a row to one origin                                  | `CircuitOpenError` at once until the cool-down ends; then one trial request                      |
+| A response interceptor returns `'retry'`                                     | The request goes out one more time                                                               |
+| `abort(id)`, `abortAll()` or the caller's signal                             | `RequestAbortedError`                                                                            |
+| The Network stops                                                            | Every running request is aborted                                                                 |
+| A cached response with `cachePersist: { encrypt: true }` and no Storage keys | Kept in memory only, never in plain text                                                         |
+| `cachePersist: false`                                                        | Kept in memory only                                                                              |
 
 ## Options
 
-| Option          | Default                   | Purpose                                              |
-| --------------- | ------------------------- | ---------------------------------------------------- |
-| `baseUrl`       | `location.href`           | The base of relative URLs.                           |
-| `timeoutMs`     | `30_000`                  | The default timeout.                                 |
-| `retries`       | `3`                       | The default number of retries.                      |
-| `retryBaseMs`   | `300`                     | The base wait of the backoff.                        |
-| `maxConcurrent` | `6`                       | Requests at the same time.                           |
-| `cacheTtlMs`    | `300_000`                 | How long a cached response stays fresh.              |
-| `cacheEntries`  | `200`                     | Cached responses in memory.                          |
-| `persistCache`  | `{ encrypt: true, compress: false }` | How cached responses are kept in Storage, or `false`. A request can change it with `cachePersist`. |
-| `breaker`       | `{ threshold: 5, cooldownMs: 30_000 }` | The circuit breaker, or `false`.         |
-| `fetch`         | the global `fetch`        | The fetch function (tests give a fake).              |
+| Option          | Default                                | Purpose                                                                                            |
+| --------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `baseUrl`       | `location.href`                        | The base of relative URLs.                                                                         |
+| `timeoutMs`     | `30_000`                               | The default timeout.                                                                               |
+| `retries`       | `3`                                    | The default number of retries.                                                                     |
+| `retryBaseMs`   | `300`                                  | The base wait of the backoff.                                                                      |
+| `maxConcurrent` | `6`                                    | Requests at the same time.                                                                         |
+| `cacheTtlMs`    | `300_000`                              | How long a cached response stays fresh.                                                            |
+| `cacheEntries`  | `200`                                  | Cached responses in memory.                                                                        |
+| `persistCache`  | `{ encrypt: true, compress: false }`   | How cached responses are kept in Storage, or `false`. A request can change it with `cachePersist`. |
+| `breaker`       | `{ threshold: 5, cooldownMs: 30_000 }` | The circuit breaker, or `false`.                                                                   |
+| `fetch`         | the global `fetch`                     | The fetch function (tests give a fake).                                                            |
 
 ## Testing
 

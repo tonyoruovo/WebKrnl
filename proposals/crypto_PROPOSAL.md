@@ -28,7 +28,7 @@ in a worker.
     id: string;
     purpose: 'encrypt' | 'sign' | 'hmac' | 'derive';
     algorithm: 'AES-GCM' | 'HMAC-SHA-256' | 'ECDSA-P256' | 'SHA-256';
-    key: CryptoKey;          // non-extractable
+    key: CryptoKey; // non-extractable
     createdAt: number;
     expiresAt: number | null;
     rotatedAt: number | null;
@@ -43,44 +43,56 @@ in a worker.
 ## Features
 
 ### Key Manager
+
 **Purpose**: Owns key life cycle.  
 **Responsibilities**:
+
 - Generate keys and import them as non-extractable `CryptoKey`.
 - Rotate keys on an interval and keep the previous key for a grace window.
 - Zeroize every key on shutdown.
 - **Weight**: CRITICAL.
 
 ### Encryption Service
+
 **Purpose**: Encrypt and decrypt payloads.  
 **Responsibilities**:
+
 - AES-GCM encrypt and decrypt.
 - Attach the key id and nonce to the ciphertext so a future key version can decrypt.
 - **Weight**: CRITICAL.
 
 ### Signature Service
+
 **Purpose**: Sign and verify messages.  
 **Responsibilities**:
+
 - ECDSA-P256 sign and verify.
 - Support the Queue's message-signing requirement.
 - **Weight**: HIGH.
 
 ### Integrity Service
+
 **Purpose**: Detect tampered or corrupted data.  
 **Responsibilities**:
+
 - Compute an HMAC-SHA-256 tag over each storage envelope.
 - Verify the tag on read and report a mismatch.
 - **Weight**: HIGH.
 
 ### Hash Service
+
 **Purpose**: Hash and derive.  
 **Responsibilities**:
+
 - SHA-256/384/512 digests.
 - PBKDF2 and HKDF key derivation.
 - **Weight**: MEDIUM.
 
 ### Secure Random
+
 **Purpose**: Supply randomness.  
 **Responsibilities**:
+
 - Wrap `crypto.getRandomValues` for ids, nonces, and salts.
 - **Weight**: MEDIUM.
 
@@ -89,6 +101,7 @@ in a worker.
 ## Life Cycle Manager
 
 ### Initialization Sequence
+
 1. Read `cryptoConfig` from Global State.
 2. Obtain key material at boot: a minimal bootstrap fetch, or injected config.
    The manager does not depend on the full Network manager. This avoids a cycle.
@@ -98,6 +111,7 @@ in a worker.
 6. Log initialization complete (key count, never key material).
 
 ### Destruction Sequence
+
 1. Stop the rotation timer.
 2. Zeroize every key and clear `keyRegistry`.
 3. Log shutdown complete.
@@ -113,13 +127,16 @@ default. A virtual worker on the main thread is the fallback when the worker
 context is unavailable, as in Safari private browsing.
 
 ### Receiver
+
 - Receives encrypt, decrypt, sign, verify, hash, and HMAC requests.
 - Receives key rotation commands.
 
 ### Processor
+
 - **Crypto Processor**: runs every primitive against `WebCrypto`.
 
 ### Dispatcher
+
 - Returns results to callers.
 - Reports integrity failures to the Logger.
 
@@ -140,9 +157,7 @@ injected config.
 ```javascript
 function canDecrypt(keyId) {
   // The current key and the previous key (grace window) both decrypt.
-  return keyRegistry.has(keyId) && (
-    activeKeys.encrypt === keyId || isPreviousKey(keyId)
-  );
+  return keyRegistry.has(keyId) && (activeKeys.encrypt === keyId || isPreviousKey(keyId));
 }
 ```
 
@@ -151,10 +166,12 @@ function canDecrypt(keyId) {
 ## Control Interface
 
 ### Getters (No-arg)
+
 - `isReady(): boolean`.
 - `getActiveKeyId(purpose): string | null`.
 
 ### Actions
+
 - `encrypt(purpose, data): Promise<{ keyId, ciphertext }>`.
 - `decrypt(keyId, ciphertext): Promise<ArrayBuffer>`.
 - `sign(data): Promise<ArrayBuffer>`.
@@ -212,23 +229,28 @@ export type CryptoPacket = EncryptPacket | DecryptPacket | IntegrityFailurePacke
 ## Special Considerations
 
 ### Non-extractable keys
+
 Keys never leave the worker as plain bytes. They are imported as non-extractable
 `CryptoKey`. The platform can use a key but cannot read it.
 
 ### Zeroization
+
 Shutdown zeroizes every key and clears the registry. There is no key material to
 dump.
 
 ### Key rotation
+
 Rotation keeps the previous key for a grace window. Data written before the
 rotation still decrypts during the window. The envelope stores the key id, so a
 read resolves the right key.
 
 ### Integrity
+
 An HMAC tag per envelope detects tampering and corruption. Encryption alone does
 not. A mismatch reports to the Logger and does not return the value.
 
 ### Constant-time compare
+
 Signature and HMAC verification use a constant-time compare to resist timing
 attacks.
 

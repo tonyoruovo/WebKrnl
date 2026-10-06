@@ -26,10 +26,10 @@ The package starts its worker with `new SharedWorker(new URL('./crypto.worker.ts
 
 ## Entry points
 
-| Import                    | Contents                                                                                     |
-| ------------------------- | -------------------------------------------------------------------------------------------- |
+| Import                   | Contents                                                                                                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/crypto`        | `createCrypto`, `createCryptoProcessor`, `KeyStore`, the cipher functions (`encryptText`, `decryptText`, `hmacText`, `verifyHmacText`), the key source types, encodings, errors |
-| `@webkrnl/crypto/worker` | The worker entry. It serves the Crypto processor. You do not import it yourself.             |
+| `@webkrnl/crypto/worker` | The worker entry. It serves the Crypto processor. You do not import it yourself.                                                                                                |
 
 ## Usage
 

@@ -6,7 +6,6 @@
 > - Pending work is registered by the Queue for every in-flight packet (`beginWork` / `endWork`).
 > - Tab identity: an id in `sessionStorage`, confirmed unique with a `BroadcastChannel` probe so duplicated tabs get their own id.
 
-
 **Type**: Centralized  
 **Importance/Priority/Weight**: **CRITICAL** - Foundation for all subsystem coordination and platform state management
 
@@ -19,6 +18,7 @@ The Global State subsystem serves as the central nervous system of the platform,
 The state object maintains comprehensive platform-wide state with strict immutability guarantees:
 
 ### Core Platform Status
+
 - **platformStatus**: Enum (`INITIALIZING`, `IDLE`, `BUSY`, `DEGRADED`, `STOPPED`, `CRASHED`)
   - `INITIALIZING`: Platform bootstrapping in progress
   - `IDLE`: No pending work, ready for operations
@@ -28,6 +28,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   - `CRASHED`: Unrecoverable error, requires restart
 
 - **pendingTokens**: `Map<string, PendingToken>` - Active work tracking
+
   ```typescript
   interface PendingToken {
     id: string;
@@ -61,6 +62,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Network & Connectivity
+
 - **onlineStatus**: Object containing detailed network state
   ```typescript
   interface OnlineStatus {
@@ -77,6 +79,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Authentication & User Context
+
 - **authenticationContext**: Object containing auth state (synced with Auth Manager)
   ```typescript
   interface AuthenticationContext {
@@ -91,6 +94,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Timing & Synchronization
+
 - **timestamps**: Object containing critical platform timestamps
   ```typescript
   interface Timestamps {
@@ -108,6 +112,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Device & Environment
+
 - **deviceInfo**: Object containing device capabilities and characteristics
   ```typescript
   interface DeviceInfo {
@@ -120,25 +125,25 @@ The state object maintains comprehensive platform-wide state with strict immutab
     // Locale
     language: string;
     timezone: string;
-    
+
     // Capabilities
     supportsWebWorkers: boolean;
     supportsIndexedDB: boolean;
     supportsServiceWorker: boolean;
     supportsWebAssembly: boolean;
-    
+
     // Performance
     deviceMemory: number | null; // GB
     hardwareConcurrency: number; // CPU cores
     maxTouchPoints: number;
-    
+
     // Display
     devicePixelRatio: number;
-    
+
     // Features
     cookiesEnabled: boolean;
     doNotTrack: boolean | null;
-    
+
     // Identifiers
     deviceFingerprint: string | null; // Hashed composite
     sessionFingerprint: string; // Unique per session
@@ -147,6 +152,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Performance & Resource Monitoring
+
 - **performanceMetrics**: Object containing platform performance data
   ```typescript
   interface PerformanceMetrics {
@@ -156,18 +162,18 @@ The state object maintains comprehensive platform-wide state with strict immutab
       heapTotal: number | null;
       jsHeapSizeLimit: number | null;
     };
-    
+
     // Timing
     averagePacketProcessingTime: number; // ms
     averageResponseTime: number; // ms
     subsystemResponseTimes: Map<string, number>; // subsystemId -> avg response time
-    
+
     // Throughput
     packetsProcessedLastMinute: number;
     packetsProcessedTotal: number;
     errorsLastMinute: number;
     errorsTotal: number;
-    
+
     // Resource usage
     activeWebWorkers: number;
     activeConnections: number;
@@ -176,26 +182,28 @@ The state object maintains comprehensive platform-wide state with strict immutab
 
     // Battery & power (if available)
     battery?: {
-        level: number;
-        charging: boolean;
-        chargingTime: number | null;
-        dischargingTime: number | null;
+      level: number;
+      charging: boolean;
+      chargingTime: number | null;
+      dischargingTime: number | null;
     };
-    
+
     // Health indicators
     platformHealthScore: number; // 0-100
     lastPerformanceCheck: number;
     // Transient UI hints (non-persistent)
     uiHints: {
-        frameRate: number | null;
-        reducedMotion: boolean;
-        highContrast: boolean;
+      frameRate: number | null;
+      reducedMotion: boolean;
+      highContrast: boolean;
     };
   }
   ```
 
 ### Feature Flags & Configuration
+
 - **featureFlags**: `Map<string, FeatureFlag>` - Dynamic feature control
+
   ```typescript
   interface FeatureFlag {
     key: string;
@@ -224,6 +232,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Error & Recovery State
+
 - **errorState**: Object tracking error conditions
   ```typescript
   interface ErrorState {
@@ -243,7 +252,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
     errorRateLastMinute: number;
     circuitBreakers: Map<string, CircuitBreakerState>;
   }
-  
+
   interface CircuitBreakerState {
     subsystemId: string;
     status: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
@@ -254,6 +263,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### Visibility & Lifecycle
+
 - **visibilityState**: Object tracking page visibility
   ```typescript
   interface VisibilityState {
@@ -266,6 +276,7 @@ The state object maintains comprehensive platform-wide state with strict immutab
   ```
 
 ### State Versioning & History
+
 - **stateVersion**: Number - Increments on every state mutation
 - **stateHistory**: Circular buffer of recent state snapshots (for debugging/rollback)
 - **lastStateTransition**: Object tracking most recent state change
@@ -286,9 +297,11 @@ The state object maintains comprehensive platform-wide state with strict immutab
 Each feature manages a specific aspect of global state and provides specialized functionality.
 
 ### Platform Status Manager
+
 **Purpose**: Manages overall platform status and work capacity
 
 **Responsibilities**:
+
 - Monitors pending tokens and calculates platform status
 - Enforces busy threshold and work admission control
 - Tracks work distribution across categories
@@ -298,6 +311,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `platformStatus`, `pendingTokens`, `busyThreshold`
 
 **Key Methods**:
+
 - `calculatePlatformStatus(): PlatformStatus`
 - `canAcceptWork(importance: Importance): boolean`
 - `registerPendingToken(token: PendingToken): void`
@@ -310,9 +324,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Subsystem Registry Manager
+
 **Purpose**: Maintains real-time registry of all subsystems and their health
 
 **Responsibilities**:
+
 - Tracks subsystem lifecycle (initialization → destruction)
 - Receives and processes heartbeat signals
 - Computes subsystem health scores
@@ -323,6 +339,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `subsystemRegistry`
 
 **Key Methods**:
+
 - `registerSubsystem(config: SubsystemConfig): void`
 - `updateSubsystemStatus(subsystemId: string, status: SubsystemStatus): void`
 - `processHeartbeat(subsystemId: string): void`
@@ -336,9 +353,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Network Status Manager
+
 **Purpose**: Monitors and provides network connectivity state
 
 **Responsibilities**:
+
 - Integrates with Navigator Online/Offline API
 - Monitors Network Information API
 - Tracks connection quality metrics
@@ -349,6 +368,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `onlineStatus`, `timestamps.lastNetworkRequest`
 
 **Key Methods**:
+
 - `isOnline(): boolean`
 - `getConnectionQuality(): 'excellent' | 'good' | 'fair' | 'poor' | 'offline'`
 - `getEffectiveBandwidth(): number`
@@ -356,6 +376,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 - `getNetworkRecommendations(): NetworkRecommendations`
 
 **Subscriptions**:
+
 - Browser `online`/`offline` events
 - Network Information API change events
 - Network Request Manager connection status updates
@@ -365,9 +386,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Authentication Context Manager
+
 **Purpose**: Provides centralized authentication state (mirrors Auth Manager)
 
 **Responsibilities**:
+
 - Synchronizes with Auth Manager subsystem
 - Caches authentication state for quick access
 - Provides permission checking predicates
@@ -377,6 +400,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `authenticationContext`, `timestamps.lastAuthTime`
 
 **Key Methods**:
+
 - `isAuthenticated(): boolean`
 - `getAuthLevel(): AuthLevel`
 - `getUserId(): string | null`
@@ -385,6 +409,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 - `getSessionTimeRemaining(): number | null`
 
 **Subscriptions**:
+
 - Auth Manager login/logout events
 - Auth Manager session refresh events
 - Auth Manager token expiry warnings
@@ -394,9 +419,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Timestamp Manager
+
 **Purpose**: Manages all platform-critical timestamps
 
 **Responsibilities**:
+
 - Maintains high-precision timestamps
 - Calculates time intervals and durations
 - Provides uptime and session duration
@@ -406,6 +433,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `timestamps`
 
 **Key Methods**:
+
 - `getPlatformUptime(): number`
 - `getTimeSinceLastSync(): number`
 - `getTimeSinceLastError(): number`
@@ -418,9 +446,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Device Info Manager
+
 **Purpose**: Provides device capabilities and characteristics
 
 **Responsibilities**:
+
 - Parses User Agent for browser/OS info
 - Detects feature support (Web Workers, IndexedDB, etc.)
 - Monitors device memory and CPU
@@ -430,6 +460,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `deviceInfo`
 
 **Key Methods**:
+
 - `getDeviceCapabilities(): DeviceCapabilities`
 - `supportsFeature(feature: string): boolean`
 - `getDeviceClass(): 'high-end' | 'mid-range' | 'low-end'`
@@ -442,9 +473,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Performance Monitor
+
 **Purpose**: Tracks platform performance and resource usage
 
 **Responsibilities**:
+
 - Monitors memory usage via Performance API
 - Tracks packet processing metrics
 - Calculates throughput rates
@@ -455,6 +488,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `performanceMetrics`
 
 **Key Methods**:
+
 - `getMemoryUsage(): MemoryUsage`
 - `getAverageResponseTime(): number`
 - `getPacketThroughput(): number`
@@ -464,6 +498,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 - `suggestOptimizations(): Optimization[]`
 
 **Subscriptions**:
+
 - Message Queue packet completion events
 - All subsystem error events
 - Browser memory pressure events
@@ -473,9 +508,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Feature Flag Manager
+
 **Purpose**: Controls feature rollout and A/B testing
 
 **Responsibilities**:
+
 - Manages feature flag definitions
 - Computes user-specific rollout eligibility
 - Handles admin overrides
@@ -485,6 +522,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `featureFlags`
 
 **Key Methods**:
+
 - `isFeatureEnabled(key: string): boolean`
 - `getFeatureRollout(key: string): number`
 - `enableFeature(key: string, userId?: string): void`
@@ -497,9 +535,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Configuration Manager
+
 **Purpose**: Manages runtime platform configuration
 
 **Responsibilities**:
+
 - Maintains platform configuration
 - Validates configuration changes
 - Provides environment-specific defaults
@@ -509,6 +549,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `platformConfiguration`
 
 **Key Methods**:
+
 - `getEnvironment(): string`
 - `isDebugMode(): boolean`
 - `getLogLevel(): LogLevel`
@@ -521,9 +562,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Error Tracking Manager
+
 **Purpose**: Centralized error tracking and circuit breaker management
 
 **Responsibilities**:
+
 - Records and categorizes errors
 - Implements error rate limiting
 - Manages circuit breakers for failing subsystems
@@ -533,6 +576,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `errorState`
 
 **Key Methods**:
+
 - `recordError(error: Error, subsystemId: string, severity: Severity): void`
 - `getErrorRate(): number`
 - `getCircuitBreakerState(subsystemId: string): CircuitBreakerState`
@@ -542,6 +586,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 - `getRecentErrors(count: number): Error[]`
 
 **Subscriptions**:
+
 - All subsystem error events
 - Logger critical error events
 
@@ -550,9 +595,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### Visibility Manager
+
 **Purpose**: Manages page visibility and background behavior
 
 **Responsibilities**:
+
 - Tracks page visibility via Page Visibility API
 - Calculates hidden duration
 - Determines background operation mode
@@ -562,6 +609,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `visibilityState`
 
 **Key Methods**:
+
 - `isPageVisible(): boolean`
 - `getBackgroundMode(): BackgroundMode`
 - `getHiddenDuration(): number`
@@ -569,6 +617,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 - `suggestBackgroundStrategy(): BackgroundStrategy`
 
 **Subscriptions**:
+
 - Browser `visibilitychange` events
 
 **Weight**: MEDIUM - Resource optimization
@@ -576,9 +625,11 @@ Each feature manages a specific aspect of global state and provides specialized 
 ---
 
 ### State History Manager
+
 **Purpose**: Maintains state history for debugging and recovery
 
 **Responsibilities**:
+
 - Records state transitions
 - Maintains circular buffer of snapshots
 - Provides state diffing
@@ -588,6 +639,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 **State Fields**: `stateVersion`, `stateHistory`, `lastStateTransition`
 
 **Key Methods**:
+
 - `recordStateChange(from: Partial<State>, to: Partial<State>, reason: string): void`
 - `getStateHistory(count: number): StateSnapshot[]`
 - `exportStateHistory(): string`
@@ -605,6 +657,7 @@ Each feature manages a specific aspect of global state and provides specialized 
 The Global State initialization is the first step in platform bootstrap and follows a strict sequence:
 
 1. **Pre-initialization Phase**
+
    ```javascript
    // Validate environment
    - Check browser compatibility
@@ -613,6 +666,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 2. **Core State Initialization**
+
    ```javascript
    // Initialize state with safe defaults
    - Create state object with default values
@@ -623,6 +677,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 3. **Device & Environment Detection**
+
    ```javascript
    // Gather device information
    - Parse User Agent
@@ -633,6 +688,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 4. **Feature Component Initialization** (ordered by dependency)
+
    ```javascript
    // Initialize in this exact order:
    1. Device Info Manager (no dependencies)
@@ -650,6 +706,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 5. **Event Registration**
+
    ```javascript
    // Register with Notification Center (once it's initialized)
    - Register all event IDs with action names
@@ -658,16 +715,18 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 6. **Browser API Subscriptions**
+
    ```javascript
    // Subscribe to browser events
-   - window.addEventListener('online', onOnlineChange)
-   - window.addEventListener('offline', onOfflineChange)
-   - document.addEventListener('visibilitychange', onVisibilityChange)
-   - navigator.connection?.addEventListener('change', onConnectionChange)
-   - performance.addEventListener('resourcetimingbufferfull', onMemoryPressure)
+   -window.addEventListener('online', onOnlineChange) -
+     window.addEventListener('offline', onOfflineChange) -
+     document.addEventListener('visibilitychange', onVisibilityChange) -
+     navigator.connection?.addEventListener('change', onConnectionChange) -
+     performance.addEventListener('resourcetimingbufferfull', onMemoryPressure);
    ```
 
 7. **State Persistence Recovery**
+
    ```javascript
    // Attempt to restore previous session state (if available)
    - Query Storage Manager for persisted Global State
@@ -678,6 +737,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 8. **Initial Subsystem Registration**
+
    ```javascript
    // Register self in subsystem registry
    - Register 'global-state' subsystem
@@ -686,6 +746,7 @@ The Global State initialization is the first step in platform bootstrap and foll
    ```
 
 9. **Health Check**
+
    ```javascript
    // Perform initial health check
    - Verify all features initialized successfully
@@ -725,6 +786,7 @@ After Global State initializes, it coordinates other subsystem initialization:
 Graceful shutdown follows reverse initialization order:
 
 1. **Initiate Shutdown**
+
    ```javascript
    // Broadcast shutdown intent
    - Fire 'global:shutting-down' event
@@ -734,6 +796,7 @@ Graceful shutdown follows reverse initialization order:
    ```
 
 2. **Wait for Pending Work**
+
    ```javascript
    // Allow critical work to complete
    - Wait for CRITICAL importance tokens to complete (max 5s timeout)
@@ -742,6 +805,7 @@ Graceful shutdown follows reverse initialization order:
    ```
 
 3. **Notify Dependent Subsystems**
+
    ```javascript
    // Signal all subsystems to clean up
    - Fire 'global:stopped' event to Notification Center
@@ -750,6 +814,7 @@ Graceful shutdown follows reverse initialization order:
    ```
 
 4. **Persist Critical State**
+
    ```javascript
    // Save state to storage
    - Prepare state snapshot (exclude runtime fields)
@@ -759,15 +824,17 @@ Graceful shutdown follows reverse initialization order:
    ```
 
 5. **Unsubscribe from Browser Events**
+
    ```javascript
    // Clean up event listeners
-   - window.removeEventListener('online', onOnlineChange)
-   - window.removeEventListener('offline', onOfflineChange)
-   - document.removeEventListener('visibilitychange', onVisibilityChange)
-   - navigator.connection?.removeEventListener('change', onConnectionChange)
+   -window.removeEventListener('online', onOnlineChange) -
+     window.removeEventListener('offline', onOfflineChange) -
+     document.removeEventListener('visibilitychange', onVisibilityChange) -
+     navigator.connection?.removeEventListener('change', onConnectionChange);
    ```
 
 6. **Destruct Features** (reverse initialization order)
+
    ```javascript
    // Clean up features
    12. State History Manager
@@ -821,6 +888,7 @@ The Global State subsystem does NOT use physical Web Workers as it must be synch
 ### Virtual Worker Pattern
 
 **Receiver-like Functions** (event handlers):
+
 - `onNetworkStatusChange(event: Event)`
 - `onVisibilityChange(event: Event)`
 - `onSubsystemHeartbeat(subsystemId: string)`
@@ -830,6 +898,7 @@ The Global State subsystem does NOT use physical Web Workers as it must be synch
 - `onConfigurationUpdate(updates: Partial<Configuration>)`
 
 **Processor-like Functions** (state mutations):
+
 - `processPlatformStatusTransition(newStatus: PlatformStatus)`
 - `processSubsystemStatusUpdate(subsystemId: string, status: SubsystemStatus)`
 - `processErrorEvent(error: Error, subsystemId: string)`
@@ -837,6 +906,7 @@ The Global State subsystem does NOT use physical Web Workers as it must be synch
 - `processPerformanceMetrics(metrics: PerformanceMetrics)`
 
 **Dispatcher-like Functions** (state change broadcasts):
+
 - `dispatchPlatformStatusChange(oldStatus: PlatformStatus, newStatus: PlatformStatus)`
 - `dispatchNetworkStatusChange(oldStatus: OnlineStatus, newStatus: OnlineStatus)`
 - `dispatchAuthContextChange(oldContext: AuthContext, newContext: AuthContext)`
@@ -956,7 +1026,7 @@ function shouldOpenCircuitBreaker(subsystemId: string): boolean {
   const cb = state.errorState.circuitBreakers.get(subsystemId);
   if (!cb) return false;
   if (cb.status === 'OPEN') return false; // Already open
-  
+
   // Open if 5 failures in last 60 seconds
   const recentFailures = cb.failureCount;
   const timeSinceLastFailure = Date.now() - (cb.lastFailure ?? 0);
@@ -979,7 +1049,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
   if (!flag) return false;
   if (flag.overriddenByAdmin) return flag.enabled;
   if (!flag.enabled) return false;
-  
+
   // Check rollout percentage
   const userId = state.authenticationContext.userId ?? state.deviceInfo.sessionFingerprint;
   const hash = simpleHash(userId + featureKey);
@@ -995,6 +1065,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 ### Getters (No-arg)
 
 #### Platform Status
+
 - `getPlatformStatus(): PlatformStatus` - Returns current platform status
 - `isPlatformReady(): boolean` - Returns true if IDLE or BUSY
 - `isPlatformBusy(): boolean` - Returns true if BUSY
@@ -1004,6 +1075,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `getWorkloadByCategory(): Map<Category, number>` - Work distribution
 
 #### Subsystems
+
 - `getSubsystemStatus(subsystemId: string): SubsystemStatus | null`
 - `getAllSubsystems(): SubsystemStatus[]`
 - `getHealthySubsystems(): SubsystemStatus[]`
@@ -1012,6 +1084,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `getSubsystemDependencies(subsystemId: string): string[]`
 
 #### Network
+
 - `isOnline(): boolean`
 - `getConnectionType(): ConnectionType`
 - `getEffectiveConnectionType(): EffectiveType`
@@ -1021,6 +1094,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `isDataSaverEnabled(): boolean`
 
 #### Authentication
+
 - `isAuthenticated(): boolean`
 - `getAuthLevel(): AuthLevel`
 - `getUserId(): string | null`
@@ -1030,6 +1104,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `isSessionExpiring(): boolean` - Returns true if < 5 min remaining
 
 #### Timing
+
 - `getPlatformUptime(): number`
 - `getTimeSinceStartup(): number`
 - `getTimeSinceLastSync(): number`
@@ -1038,6 +1113,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `getTimestamp(key: keyof Timestamps): number | null`
 
 #### Device & Environment
+
 - `getDeviceInfo(): DeviceInfo`
 - `supportsFeature(feature: string): boolean`
 - `getDeviceClass(): DeviceClass`
@@ -1046,6 +1122,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `getDeviceFingerprint(): string | null`
 
 #### Performance
+
 - `getMemoryUsage(): MemoryUsage`
 - `getPerformanceMetrics(): PerformanceMetrics`
 - `getPlatformHealthScore(): number`
@@ -1054,6 +1131,7 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `getPacketThroughput(): number`
 
 #### Features & Configuration
+
 - `isFeatureEnabled(key: string): boolean`
 - `getEnabledFeatures(): string[]`
 - `getEnvironment(): Environment`
@@ -1062,18 +1140,21 @@ function isFeatureEnabledForUser(featureKey: string): boolean {
 - `isMaintenanceMode(): boolean`
 
 #### Errors
+
 - `hasUnrecoverableError(): boolean`
 - `getRecentErrors(count: number): Error[]`
 - `getErrorRate(): number`
 - `getCircuitBreakerState(subsystemId: string): CircuitBreakerState | null`
 
 #### Visibility
+
 - `isPageVisible(): boolean`
 - `getBackgroundMode(): BackgroundMode`
 - `getHiddenDuration(): number`
 - `shouldThrottleBackgroundWork(): boolean`
 
 #### State & History
+
 - `getStateVersion(): number`
 - `getStateHistory(count: number): StateSnapshot[]`
 - `getLastStateTransition(): StateTransition | null`
@@ -1094,6 +1175,7 @@ Most state changes happen internally through events. Public setters are minimal:
 ### Actions (Fire events to message queue)
 
 #### Platform Control
+
 - `initiatePlatformShutdown(reason: string)` - Graceful shutdown
   - Fires `global:shutdown-initiated` event
   - **Importance**: CRITICAL
@@ -1105,6 +1187,7 @@ Most state changes happen internally through events. Public setters are minimal:
   - **Payload**: `{ error: Error, timestamp: number }`
 
 #### Subsystem Management
+
 - `registerSubsystem(config: SubsystemConfig)` - Register new subsystem
   - Fires `global:subsystem-registered` event
   - **Importance**: HIGH
@@ -1121,6 +1204,7 @@ Most state changes happen internally through events. Public setters are minimal:
   - **Payload**: `{ subsystemId: string, timestamp: number }`
 
 #### Work Management
+
 - `registerPendingWork(token: PendingToken)` - Register new work
   - Fires `global:work-started` event
   - **Importance**: Varies (from token)
@@ -1132,12 +1216,14 @@ Most state changes happen internally through events. Public setters are minimal:
   - **Payload**: `{ tokenId: string, timestamp: number }`
 
 #### Error Reporting
+
 - `reportError(error: Error, subsystemId: string, severity: Severity)` - Report error
   - Fires `global:error-reported` event
   - **Importance**: Varies by severity
   - **Payload**: `{ error: Error, subsystemId: string, severity: Severity }`
 
 #### Configuration
+
 - `updateConfiguration(updates: Partial<PlatformConfiguration>)` - Update config
   - Fires `global:configuration-updated` event
   - **Importance**: MEDIUM
@@ -1150,41 +1236,50 @@ Most state changes happen internally through events. Public setters are minimal:
 Global State subscribes to events from other subsystems to maintain synchronized state:
 
 #### Message Queue Events
+
 - `queue:packet-enqueued` - Track new work tokens
 - `queue:packet-dispatched` - Update work status
 - `queue:packet-completed` - Remove work tokens
 - `queue:packet-failed` - Record errors
 
 #### Notification Center Events
+
 - `notification:dispatch-failed` - Record system errors
 
 #### Storage Manager Events
+
 - `storage:quota-warning` - Update resource status
 - `storage:quota-exceeded` - Trigger degraded mode
 - `storage:operation-failed` - Record storage errors
 
 #### Network Request Manager Events
+
 - `network:connection-changed` - Update network status
 - `network:request-failed` - Track network errors
 - `network:rate-limit-exceeded` - Update resource status
 
 #### Auth Manager Events
+
 - `auth:login-success` - Update authentication context
 - `auth:logout` - Clear authentication context
 - `auth:token-refreshed` - Update token expiry
 - `auth:session-expired` - Clear session
 
 #### Sync Manager Events
+
 - `sync:completed` - Update last sync timestamp
 - `sync:failed` - Record sync errors
 
 #### Logger Events
+
 - `logger:critical-error` - Record unrecoverable errors
 
 #### Analytics Manager Events
+
 - `analytics:performance-degradation` - Update health score
 
 #### All Subsystems
+
 - `*:initialized` - Update subsystem registry
 - `*:destroyed` - Remove from registry
 - `*:error` - Record subsystem errors
@@ -1202,7 +1297,8 @@ Global State defines comprehensive message packets for all state change operatio
  * Shared Types
  */
 export type PlatformStatus = 'INITIALIZING' | 'IDLE' | 'BUSY' | 'DEGRADED' | 'STOPPED' | 'CRASHED';
-export type SubsystemStatusType = 'UNINITIALIZED' | 'INITIALIZING' | 'READY' | 'BUSY' | 'ERROR' | 'DESTROYED';
+export type SubsystemStatusType =
+  'UNINITIALIZED' | 'INITIALIZING' | 'READY' | 'BUSY' | 'ERROR' | 'DESTROYED';
 export type AuthLevel = 'GUEST' | 'USER' | 'ADMIN' | 'CORPORATE' | 'MODERATOR' | 'SUSPENDED';
 export type Importance = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 export type Severity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
@@ -1350,10 +1446,7 @@ export interface WorkRegistrationResult {
   position: number; // Position in work queue
 }
 
-export type WorkRegistrationPacket = BasePacket<
-  WorkRegistrationPayload,
-  WorkRegistrationResult
->;
+export type WorkRegistrationPacket = BasePacket<WorkRegistrationPayload, WorkRegistrationResult>;
 
 // Event ID: global:work-register
 // Importance: Varies (from payload)
@@ -1381,10 +1474,7 @@ export interface WorkCompletionResult {
   remainingWorkCount: number;
 }
 
-export type WorkCompletionPacket = BasePacket<
-  WorkCompletionPayload,
-  WorkCompletionResult
->;
+export type WorkCompletionPacket = BasePacket<WorkCompletionPayload, WorkCompletionResult>;
 
 // Event ID: global:work-complete
 // Importance: Varies
@@ -1531,10 +1621,7 @@ export interface FeatureFlagUpdateResult {
   affectedUsers: number; // Estimated
 }
 
-export type FeatureFlagUpdatePacket = BasePacket<
-  FeatureFlagUpdatePayload,
-  FeatureFlagUpdateResult
->;
+export type FeatureFlagUpdatePacket = BasePacket<FeatureFlagUpdatePayload, FeatureFlagUpdateResult>;
 
 // Event ID: global:feature-flag-update
 // Importance: MEDIUM
@@ -1632,8 +1719,13 @@ Query specific state information.
 
 ```typescript
 export interface StateQueryPayload {
-  queryType: 'PLATFORM_STATUS' | 'SUBSYSTEM_HEALTH' | 'NETWORK_STATUS' | 
-              'AUTH_CONTEXT' | 'PERFORMANCE_METRICS' | 'ALL';
+  queryType:
+    | 'PLATFORM_STATUS'
+    | 'SUBSYSTEM_HEALTH'
+    | 'NETWORK_STATUS'
+    | 'AUTH_CONTEXT'
+    | 'PERFORMANCE_METRICS'
+    | 'ALL';
   subsystemId?: string; // For subsystem-specific queries
   includeHistory?: boolean;
 }
@@ -2212,6 +2304,7 @@ This section illustrates logical communication patterns between Global State and
 **Challenge**: Multiple subsystems reading/writing state concurrently can cause race conditions.
 
 **Solution**:
+
 - All state mutations go through controlled setter functions
 - State changes are atomic (no partial updates visible)
 - State version increments on every mutation
@@ -2219,23 +2312,24 @@ This section illustrates logical communication patterns between Global State and
 - State history for rollback capability
 
 **Implementation**:
+
 ```javascript
 function updateState(updates: Partial<GlobalState>, reason: string) {
   const oldState = cloneState(state);
   const newState = { ...state, ...updates };
-  
+
   // Validate state consistency
   if (!validateStateTransition(oldState, newState)) {
     throw new Error('Invalid state transition');
   }
-  
+
   // Record transition
   recordStateTransition(oldState, newState, reason);
-  
+
   // Atomically apply
   Object.assign(state, newState);
   state.stateVersion++;
-  
+
   // Broadcast changes
   dispatchStateChange(oldState, newState);
 }
@@ -2248,6 +2342,7 @@ function updateState(updates: Partial<GlobalState>, reason: string) {
 **Challenge**: Global State is accessed constantly by all subsystems.
 
 **Optimizations**:
+
 - **Getter Caching**: Cache computed values (e.g., health scores) with TTL
 - **Event Batching**: Batch rapid state changes into single broadcasts
 - **Selective Notifications**: Only notify relevant subsystems of changes
@@ -2255,6 +2350,7 @@ function updateState(updates: Partial<GlobalState>, reason: string) {
 - **Indexed Lookups**: Use Maps for O(1) subsystem/token lookups
 
 **Example**:
+
 ```javascript
 const cachedHealthScore = {
   value: null,
@@ -2267,7 +2363,7 @@ function getPlatformHealthScore(): number {
   if (cachedHealthScore.value && (now - cachedHealthScore.timestamp) < cachedHealthScore.ttl) {
     return cachedHealthScore.value;
   }
-  
+
   // Compute expensive health score
   const score = computeHealthScore();
   cachedHealthScore.value = score;
@@ -2283,19 +2379,21 @@ function getPlatformHealthScore(): number {
 **Challenge**: Sensitive state must be protected from unauthorized access.
 
 **Protection**:
+
 - **Permission Checking**: All setters validate permission tokens
 - **Data Sanitization**: Sensitive data redacted in logs/exports
 - **Admin-Only Operations**: Critical operations require elevated auth
 - **Audit Trail**: All state changes logged with initiator
 
 **Example**:
+
 ```javascript
 function setMaintenanceMode(enabled: boolean, permissionToken: string) {
   // Validate permission
   if (!validatePermission(permissionToken, 'ADMIN')) {
     throw new PermissionError('Admin access required');
   }
-  
+
   // Audit log
   logger.log({
     action: 'setMaintenanceMode',
@@ -2303,12 +2401,12 @@ function setMaintenanceMode(enabled: boolean, permissionToken: string) {
     initiatedBy: extractUserId(permissionToken),
     timestamp: Date.now()
   });
-  
+
   // Update state
-  updateState({ 
-    platformConfiguration: { 
-      ...state.platformConfiguration, 
-      maintenanceMode: enabled 
+  updateState({
+    platformConfiguration: {
+      ...state.platformConfiguration,
+      maintenanceMode: enabled
     }
   }, 'Admin maintenance mode toggle');
 }
@@ -2321,6 +2419,7 @@ function setMaintenanceMode(enabled: boolean, permissionToken: string) {
 **Challenge**: Global State failure is catastrophic for entire platform.
 
 **Resilience Mechanisms**:
+
 - **State Snapshots**: Periodic snapshots for recovery
 - **Error Isolation**: Feature errors don't crash entire subsystem
 - **Graceful Degradation**: Continue with reduced functionality
@@ -2328,6 +2427,7 @@ function setMaintenanceMode(enabled: boolean, permissionToken: string) {
 - **State Validation**: Detect and repair inconsistent state
 
 **Example**:
+
 ```javascript
 function handleCriticalError(error: Error) {
   // Record error
@@ -2337,7 +2437,7 @@ function handleCriticalError(error: Error) {
     stack: error.stack,
     timestamp: Date.now()
   };
-  
+
   // Attempt state snapshot
   try {
     const snapshot = createStateSnapshot();
@@ -2345,7 +2445,7 @@ function handleCriticalError(error: Error) {
   } catch (persistError) {
     // Fire-and-forget
   }
-  
+
   // Emergency shutdown
   emergencyShutdown(error);
 }
@@ -2358,6 +2458,7 @@ function handleCriticalError(error: Error) {
 **Challenge**: Debugging distributed subsystem issues is difficult.
 
 **Observability Tools**:
+
 - **State History**: Circular buffer of recent state transitions
 - **Event Replay**: Reconstruct event sequence from logs
 - **Subsystem Health Dashboard**: Real-time health monitoring
@@ -2365,6 +2466,7 @@ function handleCriticalError(error: Error) {
 - **State Export**: Export complete state for analysis
 
 **Example**:
+
 ```javascript
 function exportDebugBundle(): string {
   return JSON.stringify({
@@ -2385,6 +2487,7 @@ function exportDebugBundle(): string {
 **Challenge**: Global State touches every subsystem, making testing complex.
 
 **Testing Strategies**:
+
 - **State Machine Tests**: Verify all status transitions valid
 - **Invariant Checking**: Assert state invariants after each mutation
 - **Fuzzing**: Random state mutations to find edge cases
@@ -2392,6 +2495,7 @@ function exportDebugBundle(): string {
 - **Chaos Engineering**: Inject failures to test resilience
 
 **Example**:
+
 ```javascript
 function validateStateInvariants(state: GlobalState): boolean {
   // Invariant: pendingTokens.size matches platformStatus
@@ -2402,13 +2506,13 @@ function validateStateInvariants(state: GlobalState): boolean {
   } else {
     if (state.platformStatus !== 'STOPPED') return false;
   }
-  
+
   // Invariant: authenticated context matches auth level
-  if (state.authenticationContext.isAuthenticated && 
+  if (state.authenticationContext.isAuthenticated &&
       state.authenticationContext.authLevel === 'GUEST') {
     return false;
   }
-  
+
   // All invariants passed
   return true;
 }
@@ -2427,6 +2531,7 @@ This comprehensive redesign of the Global State subsystem:
 5. **Establishes Global State as the foundation** for all subsystem coordination
 
 The design emphasizes:
+
 - **Centralization**: Single source of truth for platform-wide state
 - **Coordination**: Orchestrating subsystem lifecycle and health
 - **Observability**: Comprehensive monitoring and debugging capabilities

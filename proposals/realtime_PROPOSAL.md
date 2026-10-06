@@ -39,37 +39,47 @@ over one socket. It feeds incoming messages into the Notification Center.
 ## Features
 
 ### Connection Manager
+
 **Purpose**: Own the socket life cycle.  
 **Responsibilities**:
+
 - Connect and close.
 - Reconnect with backoff on drop.
 - Respect `maxReconnectAttempts`.
 - **Weight**: HIGH.
 
 ### Heartbeat Manager
+
 **Purpose**: Detect dead connections.  
 **Responsibilities**:
+
 - Send pings on an interval.
 - Treat a missed pong as a dead connection and reconnect.
 - **Weight**: MEDIUM.
 
 ### Subscription Multiplexer
+
 **Purpose**: Carry many topics over one socket.  
 **Responsibilities**:
+
 - Map `subscribe(topic)` to one physical socket.
 - Re-subscribe every topic on reconnect.
 - **Weight**: HIGH.
 
 ### Presence Tracker
+
 **Purpose**: Track peers.  
 **Responsibilities**:
+
 - Record peer status from messages.
 - Mark a peer offline after a timeout.
 - **Weight**: MEDIUM.
 
 ### Message Router
+
 **Purpose**: Feed messages into the bus.  
 **Responsibilities**:
+
 - Route an incoming message to its topic subscribers.
 - Emit the message as a Notification event.
 - **Weight**: HIGH.
@@ -79,6 +89,7 @@ over one socket. It feeds incoming messages into the Notification Center.
 ## Life Cycle Manager
 
 ### Initialization Sequence
+
 1. Read `realtimeConfig` from Global State.
 2. Obtain the auth token from Auth for an authenticated socket.
 3. Open the socket.
@@ -86,6 +97,7 @@ over one socket. It feeds incoming messages into the Notification Center.
 5. Log initialization complete.
 
 ### Destruction Sequence
+
 1. Close the socket.
 2. Clear `subscriptionRegistry` and `presenceState`.
 3. Log shutdown complete.
@@ -101,13 +113,16 @@ virtual worker on the main thread is the fallback when the worker context is
 unavailable.
 
 ### Receiver
+
 - Receives connect, disconnect, subscribe, and publish commands.
 
 ### Processor
+
 - **Connection Processor**: manages the socket and heartbeats.
 - **Message Processor**: parses and routes incoming messages.
 
 ### Dispatcher
+
 - Returns connection status.
 - Emits incoming messages to the Notification Center.
 
@@ -126,8 +141,10 @@ Ordered by initialization priority:
 
 ```javascript
 function shouldReconnect() {
-  return globalState.isOnline() &&
-         connectionState.reconnectAttempts < realtimeConfig.maxReconnectAttempts;
+  return (
+    globalState.isOnline() &&
+    connectionState.reconnectAttempts < realtimeConfig.maxReconnectAttempts
+  );
 }
 
 function reconnectDelay() {
@@ -140,12 +157,14 @@ function reconnectDelay() {
 ## Control Interface
 
 ### Getters (No-arg)
+
 - `getConnectionStatus(): ConnectionState['status']`.
 - `isConnected(): boolean`.
 - `getSubscriptions(): string[]`.
 - `getPresence(peerId?): unknown`.
 
 ### Actions
+
 - `connect(): void`.
 - `disconnect(): void`.
 - `subscribe(topic, subscriberId): void`.
@@ -154,6 +173,7 @@ function reconnectDelay() {
 - `getPresence(peerId): void`.
 
 ### Subscriptions
+
 - `global:network-status-changed` - reconnect on reconnect.
 - `auth:login-success` / `auth:logout` - reconnect the socket with the new token.
 
@@ -197,18 +217,22 @@ export type RealtimePacket = MessageReceivedPacket | ConnectionChangedPacket;
 ## Special Considerations
 
 ### Reconnect with backoff
+
 A dropped socket reconnects with the backoff engine from Network. The delay grows
 with each attempt and stops at the cap.
 
 ### Heartbeats
+
 A ping and pong pair detects a dead connection that did not close cleanly. This is
 how the platform knows a socket is stale before the browser times it out.
 
 ### Multiplexing
+
 One physical socket carries many logical topics. Re-subscription is automatic on
 reconnect. No caller re-subscribes by hand.
 
 ### Token refresh
+
 When Auth refreshes the token, the socket reconnects with the new token. This
 keeps an authenticated socket valid without a manual step.
 

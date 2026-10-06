@@ -244,7 +244,10 @@ console.log('saved:', JSON.stringify(disk.get('editor')));
 
 const second = new Kernel([editor], { persistence });
 await second.start(); // the page loads again
-console.log('restored:', second.unit<EditorControl>('editor').control!.views.state.getSnapshot().draft);
+console.log(
+  'restored:',
+  second.unit<EditorControl>('editor').control!.views.state.getSnapshot().draft,
+);
 await second.stop();
 ```
 

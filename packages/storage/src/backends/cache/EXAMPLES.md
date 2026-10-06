@@ -16,10 +16,30 @@ console.log('available:', (await backend.probe()).available);
 await backend.initialize();
 
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'news', platform: 'browser', platformVersion: 1, callingModule: 'articles', actualKey: name });
+  buildCanonicalKey({
+    domain: 'news',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'articles',
+    actualKey: name,
+  });
 const now = Date.now();
-await backend.write(key('today'), { payload: '{"title":"Rain at noon"}', schema_version: 1, written_at: now, expires_at: null, weight: 1, backend: 'cache' });
-await backend.write(key('old'), { payload: '{"title":"Snow"}', schema_version: 1, written_at: now, expires_at: now - 1, weight: 1, backend: 'cache' });
+await backend.write(key('today'), {
+  payload: '{"title":"Rain at noon"}',
+  schema_version: 1,
+  written_at: now,
+  expires_at: null,
+  weight: 1,
+  backend: 'cache',
+});
+await backend.write(key('old'), {
+  payload: '{"title":"Snow"}',
+  schema_version: 1,
+  written_at: now,
+  expires_at: now - 1,
+  weight: 1,
+  backend: 'cache',
+});
 
 console.log('today:', JSON.parse((await backend.read(key('today')))!.payload).title);
 console.log('old:', await backend.read(key('old')));
@@ -44,7 +64,13 @@ import { CacheBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new CacheBackend({ cacheName: 'reader' });
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'news', platform: 'browser', platformVersion: 1, callingModule: 'articles', actualKey: name });
+  buildCanonicalKey({
+    domain: 'news',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'articles',
+    actualKey: name,
+  });
 const article = (weight: number) => ({
   payload: 'text '.repeat(200),
   schema_version: 1,

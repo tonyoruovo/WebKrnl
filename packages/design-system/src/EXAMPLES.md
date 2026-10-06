@@ -10,7 +10,12 @@ The device prefers dark colors, and the preference `colorScheme` is `system`, so
 
 ```ts file=main.ts
 import { Kernel } from '@webkrnl/core';
-import { DESIGN_SYSTEM_ID, createDesignSystem, type DesignSystemControl, type ThemeRoot } from '@webkrnl/design-system';
+import {
+  DESIGN_SYSTEM_ID,
+  createDesignSystem,
+  type DesignSystemControl,
+  type ThemeRoot,
+} from '@webkrnl/design-system';
 
 const properties = new Map<string, string>();
 const attributes = new Map<string, string>();
@@ -25,7 +30,9 @@ const darkDevice = (query: string) => ({
   removeEventListener() {},
 });
 
-const kernel = new Kernel([createDesignSystem({ root, matchMedia: darkDevice, storage: null, schedule: (write) => write() })]);
+const kernel = new Kernel([
+  createDesignSystem({ root, matchMedia: darkDevice, storage: null, schedule: (write) => write() }),
+]);
 await kernel.start();
 const { commands, views } = kernel.unit<DesignSystemControl>(DESIGN_SYSTEM_ID).control!;
 const show = () =>
@@ -55,7 +62,13 @@ theme: {"colorScheme":"light","contrast":"normal","density":"comfortable","fontS
 A server renders the stylesheet and the small script into the `<head>`. The stylesheet has every mode, so the first paint already follows the device and the stored preferences. Check your brand colors with `contrastRatio` before you ship them.
 
 ```ts file=main.ts
-import { DEFAULT_TOKENS, contrastRatio, renderThemeCss, renderThemeScript, type TokenSet } from '@webkrnl/design-system';
+import {
+  DEFAULT_TOKENS,
+  contrastRatio,
+  renderThemeCss,
+  renderThemeScript,
+  type TokenSet,
+} from '@webkrnl/design-system';
 
 const brand: TokenSet = {
   ...DEFAULT_TOKENS,

@@ -87,7 +87,10 @@ console.log('log:', failure.message);
 
 const trace = logger.commands.trace(failure.traceId!);
 for (const record of trace.records) {
-  console.log('path:', record.trail.entries.map((e) => `${e.actionName}:${e.subsystemId}`).join(' > '));
+  console.log(
+    'path:',
+    record.trail.entries.map((e) => `${e.actionName}:${e.subsystemId}`).join(' > '),
+  );
 }
 await kernel.stop();
 ```

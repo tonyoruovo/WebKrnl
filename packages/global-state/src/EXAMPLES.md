@@ -72,7 +72,8 @@ const { views } = kernel.unit<GlobalStateControl>(GLOBAL_STATE_ID).control!;
 let bannerShown = false;
 views.state.subscribe(() => {
   const offline = views.state.getSnapshot().online === false;
-  if (offline !== bannerShown) console.log(offline ? 'show banner: You are offline' : 'hide banner');
+  if (offline !== bannerShown)
+    console.log(offline ? 'show banner: You are offline' : 'hide banner');
   bannerShown = offline;
 });
 

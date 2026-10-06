@@ -56,7 +56,10 @@ try {
 }
 
 const history = kernel.unit<NotificationControl>(NOTIFICATION_ID).control!.views.history;
-console.log('history:', JSON.stringify(history.getSnapshot().map((r) => `${r.source}:${r.outcome}`)));
+console.log(
+  'history:',
+  JSON.stringify(history.getSnapshot().map((r) => `${r.source}:${r.outcome}`)),
+);
 await kernel.stop();
 ```
 
@@ -93,7 +96,9 @@ const sync = defineSubsystem({
 
 const notification = createNotificationCenter();
 const queue = createQueue({ fanOut: notification.fanOut });
-const kernel = new Kernel([queue.subsystem, notification.subsystem, sync], { router: queue.router });
+const kernel = new Kernel([queue.subsystem, notification.subsystem, sync], {
+  router: queue.router,
+});
 await kernel.start();
 
 const { commands } = kernel.unit<NotificationControl>(NOTIFICATION_ID).control!;
@@ -107,7 +112,8 @@ commands.subscribe(
   },
 );
 
-for (const changes of [0, 3, 5]) await syncPort!.send({ eventId: 'sync:done', payload: { changes } });
+for (const changes of [0, 3, 5])
+  await syncPort!.send({ eventId: 'sync:done', payload: { changes } });
 await kernel.stop();
 ```
 

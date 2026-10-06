@@ -59,7 +59,13 @@ await todos.create('t1', { title: 'Tea' });
 await todos.update('t1', { title: 'Green tea' }); // merges into the create
 await todos.create('t2', { title: 'Cups' });
 console.log('waiting:', sync.views.state.getSnapshot().pending);
-console.log('shown to the user:', globalState.views.state.getSnapshot().pending?.map((w) => w.label).join(', '));
+console.log(
+  'shown to the user:',
+  globalState.views.state
+    .getSnapshot()
+    .pending?.map((w) => w.label)
+    .join(', '),
+);
 
 environment.set({ online: true });
 while (sync.commands.outbox().length > 0) await new Promise((resolve) => setTimeout(resolve, 5));
@@ -122,7 +128,8 @@ const docs = sync.commands.entity<{ title: string }>({
 });
 
 await docs.update('d1', { title: 'Plan (edited by Ada)' });
-while (sync.views.state.getSnapshot().conflicts === 0) await new Promise((resolve) => setTimeout(resolve, 5));
+while (sync.views.state.getSnapshot().conflicts === 0)
+  await new Promise((resolve) => setTimeout(resolve, 5));
 const [conflict] = docs.pending();
 console.log('mine:', conflict!.data?.title);
 console.log('server:', conflict!.remote?.title);

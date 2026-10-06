@@ -9,12 +9,7 @@ A backend stores envelopes under canonical keys. All five backends (IndexedDB, O
 The coordinator probes a chain of backends and uses the first one that works. This is the same idea, for a tool that runs outside the platform.
 
 ```ts file=main.ts
-import {
-  IDBBackend,
-  MemoryBackend,
-  OPFSBackend,
-  type IStorageBackend,
-} from '@webkrnl/storage';
+import { IDBBackend, MemoryBackend, OPFSBackend, type IStorageBackend } from '@webkrnl/storage';
 
 async function firstAvailable(chain: IStorageBackend<unknown>[]) {
   for (const backend of chain) {
@@ -71,7 +66,13 @@ await local.initialize();
 await idb.initialize();
 
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'shop', platform: 'browser', platformVersion: 1, callingModule: 'cart', actualKey: name });
+  buildCanonicalKey({
+    domain: 'shop',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'cart',
+    actualKey: name,
+  });
 const envelope = (payload: string) => ({
   payload,
   schema_version: 1,

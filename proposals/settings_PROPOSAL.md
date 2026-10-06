@@ -16,7 +16,7 @@ and roll back on failure.
 - **settings**: `{ syncInterval, bandwidthMode, dataSaver }`
   ```typescript
   interface UserSettings {
-    syncInterval: number;              // auto-sync interval, milliseconds
+    syncInterval: number; // auto-sync interval, milliseconds
     bandwidthMode: 'FULL' | 'CONSERVATIVE' | 'MINIMAL';
     dataSaver: boolean;
   }
@@ -27,22 +27,28 @@ and roll back on failure.
 ## Features
 
 ### Preference Store
+
 **Purpose**: Hold user-tunable preferences.  
 **Responsibilities**:
+
 - Read and update `syncInterval`, `bandwidthMode`, and `dataSaver`.
 - Expose a plain `getSettings()` snapshot.
 - **Weight**: MEDIUM.
 
 ### Consent Delegation
+
 **Purpose**: Route analytics opt-out to Consent.  
 **Responsibilities**:
+
 - `isAnalyticsEnabled()` reads `consent.isGranted('analytics')`.
 - `enableAnalytics()` and `disableAnalytics()` grant and revoke through Consent.
 - **Weight**: MEDIUM.
 
 ### Optimistic Update
+
 **Purpose**: Apply-then-reconcile with rollback.  
 **Responsibilities**:
+
 - `optimisticUpdate(apply, commit, rollback)` applies a change optimistically,
   commits remotely, and rolls back locally on failure.
 - **Weight**: MEDIUM.
@@ -52,11 +58,13 @@ and roll back on failure.
 ## Life Cycle Manager
 
 ### Initialization Sequence
+
 1. Read the initial preferences (defaults or persisted overrides).
 2. Attach the Consent surface for analytics opt-out.
 3. Log initialization complete.
 
 ### Destruction Sequence
+
 1. Persist the current preferences.
 2. Log shutdown complete.
 
@@ -88,10 +96,12 @@ function isAnalyticsEnabled() {
 ## Control Interface
 
 ### Getters (No-arg)
+
 - `getSettings(): UserSettings`.
 - `isAnalyticsEnabled(): boolean`.
 
 ### Actions
+
 - `setSyncInterval(ms)`.
 - `setBandwidthMode(mode)`.
 - `setDataSaver(enabled)`.
@@ -102,10 +112,12 @@ function isAnalyticsEnabled() {
 ## Special Considerations
 
 ### Opt-out never breaks essential use
+
 Disabling analytics only stops telemetry. Storage, sync, and network for the
 `necessary` and `functional` categories are unaffected.
 
 ### Live application
+
 A settings change applies immediately. No reload is required.
 
 ---

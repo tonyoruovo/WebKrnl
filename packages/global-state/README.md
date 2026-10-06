@@ -24,8 +24,8 @@ Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centr
 }
 ```
 
-| Peer dependency  | Why                                |
-| ---------------- | ---------------------------------- |
+| Peer dependency | Why                                |
+| --------------- | ---------------------------------- |
 | `@webkrnl/core` | The kernel this subsystem runs on. |
 
 ## Usage
@@ -97,25 +97,25 @@ The tab id is kept in `sessionStorage`, so a reload keeps it. A duplicated tab c
 
 `tabs` is the number of tabs of this origin with the platform open and shown, this tab included. Each tab holds the Web Lock `platform:tab:<tabId>` while its page is shown, and the count is the number of these locks (`navigator.locks.query()`). The browser releases the lock of a tab that closes or crashes, so a dead tab is never counted for long.
 
-| Situation | Result |
-|---|---|
-| A tab opens or closes | It tells the others on a `BroadcastChannel`; they count again at once |
-| A page goes into the back-forward cache (`pagehide`) | It releases its lock: it does not count. `pageshow` takes it again |
-| A tab crashes | Its lock goes; the other tabs see it at the next count (every `intervalMs`, 30 s, and when a page becomes visible) |
-| No Web Locks | The tabs count each other with `hello`, `here` and `bye` messages. A crashed tab stays counted until a reload |
-| No Web Locks and no `BroadcastChannel` | `1` |
-| Tabs on other subdomains | Not counted: locks and channels belong to one origin |
+| Situation                                            | Result                                                                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| A tab opens or closes                                | It tells the others on a `BroadcastChannel`; they count again at once                                              |
+| A page goes into the back-forward cache (`pagehide`) | It releases its lock: it does not count. `pageshow` takes it again                                                 |
+| A tab crashes                                        | Its lock goes; the other tabs see it at the next count (every `intervalMs`, 30 s, and when a page becomes visible) |
+| No Web Locks                                         | The tabs count each other with `hello`, `here` and `bye` messages. A crashed tab stays counted until a reload      |
+| No Web Locks and no `BroadcastChannel`               | `1`                                                                                                                |
+| Tabs on other subdomains                             | Not counted: locks and channels belong to one origin                                                               |
 
 `createTabCounter(tabId)` is exported for use on its own.
 
 ## Options
 
-| Option          | Default                      | Purpose                                                                                 |
-| --------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
-| `busyThreshold` | `50`                         | Pending work above which the platform is `BUSY`.                                        |
-| `environment`   | `createBrowserEnvironment()` | Where `online` and `visible` come from.                                                 |
-| `tabIdentity`   | browser defaults             | Storage, channel and probe timeout; `false` turns tab identity off (the id is `'tab'`). |
-| `now`           | `Date.now`                   | Clock for `startedAt`.                                                                  |
+| Option          | Default                      | Purpose                                                                                               |
+| --------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `busyThreshold` | `50`                         | Pending work above which the platform is `BUSY`.                                                      |
+| `environment`   | `createBrowserEnvironment()` | Where `online` and `visible` come from.                                                               |
+| `tabIdentity`   | browser defaults             | Storage, channel and probe timeout; `false` turns tab identity off (the id is `'tab'`).               |
+| `now`           | `Date.now`                   | Clock for `startedAt`.                                                                                |
 | `tabCount`      | browser defaults             | Locks, channel, page events and `intervalMs` of the tab count; `false` turns it off (`tabs` stays 1). |
 
 ## Testing

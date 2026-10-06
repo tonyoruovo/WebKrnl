@@ -31,8 +31,8 @@ The full design is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 Each subsystem is its own package. Packages depend on each other through peer dependencies, and optional dependencies turn individual features on or off.
 
-| Package                   | Purpose                                                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| Package                  | Purpose                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
 | `@webkrnl/core`          | Units, lifecycle, dependency resolution, packets, scopes, worker hosts, the Global wire protocol |
 | `@webkrnl/global-state`  | Environment detection, platform status, tab identity, pending work                               |
 | `@webkrnl/queue`         | Single entry point for packets: admission, priority, retry, dead letters                         |
@@ -52,7 +52,7 @@ Each subsystem is its own package. Packages depend on each other through peer de
 | `@webkrnl/hub`           | The page that connects tabs across subdomains (Window scope)                                     |
 | `@webkrnl/platform`      | Boots a chosen set of subsystems                                                                 |
 | `@webkrnl/vue`           | Vue adapter                                                                                      |
-| `@webkrnl/create`        | Project scaffolder: `npm init @webkrnl`                                                         |
+| `@webkrnl/create`        | Project scaffolder: `npm init @webkrnl`                                                          |
 
 ## Intended usage
 
@@ -143,20 +143,20 @@ Run a subset with `BROWSERS=chrome,edge pnpm test:browser`. If Windows reserved 
 
 ## Roadmap
 
-| Milestone | Delivers                                                           |
-| --------- | ------------------------------------------------------------------ |
-| M0        | Tooling, monorepo, browser test matrix (CI deferred)               |
-| M1        | Kernel (`core`)                                                    |
-| M2        | Worker hosts and transports                                        |
-| M3        | Global State, Queue, Notification Center                           |
-| M4        | Pilot: Logger and Consent                                          |
-| M5        | Window scope hub                                                   |
-| M6        | Crypto and Storage                                                 |
-| M7        | Network, Auth, Sync, Realtime                                      |
-| M8        | Global scope                                                       |
-| M9        | Translation, Settings, Analytics, Design System                    |
-| M10       | Orchestrator, Vue adapter, scaffolder; final name chosen           |
-| Alpha     | Validation in real React, Vue, Svelte and Astro apps               |
+| Milestone | Delivers                                                 |
+| --------- | -------------------------------------------------------- |
+| M0        | Tooling, monorepo, browser test matrix (CI deferred)     |
+| M1        | Kernel (`core`)                                          |
+| M2        | Worker hosts and transports                              |
+| M3        | Global State, Queue, Notification Center                 |
+| M4        | Pilot: Logger and Consent                                |
+| M5        | Window scope hub                                         |
+| M6        | Crypto and Storage                                       |
+| M7        | Network, Auth, Sync, Realtime                            |
+| M8        | Global scope                                             |
+| M9        | Translation, Settings, Analytics, Design System          |
+| M10       | Orchestrator, Vue adapter, scaffolder; final name chosen |
+| Alpha     | Validation in real React, Vue, Svelte and Astro apps     |
 
 Milestones do not change the version: it stays `0.0.2` until every milestone is complete and alpha tests pass in real React, Vue, Svelte and Astro projects. Details and exit criteria are in [`docs/PLAN.md`](docs/PLAN.md).
 

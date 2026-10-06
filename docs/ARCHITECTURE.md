@@ -12,18 +12,18 @@
 
 It gives three guarantees:
 
-| Guarantee | Meaning | Carried mainly by |
-|---|---|---|
-| **Resilience** | Loss of connection, low storage, or an in-app error does not halt critical operations. | Queue, Storage, Sync, Network, feature isolation |
-| **Efficiency** | Data is not fetched, stored, or sent more than needed. | Network (dedupe, cache), Storage (compression, eviction), Sync (deltas), Analytics (sampling) |
-| **Visible, non-blocking remote work** | Remote operations (HTTP, WebSocket, webhooks, RPC) run off the critical path, and the user can always see what is pending. | Workers, Queue scheduling, GlobalState pending work |
+| Guarantee                             | Meaning                                                                                                                    | Carried mainly by                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Resilience**                        | Loss of connection, low storage, or an in-app error does not halt critical operations.                                     | Queue, Storage, Sync, Network, feature isolation                                              |
+| **Efficiency**                        | Data is not fetched, stored, or sent more than needed.                                                                     | Network (dedupe, cache), Storage (compression, eviction), Sync (deltas), Analytics (sampling) |
+| **Visible, non-blocking remote work** | Remote operations (HTTP, WebSocket, webhooks, RPC) run off the critical path, and the user can always see what is pending. | Workers, Queue scheduling, GlobalState pending work                                           |
 
 ### 1.1 Supported platforms
 
-| In scope | Out of scope |
-|---|---|
-| Desktop browsers | In-app WebViews (Android `WebView`, iOS `WKWebView` inside native apps) |
-| Mobile browsers on Android and iOS | Server-side rendering runtimes (the packages must *import* safely there, but do not run) |
+| In scope                           | Out of scope                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| Desktop browsers                   | In-app WebViews (Android `WebView`, iOS `WKWebView` inside native apps)                  |
+| Mobile browsers on Android and iOS | Server-side rendering runtimes (the packages must _import_ safely there, but do not run) |
 
 - On iOS, every browser uses WebKit. The test matrix therefore needs **mobile WebKit** and **Chromium on Android**, as well as the desktop engines.
 - Minimum versions: desktop browsers and Chrome for Android, the last two major versions; iOS and iPadOS (every browser), 16.4 or later. No API may be assumed present without a fallback, so the virtual host (§8.2) is always available.
@@ -36,20 +36,20 @@ The packages are **framework-agnostic**: no package except an adapter imports Vu
 
 ## 2. Glossary
 
-| Term | Definition |
-|---|---|
-| **Subsystem** (synonym: *manager*) | A unit with an identity, a scope, and a packet port. The only thing other subsystems can address. |
-| **Feature** | A unit inside a subsystem. Uses its parent's identity. Can fail without failing its parent. |
-| **Unit** | The common shape of subsystems and features (§3). |
-| **Centralized subsystem** | GlobalState, Queue, NotificationCenter. Infrastructure for the others. Cannot be shut down manually. |
-| **Featurized subsystem** | Every other subsystem. Can be initialized, suspended, and destroyed independently. |
-| **Processor** | The code that does a unit's work. Runs on a physical, virtual, or hybrid worker. |
-| **Job** | What a processor does with packets: *Sink*, *Scheduler*, or *Notifier* (§8.4). |
-| **Packet** | A message between subsystems: a serializable **envelope** plus local **callbacks**. |
-| **Fingerprint** | One recorded action in a packet's history. |
-| **Trace** | All fingerprints of one causal chain, joined by `traceId`, possibly across tabs. |
-| **Scope** | The boundary a subsystem lives in and broadcasts within: Page, Tab, Window, Global. |
-| **Control interface** | The public commands and read-only views of a unit. |
+| Term                               | Definition                                                                                           |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Subsystem** (synonym: _manager_) | A unit with an identity, a scope, and a packet port. The only thing other subsystems can address.    |
+| **Feature**                        | A unit inside a subsystem. Uses its parent's identity. Can fail without failing its parent.          |
+| **Unit**                           | The common shape of subsystems and features (§3).                                                    |
+| **Centralized subsystem**          | GlobalState, Queue, NotificationCenter. Infrastructure for the others. Cannot be shut down manually. |
+| **Featurized subsystem**           | Every other subsystem. Can be initialized, suspended, and destroyed independently.                   |
+| **Processor**                      | The code that does a unit's work. Runs on a physical, virtual, or hybrid worker.                     |
+| **Job**                            | What a processor does with packets: _Sink_, _Scheduler_, or _Notifier_ (§8.4).                       |
+| **Packet**                         | A message between subsystems: a serializable **envelope** plus local **callbacks**.                  |
+| **Fingerprint**                    | One recorded action in a packet's history.                                                           |
+| **Trace**                          | All fingerprints of one causal chain, joined by `traceId`, possibly across tabs.                     |
+| **Scope**                          | The boundary a subsystem lives in and broadcasts within: Page, Tab, Window, Global.                  |
+| **Control interface**              | The public commands and read-only views of a unit.                                                   |
 
 ---
 
@@ -83,7 +83,7 @@ interface UnitDefinition<S, C extends ControlInterface> {
 }
 
 interface SubsystemDefinition<S, C> extends UnitDefinition<S, C> {
-  readonly scope: Scope;                         // §11
+  readonly scope: Scope; // §11
   readonly kind: 'centralized' | 'featurized';
   /** Handles packets addressed to this subsystem; the return value is the reply. */
   receive?(packet: Packet, ctx: UnitContext<S>): unknown;
@@ -176,18 +176,18 @@ interface StateCell<S> {
 
 Conformance of the subsystems that exist now:
 
-| Subsystem | User data that it keeps | Wipes on sign-out |
-|---|---|---|
-| Auth | The session, tokens, elevations | Yes |
-| Network | Cached responses (memory and `network.cache*`) | Yes (also aborts the requests in flight) |
-| Sync | The outbox (`sync.outbox.*`), the pull cursors | Yes |
-| Realtime | Presence, the publish buffer, the Global outbox; the socket of the user | Yes (the listeners stay: they belong to the app) |
-| Queue | Dead letters (payloads, `queue.dead-letters`) | Yes |
-| Logger | Log entries with context (`logger.entries`), traces | Yes |
-| Settings | The `user` settings (for example `locale`); the `device` settings are not user data | Yes (the `user` settings return to their defaults) |
-| Analytics | The buffer and the waiting batches (`analytics.outbox`), the session id | Yes (a new session starts) |
-| Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
-| Crypto, Consent, Global State, Notification, hub, Translation, Design System | No user data (keys, decisions, catalogs, the theme and state of the device) | Not applicable |
+| Subsystem                                                                    | User data that it keeps                                                             | Wipes on sign-out                                  |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Auth                                                                         | The session, tokens, elevations                                                     | Yes                                                |
+| Network                                                                      | Cached responses (memory and `network.cache*`)                                      | Yes (also aborts the requests in flight)           |
+| Sync                                                                         | The outbox (`sync.outbox.*`), the pull cursors                                      | Yes                                                |
+| Realtime                                                                     | Presence, the publish buffer, the Global outbox; the socket of the user             | Yes (the listeners stay: they belong to the app)   |
+| Queue                                                                        | Dead letters (payloads, `queue.dead-letters`)                                       | Yes                                                |
+| Logger                                                                       | Log entries with context (`logger.entries`), traces                                 | Yes                                                |
+| Settings                                                                     | The `user` settings (for example `locale`); the `device` settings are not user data | Yes (the `user` settings return to their defaults) |
+| Analytics                                                                    | The buffer and the waiting batches (`analytics.outbox`), the session id             | Yes (a new session starts)                         |
+| Storage                                                                      | Only what other subsystems and the app put in it                                    | Not applicable: each owner clears its collections  |
+| Crypto, Consent, Global State, Notification, hub, Translation, Design System | No user data (keys, decisions, catalogs, the theme and state of the device)         | Not applicable                                     |
 
 Each of them uses `watchSignOut` of `@webkrnl/core`, which turns the state of Auth into the two reasons (`sign-out`, `user-changed`). Tests use `createTestAuth` of `@webkrnl/core/testing`. (Done in M8, §20.4.)
 
@@ -258,11 +258,11 @@ This one mechanism covers the Logger's sink, dead-letter persistence, and Global
 
 ### 7.3 Mapping to npm
 
-| Runtime dependency | `package.json` |
-|---|---|
-| required, by a subsystem's core | `peerDependencies` |
+| Runtime dependency                          | `package.json`                                                                                                             |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| required, by a subsystem's core             | `peerDependencies`                                                                                                         |
 | optional, or only required by some features | `peerDependencies` + `peerDependenciesMeta.<pkg>.optional: true`, and a runtime presence check that turns the features off |
-| `@webkrnl/core` | `peerDependencies` (every package) |
+| `@webkrnl/core`                             | `peerDependencies` (every package)                                                                                         |
 
 ---
 
@@ -298,8 +298,8 @@ interface ProcessorDef<In, Out> {
   /** Loads the module for the virtual host. */
   readonly load: () => Promise<ProcessorModule<In, Out>>;
   /** Create the workers. Written at the definition site, so bundlers can see them. */
-  readonly dedicated?: () => Worker;      // new Worker(new URL('./x.worker.ts', import.meta.url), { type: 'module' })
-  readonly shared?: () => SharedWorker;   // new SharedWorker(new URL(...), { type: 'module', name })
+  readonly dedicated?: () => Worker; // new Worker(new URL('./x.worker.ts', import.meta.url), { type: 'module' })
+  readonly shared?: () => SharedWorker; // new SharedWorker(new URL(...), { type: 'module', name })
 }
 
 type HostKind = 'shared' | 'dedicated' | 'virtual';
@@ -312,11 +312,11 @@ type HostKind = 'shared' | 'dedicated' | 'virtual';
 
 ### 8.2 Hosts
 
-| Host | Implementation | Use for |
-|---|---|---|
-| **shared** | `SharedWorker` (same origin, shared by all its tabs) | Origin-wide coordinators: the Storage writer, Crypto keys |
-| **dedicated** | `Worker` (`type: 'module'`) | CPU or I/O work for one tab: Sync, Realtime, Analytics aggregation, Translation compilation |
-| **virtual** | Main-thread scheduler: `scheduler.postTask` → `MessageChannel` macrotask → `setTimeout(0)`. Yields with `scheduler.yield()` when present. Idle jobs use `requestIdleCallback`. | Light coordination and the fallback for every physical processor |
+| Host          | Implementation                                                                                                                                                                 | Use for                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **shared**    | `SharedWorker` (same origin, shared by all its tabs)                                                                                                                           | Origin-wide coordinators: the Storage writer, Crypto keys                                   |
+| **dedicated** | `Worker` (`type: 'module'`)                                                                                                                                                    | CPU or I/O work for one tab: Sync, Realtime, Analytics aggregation, Translation compilation |
+| **virtual**   | Main-thread scheduler: `scheduler.postTask` → `MessageChannel` macrotask → `setTimeout(0)`. Yields with `scheduler.yield()` when present. Idle jobs use `requestIdleCallback`. | Light coordination and the fallback for every physical processor                            |
 
 `queueMicrotask` is used only for coordination steps that are very small. A microtask does not yield to the browser. `navigator.scheduling.isInputPending` is a hint about when to yield. It is not a host.
 
@@ -337,11 +337,11 @@ The handshake timeout (trigger 3) is 5 s by default. A processor definition can 
 
 ### 8.4 Jobs
 
-| Job | Behavior |
-|---|---|
-| **Sink** | Consumes a packet and updates internal state. Emits nothing. |
-| **Scheduler** | Orders internal work and outgoing packets. Point-to-point (1-to-1). *Called "Queue" in the README. See §15.* |
-| **Notifier** | Emits broadcast packets through the formal protocol. |
+| Job           | Behavior                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Sink**      | Consumes a packet and updates internal state. Emits nothing.                                                 |
+| **Scheduler** | Orders internal work and outgoing packets. Point-to-point (1-to-1). _Called "Queue" in the README. See §15._ |
+| **Notifier**  | Emits broadcast packets through the formal protocol.                                                         |
 
 ### 8.5 Worker budget
 
@@ -435,11 +435,11 @@ The Queue is the **single entry point** for every packet. The NotificationCenter
                                                         subscribers      (§11)                  (§11)
 ```
 
-| | Queue | NotificationCenter |
-|---|---|---|
-| Owns | Scheduling: priority, admission, ordering keys, retry, back-pressure, dead letters | Routing: event registry, subscriptions, ACL, event history |
-| Delivery | 1-to-1, at least once, request/response | 1-to-N, fire and forget per subscriber |
-| Transport | `MessageChannel`, in-realm calls | In-realm dispatch + scope transports |
+|           | Queue                                                                              | NotificationCenter                                         |
+| --------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Owns      | Scheduling: priority, admission, ordering keys, retry, back-pressure, dead letters | Routing: event registry, subscriptions, ACL, event history |
+| Delivery  | 1-to-1, at least once, request/response                                            | 1-to-N, fire and forget per subscriber                     |
+| Transport | `MessageChannel`, in-realm calls                                                   | In-realm dispatch + scope transports                       |
 
 Queue admission reads GlobalState. When the platform is `BUSY`, only `CRITICAL` packets are admitted. `CRITICAL` packets go to the NotificationCenter synchronously. Other packets go in the next task.
 
@@ -458,6 +458,7 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 ```
 
 **GlobalState** (`global-state`)
+
 - Derives the platform status from every unit's lifecycle, which the kernel exposes to units as `ctx.statuses`. The status is `INITIALIZING` while any unit initializes, `DEGRADED` while any unit is `FAILED`, `DEGRADED` or waiting for a dependency, `BUSY` while any unit is `BUSY` or pending work exceeds a threshold, and `IDLE` otherwise.
 - Tracks pending work (`beginWork` / `endWork`). The Queue registers every in-flight packet, so the user-visible "work in progress" is always accurate (guarantee 3, §1).
 - Admission (`canAccept(importance)`): `CRITICAL` always; nothing else while `BUSY`; no `LOW` while `DEGRADED`.
@@ -465,6 +466,7 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 - Tab identity that survives reloads and is unique for duplicated tabs: an id kept in `sessionStorage`, confirmed with a `BroadcastChannel` probe. If another live tab answers with the same id (a duplicated tab copies `sessionStorage`), a new id is minted.
 
 **Queue** (`queue`), the kernel's packet router
+
 - The single entry point. It checks the send rule, then admission through GlobalState (when it runs), then a depth limit. Rejected packets fail with `QueueRejectedError`.
 - Holds packets in priority tiers, keeps packets with the same `orderingKey` in order, and runs a bounded number at once. `CRITICAL` packets dispatch at once; others in the next scheduler task.
 - 1-to-1: delivers through the kernel. A target that exists but is not running is retried with backoff (the backoff library moves to `@webkrnl/core`). After the last retry, or when the TTL passes, the packet becomes a dead letter and the request rejects. A target's own error (its `receive` threw) goes straight back to the requester: it is not retried, because retrying could repeat side effects.
@@ -473,6 +475,7 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 - Records each settled packet's final fingerprint trail (`sent`, `enqueued`, `dispatched`, `delivered`, `completed` or `failed`).
 
 **NotificationCenter** (`notification`)
+
 - Routing only: the event registry, subscriptions, access control and history. No queue, no retries (A10).
 - Subscribers are subsystems that list the event in `subscribes`, plus programmatic subscriptions (for adapters and UI code).
 - Access control per event: which subsystems may publish it, and which may receive it.
@@ -481,6 +484,7 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 - In-realm subscribers are on the same page and tab, so Page and Tab broadcasts reach them all. Window (M5) and Global (M8) broadcasts also go to the **scope relay** attached for their scope (§11.3); envelopes from other tabs come back through the Queue.
 
 **Kernel additions**
+
 - `ctx.statuses`: every unit's lifecycle, read-only, for every unit.
 - Centralized subsystems boot before featurized ones, and may only require other centralized subsystems.
 - `kernel.subscribers(eventId)` lists the running subscribers of an event, and `kernel.deliver(envelope, { to, clone })` delivers a broadcast to one of them with its own copy.
@@ -492,16 +496,16 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 
 ### 11.1 Boundaries and transports
 
-| Scope | Boundary | Broadcast transport |
-|---|---|---|
-| **Page** | One document **and** route. Ends when the path changes (router or Navigation API hook) or the document unloads. A page restored from bfcache resumes from `SUSPENDED`. | In-realm dispatch |
-| **Tab** | One top-level browsing context, across the documents it loads. State moves between documents through `sessionStorage`. | In-realm dispatch |
-| **Window** | All tabs of the same **site**, across its subdomains, in one browser profile session. | The **hub**, plus the relay where the browser partitions it (§11.3) |
-| **Global** | All sessions and devices, through the **server**. | The Global transport (§11.4) |
+| Scope      | Boundary                                                                                                                                                               | Broadcast transport                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **Page**   | One document **and** route. Ends when the path changes (router or Navigation API hook) or the document unloads. A page restored from bfcache resumes from `SUSPENDED`. | In-realm dispatch                                                   |
+| **Tab**    | One top-level browsing context, across the documents it loads. State moves between documents through `sessionStorage`.                                                 | In-realm dispatch                                                   |
+| **Window** | All tabs of the same **site**, across its subdomains, in one browser profile session.                                                                                  | The **hub**, plus the relay where the browser partitions it (§11.3) |
+| **Global** | All sessions and devices, through the **server**.                                                                                                                      | The Global transport (§11.4)                                        |
 
 ### 11.2 Send rule
 
-- **Broadcasts** are limited to the sender's scope. A broadcast from scope *S* spreads only within the boundary of *S*. Every subscriber inside that boundary receives it, whatever the subscriber's own scope ("receive from any").
+- **Broadcasts** are limited to the sender's scope. A broadcast from scope _S_ spreads only within the boundary of _S_. Every subscriber inside that boundary receives it, whatever the subscriber's own scope ("receive from any").
 - **1-to-1 requests** may target a subsystem in any reachable scope.
 - **Replies** always return to the requester.
 
@@ -513,7 +517,7 @@ Page scope ends on a path change. `core` detects it through a framework-neutral 
 
 ```ts
 interface RouteSource {
-  current(): string;                                  // the path
+  current(): string; // the path
   subscribe(listener: (path: string) => void): () => void;
 }
 ```
@@ -588,23 +592,23 @@ Shutdown runs disposers in reverse order. Persisting state is part of each unit'
 
 ## 13. Subsystem catalogue
 
-| Subsystem | Kind | Scope | Preferred hosts | Required deps (core) | Proposal |
-|---|---|---|---|---|---|
-| GlobalState | centralized | Tab | virtual | — | `global` |
-| Queue | centralized | Tab | virtual | GlobalState | `queue` |
-| NotificationCenter | centralized | Tab | virtual | GlobalState, Queue | `notification` |
-| Logger | featurized | Tab | virtual | — (late-bound: NotificationCenter, Storage) | `logger` |
-| Crypto | featurized | Tab (key cache shared per origin) | shared → dedicated → virtual | — | `crypto` |
-| Storage | featurized | Tab (coordinator shared per origin) | shared → virtual | — (uses the key store of `@webkrnl/crypto`) | `storage`, backends |
-| Consent | featurized | Window | virtual | — (grants persist through the kernel's persistence, which Storage backs from M6) | `consent` |
-| Settings | featurized | Window | virtual | Consent (Auth optional, §21.1) | `settings` |
-| Network | featurized | Tab | virtual | — (GlobalState optional, §19.1) | `network` |
-| Auth | featurized | Window | virtual | — (Network optional; Storage and Crypto late-bound, §19.2) | `auth` |
-| Sync | featurized | Tab | virtual | Network (Storage late-bound, §19.3) | `sync` |
-| Realtime | featurized | Tab (hosts the Global transport) | dedicated → virtual | — (Auth optional, §19.4) | `realtime` |
-| Translation | featurized | Tab | virtual (compile: dedicated) | — (Storage, Network and Settings late-bound, §21.2) | `translation` |
-| Analytics | featurized | Tab | virtual | Consent (Network, Storage and Settings optional, §21.3) | `analytics` |
-| Design System | featurized | Page | virtual | — (Settings and Translation optional, §21.4) | `design-system` |
+| Subsystem          | Kind        | Scope                               | Preferred hosts              | Required deps (core)                                                             | Proposal            |
+| ------------------ | ----------- | ----------------------------------- | ---------------------------- | -------------------------------------------------------------------------------- | ------------------- |
+| GlobalState        | centralized | Tab                                 | virtual                      | —                                                                                | `global`            |
+| Queue              | centralized | Tab                                 | virtual                      | GlobalState                                                                      | `queue`             |
+| NotificationCenter | centralized | Tab                                 | virtual                      | GlobalState, Queue                                                               | `notification`      |
+| Logger             | featurized  | Tab                                 | virtual                      | — (late-bound: NotificationCenter, Storage)                                      | `logger`            |
+| Crypto             | featurized  | Tab (key cache shared per origin)   | shared → dedicated → virtual | —                                                                                | `crypto`            |
+| Storage            | featurized  | Tab (coordinator shared per origin) | shared → virtual             | — (uses the key store of `@webkrnl/crypto`)                                      | `storage`, backends |
+| Consent            | featurized  | Window                              | virtual                      | — (grants persist through the kernel's persistence, which Storage backs from M6) | `consent`           |
+| Settings           | featurized  | Window                              | virtual                      | Consent (Auth optional, §21.1)                                                   | `settings`          |
+| Network            | featurized  | Tab                                 | virtual                      | — (GlobalState optional, §19.1)                                                  | `network`           |
+| Auth               | featurized  | Window                              | virtual                      | — (Network optional; Storage and Crypto late-bound, §19.2)                       | `auth`              |
+| Sync               | featurized  | Tab                                 | virtual                      | Network (Storage late-bound, §19.3)                                              | `sync`              |
+| Realtime           | featurized  | Tab (hosts the Global transport)    | dedicated → virtual          | — (Auth optional, §19.4)                                                         | `realtime`          |
+| Translation        | featurized  | Tab                                 | virtual (compile: dedicated) | — (Storage, Network and Settings late-bound, §21.2)                              | `translation`       |
+| Analytics          | featurized  | Tab                                 | virtual                      | Consent (Network, Storage and Settings optional, §21.3)                          | `analytics`         |
+| Design System      | featurized  | Page                                | virtual                      | — (Settings and Translation optional, §21.4)                                     | `design-system`     |
 
 The scopes here are proposals. They are confirmed when each subsystem's proposal is amended in its milestone.
 
@@ -636,10 +640,10 @@ packages/
 
 An adapter exists only where a framework can do something better than the neutral contracts. It never adds behavior that the core lacks.
 
-| Adapter | Scope of the package | Priority |
-|---|---|---|
-| `@webkrnl/vue` | `useView(view)` → `Readonly<ShallowRef<T>>` (subscribes, and unsubscribes on scope dispose); a Vue plugin that boots `platform` and `provide`s it, read with `usePlatform()`; a `vue-router` route source (§11.2.1); Page-scope units tied to component or route lifetime | First. Built in M10. |
-| `@webkrnl/react` | `useView` on top of `useSyncExternalStore`; a context provider; route sources for common routers | To be considered after 1.0 |
+| Adapter          | Scope of the package                                                                                                                                                                                                                                                      | Priority                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `@webkrnl/vue`   | `useView(view)` → `Readonly<ShallowRef<T>>` (subscribes, and unsubscribes on scope dispose); a Vue plugin that boots `platform` and `provide`s it, read with `usePlatform()`; a `vue-router` route source (§11.2.1); Page-scope units tied to component or route lifetime | First. Built in M10.       |
+| `@webkrnl/react` | `useView` on top of `useSyncExternalStore`; a context provider; route sources for common routers                                                                                                                                                                          | To be considered after 1.0 |
 
 `vue`, `vue-router`, `react`, and router packages are **peer dependencies** of their adapter only.
 
@@ -647,40 +651,40 @@ An adapter exists only where a framework can do something better than the neutra
 
 ## 15. Amendments to `proposals/README.md`
 
-| # | Amendment | Status |
-|---|---|---|
-| A1 | Scope send restrictions apply to **broadcasts only**. 1-to-1 requests may target any scope, and replies always return. | Decided |
-| A2 | **Window** scope spans subdomains of one site, through a hub (§11.3). "session-bound" is replaced by "window-bound". | Decided |
-| A3 | **Global** scope is server-backed (§11.4). | Decided |
-| A4 | Cross-boundary tracing uses `traceId` stitching, not returned fingerprints (§9.4). | Decided |
-| A5 | Subsystems and features share one `Unit` model. The initializer's token is the disposer (§3). | Decided |
-| A6 | The "Queue" job is renamed **Scheduler**, to avoid clashing with the Queue subsystem (§8.4). | Decided |
-| A7 | "Payload accessed once" means once **per delivery** (§9.2). | Decided |
-| A8 | One lifecycle state machine, adding `DEGRADED` and `SUSPENDED` (§4). | Decided |
-| A9 | Control-interface "setters" are commands the unit performs on itself (§6). | Decided |
-| A10 | The NotificationCenter holds no queue. All packets enter through the Queue (§10). | Decided |
+| #   | Amendment                                                                                                                                                                 | Status  |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| A1  | Scope send restrictions apply to **broadcasts only**. 1-to-1 requests may target any scope, and replies always return.                                                    | Decided |
+| A2  | **Window** scope spans subdomains of one site, through a hub (§11.3). "session-bound" is replaced by "window-bound".                                                      | Decided |
+| A3  | **Global** scope is server-backed (§11.4).                                                                                                                                | Decided |
+| A4  | Cross-boundary tracing uses `traceId` stitching, not returned fingerprints (§9.4).                                                                                        | Decided |
+| A5  | Subsystems and features share one `Unit` model. The initializer's token is the disposer (§3).                                                                             | Decided |
+| A6  | The "Queue" job is renamed **Scheduler**, to avoid clashing with the Queue subsystem (§8.4).                                                                              | Decided |
+| A7  | "Payload accessed once" means once **per delivery** (§9.2).                                                                                                               | Decided |
+| A8  | One lifecycle state machine, adding `DEGRADED` and `SUSPENDED` (§4).                                                                                                      | Decided |
+| A9  | Control-interface "setters" are commands the unit performs on itself (§6).                                                                                                | Decided |
+| A10 | The NotificationCenter holds no queue. All packets enter through the Queue (§10).                                                                                         | Decided |
 | A11 | Window scope uses the hub where the browser gives it one partition, and the Global transport as a relay where it does not (WebKit); the client reports its reach (§11.3). | Decided |
 
 ## 16. Corrections to the per-subsystem proposals
 
-| Proposal | Correction |
-|---|---|
-| `global` | Replace `BasePacket` (`eventId: symbol`, inline callbacks) with the envelope and callback split (§9.1). Derive the platform status (§4). |
-| `notification` | Remove the event queue, retry, and dead-letter logic. Delegate to the Queue (§10). |
-| `queue` | The NotificationCenter does not poll the Queue. The Queue pushes broadcasts to it (§10). Dead letters are late-bound to Storage (§7.2). |
-| `logger` | No required dependencies. NotificationCenter and Storage are late-bound (§7.2). Trimmed in M4 (see the proposal's amendments). |
-| `consent` | Grants persist through the kernel's persistence, not a direct Storage dependency. Retention and data-subject requests wait for Storage (M6). |
-| `auth` | Remove `credentialCache.hashedPassword`. Password hashing belongs on the server. Handlers replace endpoints, and tokens are never in unit state (§19.2). |
-| `network` | Runs on the main thread only. Offline requests fail at once; Sync keeps work for later. Auth adds its own interceptor, so Network has no dependency on Auth (§19.1). |
-| `sync` | Runs on the main thread. An outbox with idempotency keys and a Web Lock replaces the offline change map (§19.3). |
-| `realtime` | The protocol is pluggable. Network is not a dependency: the backoff comes from core (§19.4). |
-| `crypto` | Keep the rule that Crypto has no Network dependency (§7.1). Keys persist in IndexedDB as non-extractable `CryptoKey` objects (§18.1). |
-| `storage` | The backends run inside the coordinator processor, not as kernel features. Interactive transactions become atomic batches. The coordinator runs the pipeline with portable functions, and the caller validates with zod (§8.8, §18.2). |
-| `design-system` | The proposal was empty. It is written in M9: tokens and theme only (§21.4). |
-| `settings` | Settings are definitions with defaults and validation, `device` or `user`; built-in and app settings share one store. Optional `load` and `save` handlers keep the user settings on the server (§21.1). |
-| `translation` | ICU MessageFormat only, parsed by the package; the `plurals` map is dropped. Storage, Network and Settings are optional. Catalogs refresh with `ETag` through Network, not Sync (§21.2). |
-| `analytics` | The main thread only, because the `pagehide` beacon needs the payload at once. Sampling is for each session. Batches carry an `Idempotency-Key` (§21.3). |
-| `tab-count` | A feature of Global State, with Web Locks and a `BroadcastChannel` fallback. The `SharedWorker` and `localStorage` strategies are dropped (§21.5). |
+| Proposal        | Correction                                                                                                                                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `global`        | Replace `BasePacket` (`eventId: symbol`, inline callbacks) with the envelope and callback split (§9.1). Derive the platform status (§4).                                                                                               |
+| `notification`  | Remove the event queue, retry, and dead-letter logic. Delegate to the Queue (§10).                                                                                                                                                     |
+| `queue`         | The NotificationCenter does not poll the Queue. The Queue pushes broadcasts to it (§10). Dead letters are late-bound to Storage (§7.2).                                                                                                |
+| `logger`        | No required dependencies. NotificationCenter and Storage are late-bound (§7.2). Trimmed in M4 (see the proposal's amendments).                                                                                                         |
+| `consent`       | Grants persist through the kernel's persistence, not a direct Storage dependency. Retention and data-subject requests wait for Storage (M6).                                                                                           |
+| `auth`          | Remove `credentialCache.hashedPassword`. Password hashing belongs on the server. Handlers replace endpoints, and tokens are never in unit state (§19.2).                                                                               |
+| `network`       | Runs on the main thread only. Offline requests fail at once; Sync keeps work for later. Auth adds its own interceptor, so Network has no dependency on Auth (§19.1).                                                                   |
+| `sync`          | Runs on the main thread. An outbox with idempotency keys and a Web Lock replaces the offline change map (§19.3).                                                                                                                       |
+| `realtime`      | The protocol is pluggable. Network is not a dependency: the backoff comes from core (§19.4).                                                                                                                                           |
+| `crypto`        | Keep the rule that Crypto has no Network dependency (§7.1). Keys persist in IndexedDB as non-extractable `CryptoKey` objects (§18.1).                                                                                                  |
+| `storage`       | The backends run inside the coordinator processor, not as kernel features. Interactive transactions become atomic batches. The coordinator runs the pipeline with portable functions, and the caller validates with zod (§8.8, §18.2). |
+| `design-system` | The proposal was empty. It is written in M9: tokens and theme only (§21.4).                                                                                                                                                            |
+| `settings`      | Settings are definitions with defaults and validation, `device` or `user`; built-in and app settings share one store. Optional `load` and `save` handlers keep the user settings on the server (§21.1).                                |
+| `translation`   | ICU MessageFormat only, parsed by the package; the `plurals` map is dropped. Storage, Network and Settings are optional. Catalogs refresh with `ETag` through Network, not Sync (§21.2).                                               |
+| `analytics`     | The main thread only, because the `pagehide` beacon needs the payload at once. Sampling is for each session. Batches carry an `Idempotency-Key` (§21.3).                                                                               |
+| `tab-count`     | A feature of Global State, with Web Locks and a `BroadcastChannel` fallback. The `SharedWorker` and `localStorage` strategies are dropped (§21.5).                                                                                     |
 
 ---
 
@@ -688,14 +692,14 @@ An adapter exists only where a framework can do something better than the neutra
 
 Porting the Logger and Consent onto the kernel tested the unit contract on real subsystems. What caused friction, and what changed:
 
-| Friction | Change |
-|---|---|
-| A late-bound unit had a buffer (`LateBinding`) but no way to notice its target start or stop, so something outside had to bind it. | `ctx.watch(target, listener)`: called at once and whenever the target's control interface changes; stops on teardown (§7.2). |
-| Errors a unit recovers from (a failed sink write, a refused broadcast) had nowhere to go but `console`. | `ctx.report(error)`: sends it to the kernel's `onError` without changing the lifecycle. |
-| Views are snapshots: between notifications, the Queue's `trails` and the Notification Center's `history` can drop records, so a log built on them loses some. | `observe(observer)` on the Queue and the Notification Center pushes every record (§6.1). |
-| A bounded list in `createStore` copied and froze the whole array on every append. | `createRingBuffer` in core; the Queue's trails, the Notification Center's history and the Logger's rings use it. |
-| What `init` builds (the Logger's `log` function, which needs the context) is not reachable from `control` except through a closure variable. | No change yet. The closure is simple and local; revisit if more subsystems need it. |
-| The catalogue made Consent require Storage, which does not exist until M6. | Persisted state already goes through the kernel's `persistence`; Storage will back that adapter. Consent has no required dependency (§13). |
+| Friction                                                                                                                                                      | Change                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| A late-bound unit had a buffer (`LateBinding`) but no way to notice its target start or stop, so something outside had to bind it.                            | `ctx.watch(target, listener)`: called at once and whenever the target's control interface changes; stops on teardown (§7.2).               |
+| Errors a unit recovers from (a failed sink write, a refused broadcast) had nowhere to go but `console`.                                                       | `ctx.report(error)`: sends it to the kernel's `onError` without changing the lifecycle.                                                    |
+| Views are snapshots: between notifications, the Queue's `trails` and the Notification Center's `history` can drop records, so a log built on them loses some. | `observe(observer)` on the Queue and the Notification Center pushes every record (§6.1).                                                   |
+| A bounded list in `createStore` copied and froze the whole array on every append.                                                                             | `createRingBuffer` in core; the Queue's trails, the Notification Center's history and the Logger's rings use it.                           |
+| What `init` builds (the Logger's `log` function, which needs the context) is not reachable from `control` except through a closure variable.                  | No change yet. The closure is simple and local; revisit if more subsystems need it.                                                        |
+| The catalogue made Consent require Storage, which does not exist until M6.                                                                                    | Persisted state already goes through the kernel's `persistence`; Storage will back that adapter. Consent has no required dependency (§13). |
 
 The unit shape itself (state with a policy, views, commands, optional dependencies, `receive` and `subscribes`) needed no change.
 
@@ -935,13 +939,13 @@ This section is the design of milestone M8. It makes §11.4 concrete, gives WebK
 
 ### 20.4 Sign-out in the other subsystems (§5.1)
 
-| Subsystem | Wipes on sign-out or a change of user |
-|---|---|
-| Network | Every cached response, in memory and in Storage |
-| Sync | The outbox (waiting, failed and conflicting changes) and the pull cursors |
-| Realtime | The publish buffer, presence and the Global outbox. The topic listeners stay, because they belong to the app. The socket opens again with the new token, or closes. |
-| Queue | The dead letters, in memory and in Storage |
-| Logger | The log entries, in memory and in Storage |
+| Subsystem | Wipes on sign-out or a change of user                                                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Network   | Every cached response, in memory and in Storage                                                                                                                     |
+| Sync      | The outbox (waiting, failed and conflicting changes) and the pull cursors                                                                                           |
+| Realtime  | The publish buffer, presence and the Global outbox. The topic listeners stay, because they belong to the app. The socket opens again with the new token, or closes. |
+| Queue     | The dead letters, in memory and in Storage                                                                                                                          |
+| Logger    | The log entries, in memory and in Storage                                                                                                                           |
 
 ### 20.5 The gate
 

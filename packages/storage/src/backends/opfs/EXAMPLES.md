@@ -16,9 +16,22 @@ const probe = await backend.probe();
 console.log('available:', probe.available);
 await backend.initialize();
 
-const key = buildCanonicalKey({ domain: 'editor', platform: 'browser', platformVersion: 1, callingModule: 'drafts', actualKey: 'beach' });
+const key = buildCanonicalKey({
+  domain: 'editor',
+  platform: 'browser',
+  platformVersion: 1,
+  callingModule: 'drafts',
+  actualKey: 'beach',
+});
 const big = 'pixel'.repeat(20_000);
-await backend.write(key, { payload: big, schema_version: 1, written_at: 1, expires_at: null, weight: 1, backend: 'opfs' });
+await backend.write(key, {
+  payload: big,
+  schema_version: 1,
+  written_at: 1,
+  expires_at: null,
+  weight: 1,
+  backend: 'opfs',
+});
 
 const read = await backend.read(key);
 console.log('read length:', read?.payload.length);
@@ -47,8 +60,21 @@ import { OPFSBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new OPFSBackend({ rootDirName: 'import' });
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'editor', platform: 'browser', platformVersion: 1, callingModule: 'import', actualKey: name });
-const file = { payload: 'data', schema_version: 1, written_at: 1, expires_at: null, weight: 1, backend: 'opfs' as const };
+  buildCanonicalKey({
+    domain: 'editor',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'import',
+    actualKey: name,
+  });
+const file = {
+  payload: 'data',
+  schema_version: 1,
+  written_at: 1,
+  expires_at: null,
+  weight: 1,
+  backend: 'opfs' as const,
+};
 
 const tx = await backend.beginTransaction('compensating');
 await backend.write(key('a'), file, { transactionId: tx.id });

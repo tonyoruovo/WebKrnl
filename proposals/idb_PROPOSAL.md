@@ -12,13 +12,13 @@ The IndexedDB storage backend. Highest-priority persistent backend in the fallba
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `idb.types.ts` | All IDB-specific types: `IDBRecord`, `IDBBackendConfig`, `IDBBufferedOp`, `IIDBTransaction` |
-| `idb.utils.ts` | IDB Promise wrappers (`idbRequest`, `idbTransactionDone`) and cursor helpers (`cursorCollectPrefix`, `cursorDeleteMatching`, `collectExpired`, `collectByWeight`, `countPrefix`, `openDatabase`) |
-| `idb.backend.ts` | `IDBBackend` class — implements `IStorageBackend<string>` |
-| `idb.transaction.ts` | `IDBTransaction` — buffer-and-replay serializable transaction |
-| `index.ts` | Barrel export |
+| File                 | Purpose                                                                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `idb.types.ts`       | All IDB-specific types: `IDBRecord`, `IDBBackendConfig`, `IDBBufferedOp`, `IIDBTransaction`                                                                                                      |
+| `idb.utils.ts`       | IDB Promise wrappers (`idbRequest`, `idbTransactionDone`) and cursor helpers (`cursorCollectPrefix`, `cursorDeleteMatching`, `collectExpired`, `collectByWeight`, `countPrefix`, `openDatabase`) |
+| `idb.backend.ts`     | `IDBBackend` class — implements `IStorageBackend<string>`                                                                                                                                        |
+| `idb.transaction.ts` | `IDBTransaction` — buffer-and-replay serializable transaction                                                                                                                                    |
+| `index.ts`           | Barrel export                                                                                                                                                                                    |
 
 ---
 
@@ -83,13 +83,13 @@ Every canonical key maps to exactly one flat `IDBRecord`:
 
 ```ts
 interface IDBRecord {
-  key:            CanonicalKey  // IDB keyPath — auto-indexed
-  payload:        string        // encrypted, opaque to this backend
-  schema_version: number
-  written_at:     number        // Unix ms
-  expires_at:     number | null // null = never expires; null not indexed
-  weight:         number
-  backend:        BackendKind
+  key: CanonicalKey; // IDB keyPath — auto-indexed
+  payload: string; // encrypted, opaque to this backend
+  schema_version: number;
+  written_at: number; // Unix ms
+  expires_at: number | null; // null = never expires; null not indexed
+  weight: number;
+  backend: BackendKind;
 }
 ```
 
@@ -179,12 +179,12 @@ IDB's storage engine provides its own durability guarantees. A committed `readwr
 
 ## Indexes vs. full-scan comparison
 
-| Operation | Without indexes | With `by_expires_at` / `by_weight` |
-|---|---|---|
-| TTL sweep | Full store scan → check `expires_at` in JS | Index cursor bounded by `upperBound(now)` |
-| Eviction sort | Load all records → sort in JS | Index cursor yields records in weight order |
-| Prefix query | Full store scan | Key cursor bounded by `[prefix, prefix\uffff]` |
-| Count | Full store scan | `store.count(range?)` — native, O(log n) |
+| Operation     | Without indexes                            | With `by_expires_at` / `by_weight`             |
+| ------------- | ------------------------------------------ | ---------------------------------------------- |
+| TTL sweep     | Full store scan → check `expires_at` in JS | Index cursor bounded by `upperBound(now)`      |
+| Eviction sort | Load all records → sort in JS              | Index cursor yields records in weight order    |
+| Prefix query  | Full store scan                            | Key cursor bounded by `[prefix, prefix\uffff]` |
+| Count         | Full store scan                            | `store.count(range?)` — native, O(log n)       |
 
 ---
 
@@ -225,43 +225,43 @@ close()
 ## Usage example
 
 ```ts
-import { IDBBackend } from './backends/indexeddb'
+import { IDBBackend } from './backends/indexeddb';
 
-const backend = new IDBBackend({ dbName: 'app-storage' })
+const backend = new IDBBackend({ dbName: 'app-storage' });
 
-const probe = await backend.probe()
-if (!probe.available) throw new Error(probe.reason)
+const probe = await backend.probe();
+if (!probe.available) throw new Error(probe.reason);
 
-await backend.initialize()
+await backend.initialize();
 
 // Direct write (payload already encrypted by pipeline)
-const key = 'myapp:chrome:130:auth:session' as CanonicalKey
+const key = 'myapp:chrome:130:auth:session' as CanonicalKey;
 await backend.write(key, {
-  payload:        'AES-GCM-ENCRYPTED',
+  payload: 'AES-GCM-ENCRYPTED',
   schema_version: 1,
-  written_at:     Date.now(),
-  expires_at:     Date.now() + 3_600_000,
-  weight:         5,
-  backend:        'indexeddb',
-})
+  written_at: Date.now(),
+  expires_at: Date.now() + 3_600_000,
+  weight: 5,
+  backend: 'indexeddb',
+});
 
 // Read
-const envelope = await backend.read(key)
+const envelope = await backend.read(key);
 // envelope.payload === 'AES-GCM-ENCRYPTED'
 
 // Serializable transaction
-const tx = await backend.beginTransaction()
+const tx = await backend.beginTransaction();
 try {
-  await backend.write(keyA, envelopeA, { transactionId: tx.id })
-  await backend.delete(keyB,           { transactionId: tx.id })
-  await tx.commit()
+  await backend.write(keyA, envelopeA, { transactionId: tx.id });
+  await backend.delete(keyB, { transactionId: tx.id });
+  await tx.commit();
   // Both ops committed atomically. If either fails, IDB rolls back both.
 } catch {
-  await tx.rollback()
+  await tx.rollback();
   // Buffer discarded; nothing was written to IDB.
 }
 
-await backend.close()
+await backend.close();
 ```
 
 ---

@@ -26,27 +26,35 @@ other manager reports to, but no manager depends on it.
 ## Features
 
 ### Metric Collector
+
 **Purpose**: Record metrics.  
 **Responsibilities**:
+
 - Increment counters, set gauges, and fill histograms.
 - **Weight**: MEDIUM.
 
 ### Event Tracker
+
 **Purpose**: Track usage events.  
 **Responsibilities**:
+
 - Record an event with a name and properties.
 - Respect sampling.
 - **Weight**: MEDIUM.
 
 ### Aggregator
+
 **Purpose**: Roll up metrics.  
 **Responsibilities**:
+
 - Compute totals, averages, and percentiles before flush.
 - **Weight**: LOW.
 
 ### Flusher
+
 **Purpose**: Send metrics to the server.  
 **Responsibilities**:
+
 - Batch metrics and flush on an interval.
 - Queue offline and flush on reconnect.
 - Respect consent and data-saver.
@@ -57,6 +65,7 @@ other manager reports to, but no manager depends on it.
 ## Life Cycle Manager
 
 ### Initialization Sequence
+
 1. Read `analyticsConfig` from Global State.
 2. Check consent. If analytics is not granted, stay idle.
 3. Subscribe to `global:network-status-changed` to flush on reconnect.
@@ -64,6 +73,7 @@ other manager reports to, but no manager depends on it.
 5. Log initialization complete.
 
 ### Destruction Sequence
+
 1. Stop the flush timer.
 2. Flush once more if the tab closes abruptly (via `sendBeacon`).
 3. Log shutdown complete.
@@ -78,13 +88,16 @@ Aggregation and serialization can run off the main thread. A dedicated worker is
 the default. A virtual worker on the main thread is the fallback.
 
 ### Receiver
+
 - Receives increment, record, and flush commands.
 
 ### Processor
+
 - **Aggregation Processor**: rolls up metrics.
 - **Serialization Processor**: builds the payload.
 
 ### Dispatcher
+
 - Sends the payload through Network.
 - Reports flush failures to the Logger.
 
@@ -117,10 +130,12 @@ function shouldFlush() {
 ## Control Interface
 
 ### Getters (No-arg)
+
 - `getMetrics(): Metric[]`.
 - `getSessionStats(): unknown`.
 
 ### Actions
+
 - `increment(name, amount?): void`.
 - `recordGauge(name, value): void`.
 - `recordHistogram(name, value): void`.
@@ -128,6 +143,7 @@ function shouldFlush() {
 - `flush(): Promise<void>`.
 
 ### Subscriptions
+
 - `global:network-status-changed` - flush on reconnect.
 - `consent:changed` - start or stop collection.
 
@@ -163,21 +179,26 @@ export type AnalyticsPacket = MetricsPacket;
 ## Special Considerations
 
 ### Consent first
+
 Collection and flush both check consent. If analytics is not granted, the manager
 stays idle and collects nothing.
 
 ### Batching
+
 Metrics flush in batches, not one request per event. This conserves bandwidth and
 matches the data-saver requirement.
 
 ### Offline queue
+
 When offline, metrics queue in Storage. They flush on reconnect.
 
 ### Sampling
+
 The sample rate caps collection volume. Low-value events drop when the rate is
 below one.
 
 ### Shutdown
+
 On abrupt shutdown, the manager flushes a final batch with `sendBeacon`.
 
 ---

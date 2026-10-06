@@ -14,7 +14,13 @@ import { IDBBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new IDBBackend({ dbName: 'mail' });
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'mail', platform: 'browser', platformVersion: 1, callingModule: 'drafts', actualKey: name });
+  buildCanonicalKey({
+    domain: 'mail',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'drafts',
+    actualKey: name,
+  });
 const draft = (subject: string, written_at: number) => ({
   payload: JSON.stringify({ subject }),
   schema_version: 1,
@@ -52,7 +58,13 @@ import { IDBBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new IDBBackend({ dbName: 'budget' });
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'budget', platform: 'browser', platformVersion: 1, callingModule: 'pots', actualKey: name });
+  buildCanonicalKey({
+    domain: 'budget',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'pots',
+    actualKey: name,
+  });
 const pot = (amount: number) => ({
   payload: String(amount),
   schema_version: 1,
@@ -71,7 +83,11 @@ const ok = await backend.beginTransaction('serializable');
 await backend.write(key('food'), pot(70), { transactionId: ok.id });
 await backend.write(key('fun'), pot(30), { transactionId: ok.id });
 await ok.commit();
-console.log('after commit:', (await backend.read(key('food')))?.payload, (await backend.read(key('fun')))?.payload);
+console.log(
+  'after commit:',
+  (await backend.read(key('food')))?.payload,
+  (await backend.read(key('fun')))?.payload,
+);
 await backend.close();
 ```
 

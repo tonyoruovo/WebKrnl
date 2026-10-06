@@ -117,7 +117,11 @@ const laptop = await device();
 const phone = await device();
 const token = await laptop.crypto.commands.encrypt('Shopping list: eggs, tea');
 console.log('phone reads:', await phone.crypto.commands.decrypt(token));
-console.log('same key id:', laptop.crypto.views.state.getSnapshot().active?.encrypt === phone.crypto.views.state.getSnapshot().active?.encrypt);
+console.log(
+  'same key id:',
+  laptop.crypto.views.state.getSnapshot().active?.encrypt ===
+    phone.crypto.views.state.getSnapshot().active?.encrypt,
+);
 await laptop.kernel.stop();
 await phone.kernel.stop();
 ```

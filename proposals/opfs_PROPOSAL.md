@@ -12,14 +12,14 @@ The Origin Private File System (OPFS) storage backend. Preferred persistent back
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `opfs.types.ts` | All OPFS-specific types: manifest, WAL ops, IO adapter interfaces, config, transaction interface |
-| `opfs.io.ts` | `SyncFileIOAdapter` (Worker) and `AsyncFileIOAdapter` (main thread) + factory detection |
-| `opfs.utils.ts` | Pure helpers: manifest R/W, WAL R/W/clear, file path derivation, directory pruning, base64 encoding |
-| `opfs.ts` | `OPFSBackend` class - implements `IStorageBackend<string>` |
-| `transaction.ts` | `OPFSTransaction` - WAL-backed compensating transaction |
-| `index.ts` | Barrel export |
+| File             | Purpose                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------- |
+| `opfs.types.ts`  | All OPFS-specific types: manifest, WAL ops, IO adapter interfaces, config, transaction interface    |
+| `opfs.io.ts`     | `SyncFileIOAdapter` (Worker) and `AsyncFileIOAdapter` (main thread) + factory detection             |
+| `opfs.utils.ts`  | Pure helpers: manifest R/W, WAL R/W/clear, file path derivation, directory pruning, base64 encoding |
+| `opfs.ts`        | `OPFSBackend` class - implements `IStorageBackend<string>`                                          |
+| `transaction.ts` | `OPFSTransaction` - WAL-backed compensating transaction                                             |
+| `index.ts`       | Barrel export                                                                                       |
 
 ---
 
@@ -150,10 +150,10 @@ All WAL ops are idempotent: writing the same file twice produces the same result
 
 The backend runs in two different contexts with different IO capabilities:
 
-| Context | Adapter | Mechanism | Notes |
-|---|---|---|---|
-| SharedWorker / DedicatedWorker | `SyncFileIOAdapter` | `FileSystemSyncAccessHandle` | Synchronous, exclusive lock per file |
-| Main UI thread | `AsyncFileIOAdapter` | `FileSystemWritableFileStream` | Fully async, no persistent lock |
+| Context                        | Adapter              | Mechanism                      | Notes                                |
+| ------------------------------ | -------------------- | ------------------------------ | ------------------------------------ |
+| SharedWorker / DedicatedWorker | `SyncFileIOAdapter`  | `FileSystemSyncAccessHandle`   | Synchronous, exclusive lock per file |
+| Main UI thread                 | `AsyncFileIOAdapter` | `FileSystemWritableFileStream` | Fully async, no persistent lock      |
 
 `detectIOAdapterFactory()` probes `typeof window === 'undefined'` and the presence of `createSyncAccessHandle` on `FileSystemFileHandle.prototype` to select the right factory automatically. This can be overridden via `OPFSBackendConfig.context` for testing.
 
@@ -239,45 +239,45 @@ close()
 ## Usage example
 
 ```ts
-import { OPFSBackend } from './opfs'
+import { OPFSBackend } from './opfs';
 
 // Inside a SharedWorker - sync IO auto-detected
-const backend = new OPFSBackend({ rootDirName: 'app-storage' })
+const backend = new OPFSBackend({ rootDirName: 'app-storage' });
 
-const probe = await backend.probe()
-if (!probe.available) throw new Error(probe.reason)
+const probe = await backend.probe();
+if (!probe.available) throw new Error(probe.reason);
 
-await backend.initialize()
+await backend.initialize();
 
 // Direct write (payload is already an encrypted string from the pipeline)
-const key = 'myapp:chrome:130:auth:session' as CanonicalKey
+const key = 'myapp:chrome:130:auth:session' as CanonicalKey;
 await backend.write(key, {
-  payload:        'AES-GCM-ENCRYPTED-STRING',
+  payload: 'AES-GCM-ENCRYPTED-STRING',
   schema_version: 1,
-  written_at:     Date.now(),
-  expires_at:     Date.now() + 3_600_000,
-  weight:         5,
-  backend:        'opfs',
-})
+  written_at: Date.now(),
+  expires_at: Date.now() + 3_600_000,
+  weight: 5,
+  backend: 'opfs',
+});
 
 // Read
-const envelope = await backend.read(key)
+const envelope = await backend.read(key);
 // envelope.payload === 'AES-GCM-ENCRYPTED-STRING'
 
 // Transactional write
-const tx = await backend.beginTransaction()
+const tx = await backend.beginTransaction();
 try {
-  await backend.write(keyA, envelopeA, { transactionId: tx.id })
-  await backend.delete(keyB,            { transactionId: tx.id })
-  await tx.commit()
+  await backend.write(keyA, envelopeA, { transactionId: tx.id });
+  await backend.delete(keyB, { transactionId: tx.id });
+  await tx.commit();
   // WAL written -> ops applied -> manifest rewritten -> WAL cleared
   // WAL written -> ops applied -> manifest rewritten -> WAL cleared
 } catch {
-  await tx.rollback()
+  await tx.rollback();
   // ops[] discarded, zero filesystem changes
 }
 
-await backend.close()
+await backend.close();
 ```
 
 ---

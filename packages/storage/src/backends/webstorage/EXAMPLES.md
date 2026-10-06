@@ -13,9 +13,22 @@ import { SessionStorageBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new SessionStorageBackend({ keyPrefix: 'shop:' });
 await backend.initialize();
-const key = buildCanonicalKey({ domain: 'shop', platform: 'browser', platformVersion: 1, callingModule: 'checkout', actualKey: 'step' });
+const key = buildCanonicalKey({
+  domain: 'shop',
+  platform: 'browser',
+  platformVersion: 1,
+  callingModule: 'checkout',
+  actualKey: 'step',
+});
 
-await backend.write(key, { payload: '"address"', schema_version: 1, written_at: 1, expires_at: null, weight: 1, backend: 'sessionstorage' });
+await backend.write(key, {
+  payload: '"address"',
+  schema_version: 1,
+  written_at: 1,
+  expires_at: null,
+  weight: 1,
+  backend: 'sessionstorage',
+});
 console.log('step:', JSON.parse((await backend.read(key))!.payload));
 console.log('raw key in sessionStorage:', sessionStorage.key(0));
 await backend.close();
@@ -38,7 +51,13 @@ import { LocalStorageBackend, buildCanonicalKey } from '@webkrnl/storage';
 const backend = new LocalStorageBackend({ keyPrefix: 'app:' });
 await backend.initialize();
 const key = (name: string) =>
-  buildCanonicalKey({ domain: 'app', platform: 'browser', platformVersion: 1, callingModule: 'settings', actualKey: name });
+  buildCanonicalKey({
+    domain: 'app',
+    platform: 'browser',
+    platformVersion: 1,
+    callingModule: 'settings',
+    actualKey: name,
+  });
 const setting = (value: string) => ({
   payload: JSON.stringify(value),
   schema_version: 1,

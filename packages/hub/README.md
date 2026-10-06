@@ -22,8 +22,8 @@ The client detects which case it is in, uses the relay only when needed, and del
 
 ## Entry points
 
-| Import          | Contents                                                                                                                               |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Import         | Contents                                                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `@webkrnl/hub` | `createWindowTransport`, `createWindowClient`, `renderHubPage`, `iframeLink`, `channelLink`, the window cookie, `originAllowed`, types |
 
 ## Usage
@@ -116,15 +116,15 @@ The client also writes one session cookie, `__platform_window`, for the apex dom
 
 ## Options (`createWindowTransport`, `createWindowClient`)
 
-| Option        | Default             | Purpose                                                             |
-| ------------- | ------------------- | ------------------------------------------------------------------- |
-| `hubUrl`      | none                | The hub page on the apex. Leave it out for a single-origin app.     |
-| `channel`     | `__platform_window` | The `BroadcastChannel` name; must match `renderHubPage`'s.          |
+| Option        | Default             | Purpose                                                                                                             |
+| ------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `hubUrl`      | none                | The hub page on the apex. Leave it out for a single-origin app.                                                     |
+| `channel`     | `__platform_window` | The `BroadcastChannel` name; must match `renderHubPage`'s.                                                          |
 | `relay`       | from Realtime       | The relay for partitioned browsers. By default, the Window relay of Realtime's Global transport, when there is one. |
-| `timeoutMs`   | `5000`              | Wait for the hub's `welcome` and for each `pong`.                   |
-| `heartbeatMs` | `10000`             | How often the hub is pinged.                                        |
-| `retryBaseMs` | `500`               | Reconnection backoff base.                                          |
-| `bufferSize`  | `100`               | Broadcasts held while connecting.                                   |
+| `timeoutMs`   | `5000`              | Wait for the hub's `welcome` and for each `pong`.                                                                   |
+| `heartbeatMs` | `10000`             | How often the hub is pinged.                                                                                        |
+| `retryBaseMs` | `500`               | Reconnection backoff base.                                                                                          |
+| `bufferSize`  | `100`               | Broadcasts held while connecting.                                                                                   |
 
 ## Testing
 

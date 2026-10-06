@@ -10,16 +10,19 @@
 > - Dropped for now: query indexes, compaction, backups, an in-memory read cache, field-level encryption, statistics, and the WebSQL and cookie fallbacks.
 
 # Storage Manager
+
 ```
- /\        /\   
+ /\        /\
  ||   ||   ||  ||
  \/   \/   \/  \/
 ```
+
 - Serialization
 - Encryption
 - Compression
 
 ## Initial Proposal
+
 - Transactions spanning multiple backends will be aborted the instant a backend switch is done/triggered
 - All implementations will be running a single shared-worker instance. This means that all CRUD ops will be done from a single thread and ops will be scheduled using an internal scheduler
 - Encryption keys will use uuid provided remote once at boot (initialization, hard refresh). These will leave in-memory
@@ -32,16 +35,17 @@
 - Using the `BroadcastChannel`, change event are fired on the mutative ops
 - Support table (capabilities) can be generated from the global state that have already computed these values
 - Canonical identifiers/keys in the format `<domain>:<platform>:<platform-version>:<calling-module>:<actual-key>` where:
-    - `domain` is a string that represent the name/identifier of the app, website or program
-    - `platform` is a string which is one of `android`, `ios`, `win`, `unix`, `mac`, `safari`, `chrome`, `edge`, `firefox`, `opera`, `browser` and `iot`
-    - `platform-version` is a positive number
-    - `calling-module` is an identifier of the page/logical-module from which the write op was called
-    - `actual-keys` is the user-defined key for the value
+  - `domain` is a string that represent the name/identifier of the app, website or program
+  - `platform` is a string which is one of `android`, `ios`, `win`, `unix`, `mac`, `safari`, `chrome`, `edge`, `firefox`, `opera`, `browser` and `iot`
+  - `platform-version` is a positive number
+  - `calling-module` is an identifier of the page/logical-module from which the write op was called
+  - `actual-keys` is the user-defined key for the value
 - Unified external change event for cross-tab storage sync
 - Zod schema versioning by applying `schema_version` state for each entry saved
 - User defined parsers and serializers/formatters inside schemas
 
 **Storage - Workflow**
+
 ```
 +-------------------------------------------------------------------------+
 |                          VUE 3.3+ APPLICATION                           |
@@ -225,6 +229,7 @@
 ```
 
 ## Initial Proposal - 2
+
 ### States
 
 The state object for the Storage Manager subsystem contains:
@@ -858,246 +863,246 @@ shouldEvictFromCache(cacheEntry) {
 /**
  * Shared Type Definitions
  */
-export type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage'
-export type CRUDOperation = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE'
-export type TransactionMode = 'readonly' | 'readwrite'
-export type Importance = 'HIGH' | 'MEDIUM' | 'LOW'
+export type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
+export type CRUDOperation = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE';
+export type TransactionMode = 'readonly' | 'readwrite';
+export type Importance = 'HIGH' | 'MEDIUM' | 'LOW';
 
 export interface BasePacket<P, R = any> {
-  eventId: symbol
-  actionName: string
-  payload: P
-  importance: Importance
-  onComplete: (result: R) => void
-  onError: (error: Error) => void
-  onLog: ((fingerprints: Fingerprint[]) => void) | null
-  fingerprints: Fingerprint[]
+  eventId: symbol;
+  actionName: string;
+  payload: P;
+  importance: Importance;
+  onComplete: (result: R) => void;
+  onError: (error: Error) => void;
+  onLog: ((fingerprints: Fingerprint[]) => void) | null;
+  fingerprints: Fingerprint[];
 }
 
 /**
  * 1. Store Registration Packet
  */
 export interface RegisterStorePayload {
-  name: string
-  type: StorageType
-  schema: any // ZodSchema
-  version: number
+  name: string;
+  type: StorageType;
+  schema: any; // ZodSchema
+  version: number;
   indexes: Array<{
-    name: string
-    keyPath: string | string[]
-    unique: boolean
-  }>
-  ttl: number | null
-  maxSize: number | null
-  evictionPolicy: 'LRU' | 'FIFO' | 'LFU' | 'NONE'
-  encryptedFields: string[]
+    name: string;
+    keyPath: string | string[];
+    unique: boolean;
+  }>;
+  ttl: number | null;
+  maxSize: number | null;
+  evictionPolicy: 'LRU' | 'FIFO' | 'LFU' | 'NONE';
+  encryptedFields: string[];
 }
 
 export interface RegisterStoreResult {
-  success: boolean
-  storeName: string
-  version: number
+  success: boolean;
+  storeName: string;
+  version: number;
 }
 
-export type RegisterStorePacket = BasePacket<RegisterStorePayload, RegisterStoreResult>
+export type RegisterStorePacket = BasePacket<RegisterStorePayload, RegisterStoreResult>;
 
 /**
  * 2. CRUD Operation Packet
  */
 export interface CRUDOperationPayload {
-  operation: CRUDOperation
-  storeName: string
-  key?: any
-  data?: any
+  operation: CRUDOperation;
+  storeName: string;
+  key?: any;
+  data?: any;
   options: {
-    skipValidation: boolean
-    skipCache: boolean
-    priority: number
-    transactionId: string | null
-  }
-  subsystemId: string
+    skipValidation: boolean;
+    skipCache: boolean;
+    priority: number;
+    transactionId: string | null;
+  };
+  subsystemId: string;
 }
 
 export interface CRUDOperationResult {
-  success: boolean
-  operation: CRUDOperation
-  storeName: string
-  key: any
-  data: any
-  version: number
-  timestamp: number
-  fromCache: boolean
+  success: boolean;
+  operation: CRUDOperation;
+  storeName: string;
+  key: any;
+  data: any;
+  version: number;
+  timestamp: number;
+  fromCache: boolean;
 }
 
-export type CRUDOperationPacket = BasePacket<CRUDOperationPayload, CRUDOperationResult>
+export type CRUDOperationPacket = BasePacket<CRUDOperationPayload, CRUDOperationResult>;
 
 /**
  * 3. Query Packet
  */
 export interface QueryPayload {
-  storeName: string
+  storeName: string;
   filters: {
-    where: Record<string, any>
-    orderBy: { field: string; direction: 'asc' | 'desc' } | null
-    limit: number | null
-    offset: number | null
-    tags: string[]
-  }
+    where: Record<string, any>;
+    orderBy: { field: string; direction: 'asc' | 'desc' } | null;
+    limit: number | null;
+    offset: number | null;
+    tags: string[];
+  };
   options: {
-    useCache: boolean
-    includeMetadata: boolean
-  }
+    useCache: boolean;
+    includeMetadata: boolean;
+  };
 }
 
 export interface QueryResult {
-  results: any[]
-  totalCount: number
-  hasMore: boolean
-  executionTime: number
-  fromCache: boolean
+  results: any[];
+  totalCount: number;
+  hasMore: boolean;
+  executionTime: number;
+  fromCache: boolean;
 }
 
-export type QueryPacket = BasePacket<QueryPayload, QueryResult>
+export type QueryPacket = BasePacket<QueryPayload, QueryResult>;
 
 /**
  * 4. Transaction Packet
  */
 export interface TransactionPayload {
-  action: 'BEGIN' | 'COMMIT' | 'ROLLBACK'
-  transactionId: string
-  storeNames: string[]
-  mode: TransactionMode
-  operations: CRUDOperationPayload[]
+  action: 'BEGIN' | 'COMMIT' | 'ROLLBACK';
+  transactionId: string;
+  storeNames: string[];
+  mode: TransactionMode;
+  operations: CRUDOperationPayload[];
 }
 
 export interface TransactionResult {
-  transactionId: string
-  action: 'BEGIN' | 'COMMIT' | 'ROLLBACK'
-  success: boolean
-  operationsCompleted: number
-  operationsFailed: number
-  duration: number
+  transactionId: string;
+  action: 'BEGIN' | 'COMMIT' | 'ROLLBACK';
+  success: boolean;
+  operationsCompleted: number;
+  operationsFailed: number;
+  duration: number;
 }
 
-export type TransactionPacket = BasePacket<TransactionPayload, TransactionResult>
+export type TransactionPacket = BasePacket<TransactionPayload, TransactionResult>;
 
 /**
  * 5. CRUD Event Packet (Broadcast)
  */
 export interface CRUDEventPayload {
-  operation: CRUDOperation
-  storeName: string
-  key: any
-  data: any
-  previousData: any | null // For UPDATE operations
-  version: number
-  timestamp: number
-  subsystemId: string
-  transactionId: string | null
+  operation: CRUDOperation;
+  storeName: string;
+  key: any;
+  data: any;
+  previousData: any | null; // For UPDATE operations
+  version: number;
+  timestamp: number;
+  subsystemId: string;
+  transactionId: string | null;
 }
 
-export type CRUDEventPacket = BasePacket<CRUDEventPayload, void>
+export type CRUDEventPacket = BasePacket<CRUDEventPayload, void>;
 
 /**
  * 6. Quota Warning Packet
  */
 export interface QuotaWarningPayload {
-  severity: 'WARNING' | 'CRITICAL'
-  totalQuota: number
-  usedQuota: number
-  availableQuota: number
-  usagePercentage: number
-  topStores: Array<{ storeName: string; size: number; percentage: number }>
-  timestamp: number
+  severity: 'WARNING' | 'CRITICAL';
+  totalQuota: number;
+  usedQuota: number;
+  availableQuota: number;
+  usagePercentage: number;
+  topStores: Array<{ storeName: string; size: number; percentage: number }>;
+  timestamp: number;
 }
 
-export type QuotaWarningPacket = BasePacket<QuotaWarningPayload, void>
+export type QuotaWarningPacket = BasePacket<QuotaWarningPayload, void>;
 
 /**
  * 7. Migration Packet
  */
 export interface MigrationPayload {
-  storeName: string
-  fromVersion: number
-  toVersion: number
-  migrationScript: string | Function
-  validateAfter: boolean
+  storeName: string;
+  fromVersion: number;
+  toVersion: number;
+  migrationScript: string | Function;
+  validateAfter: boolean;
 }
 
 export interface MigrationResult {
-  success: boolean
-  storeName: string
-  fromVersion: number
-  toVersion: number
-  recordsMigrated: number
-  duration: number
-  errors: string[]
+  success: boolean;
+  storeName: string;
+  fromVersion: number;
+  toVersion: number;
+  recordsMigrated: number;
+  duration: number;
+  errors: string[];
 }
 
-export type MigrationPacket = BasePacket<MigrationPayload, MigrationResult>
+export type MigrationPacket = BasePacket<MigrationPayload, MigrationResult>;
 
 /**
  * 8. Compaction Packet
  */
 export interface CompactionPayload {
-  storeName: string
-  force: boolean
-  estimateOnly: boolean
+  storeName: string;
+  force: boolean;
+  estimateOnly: boolean;
 }
 
 export interface CompactionResult {
-  success: boolean
-  storeName: string
-  spaceReclaimed: number
-  recordsRemoved: number
-  duration: number
-  fragmentationBefore: number
-  fragmentationAfter: number
+  success: boolean;
+  storeName: string;
+  spaceReclaimed: number;
+  recordsRemoved: number;
+  duration: number;
+  fragmentationBefore: number;
+  fragmentationAfter: number;
 }
 
-export type CompactionPacket = BasePacket<CompactionPayload, CompactionResult>
+export type CompactionPacket = BasePacket<CompactionPayload, CompactionResult>;
 
 /**
  * 9. Backup/Restore Packet
  */
 export interface BackupPayload {
-  action: 'BACKUP' | 'RESTORE'
-  storeName: string
-  data: any | null // For restore
-  format: 'json' | 'binary'
-  compress: boolean
+  action: 'BACKUP' | 'RESTORE';
+  storeName: string;
+  data: any | null; // For restore
+  format: 'json' | 'binary';
+  compress: boolean;
 }
 
 export interface BackupResult {
-  action: 'BACKUP' | 'RESTORE'
-  success: boolean
-  storeName: string
-  data: any | null // For backup
-  size: number
-  recordCount: number
-  timestamp: number
+  action: 'BACKUP' | 'RESTORE';
+  success: boolean;
+  storeName: string;
+  data: any | null; // For backup
+  size: number;
+  recordCount: number;
+  timestamp: number;
 }
 
-export type BackupPacket = BasePacket<BackupPayload, BackupResult>
+export type BackupPacket = BasePacket<BackupPayload, BackupResult>;
 
 /**
  * 10. Cache Operation Packet
  */
 export interface CacheOperationPayload {
-  operation: 'INVALIDATE' | 'CLEAR' | 'WARM' | 'GET'
-  storeName: string
-  key: any | null
-  keys: any[] | null // For warm
+  operation: 'INVALIDATE' | 'CLEAR' | 'WARM' | 'GET';
+  storeName: string;
+  key: any | null;
+  keys: any[] | null; // For warm
 }
 
 export interface CacheOperationResult {
-  success: boolean
-  operation: string
-  keysAffected: number
-  cacheSize: number
+  success: boolean;
+  operation: string;
+  keysAffected: number;
+  cacheSize: number;
 }
 
-export type CacheOperationPacket = BasePacket<CacheOperationPayload, CacheOperationResult>
+export type CacheOperationPacket = BasePacket<CacheOperationPayload, CacheOperationResult>;
 
 /**
  * Unified Storage Packet Type
@@ -1112,7 +1117,7 @@ export type StoragePacket =
   | MigrationPacket
   | CompactionPacket
   | BackupPacket
-  | CacheOperationPacket
+  | CacheOperationPacket;
 ```
 
 ---

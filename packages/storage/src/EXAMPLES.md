@@ -25,7 +25,13 @@ const Prefs: SchemaLike<Prefs> = {
 };
 
 const kernel = new Kernel([
-  createStorage({ domain: 'notes', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'notes',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -103,7 +109,13 @@ import { Kernel } from '@webkrnl/core';
 import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
-  createStorage({ domain: 'notes', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'notes',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -145,7 +157,13 @@ interface Order {
 }
 
 const kernel = new Kernel([
-  createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'shop',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -181,7 +199,13 @@ import { Kernel } from '@webkrnl/core';
 import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
-  createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'shop',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -209,7 +233,13 @@ import { Kernel } from '@webkrnl/core';
 import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
-  createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'shop',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -242,7 +272,13 @@ import { Kernel } from '@webkrnl/core';
 import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
-  createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'shop',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -330,7 +366,13 @@ interface Order {
 }
 
 const kernel = new Kernel([
-  createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
+  createStorage({
+    domain: 'shop',
+    hosts: ['virtual'],
+    backends: ['memory'],
+    keys: null,
+    quota: false,
+  }),
 ]);
 await kernel.start();
 const { commands } = kernel.unit<StorageControl>(STORAGE_ID).control!;
@@ -378,7 +420,13 @@ const source: KeySource = {
 async function start(storageSource: KeySource) {
   const kernel = new Kernel([
     createCrypto({ hosts: ['virtual'], indexedDB: null, keys: source }),
-    createStorage({ domain: 'notes', hosts: ['virtual'], backends: ['memory'], keys: { source: storageSource }, quota: false }),
+    createStorage({
+      domain: 'notes',
+      hosts: ['virtual'],
+      backends: ['memory'],
+      keys: { source: storageSource },
+      quota: false,
+    }),
   ]);
   await kernel.start();
   await new Promise((resolve) => setTimeout(resolve, 20)); // the check runs after Crypto starts
@@ -389,10 +437,16 @@ const same = await start(source);
 console.log('same source:', same.storage.views.state.getSnapshot().keyCheck);
 await same.kernel.stop();
 
-const other = await start({ kind: 'material', encrypt: toBase64Url(new Uint8Array(32).fill(9)), hmac: source.hmac });
+const other = await start({
+  kind: 'material',
+  encrypt: toBase64Url(new Uint8Array(32).fill(9)),
+  hmac: source.hmac,
+});
 console.log('other source:', other.storage.views.state.getSnapshot().keyCheck);
 try {
-  await other.storage.commands.collection<string>({ name: 'vault', encrypt: true }).set('pin', '1234');
+  await other.storage.commands
+    .collection<string>({ name: 'vault', encrypt: true })
+    .set('pin', '1234');
 } catch (error) {
   console.log('encrypted write:', (error as Error).name);
 }
