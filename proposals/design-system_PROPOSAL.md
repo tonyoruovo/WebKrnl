@@ -1,4 +1,4 @@
-> **Draft (M9, 2026-10-05), for review.** The user decided the scope: tokens and theme only, Page scope, no components. This draft is agreed before the package is built. See [ARCHITECTURE §21.4](../docs/ARCHITECTURE.md#214-design-system).
+> **Agreed (M9, 2026-10-06).** The user decided the scope (tokens and theme only, Page scope, no components) on 2026-10-05, and agreed this proposal on 2026-10-06. See [ARCHITECTURE §21.4](../docs/ARCHITECTURE.md#214-design-system).
 
 # Design System
 
@@ -17,7 +17,7 @@ The Design System gives the page its **design tokens** and its **theme**. Tokens
     colorScheme: 'light' | 'dark';          // after 'system' is resolved
     contrast: 'normal' | 'more';            // after 'system' is resolved
     density: 'compact' | 'comfortable' | 'spacious';
-    fontScale: number;                      // 0.875 to 1.5; multiplies the type tokens
+    fontScale: number;                      // 0.875 to 1.5; multiplies the font sizes
     reducedMotion: boolean;                 // after 'system' is resolved
     direction: 'ltr' | 'rtl';               // from Translation; 'ltr' without it
     lang: string;                           // from Translation; the document language without it
@@ -73,7 +73,7 @@ The Design System gives the page its **design tokens** and its **theme**. Tokens
 **Purpose**: Apply the theme to the page.  
 **Responsibilities**:
 - Write each token as a custom property `--ds-<name>` on the root (`document.documentElement` by default, or the `root` option). Mode values replace base values.
-- Multiply the type tokens (`font.size.*`, `line.height.*`) by `fontScale`.
+- Multiply the font sizes (`font.size.*`) by `fontScale`. Line heights are ratios, so they do not change.
 - Set `motion.*` durations to `0ms` when `reducedMotion` is `true`.
 - Set the attributes `data-color-scheme`, `data-contrast`, `data-density` and `data-reduced-motion`, and `dir` and `lang`, on the root. Set the CSS property `color-scheme`, so that form controls and scrollbars follow.
 - Write once for each change, in one animation frame, and only the properties that changed.
@@ -83,7 +83,7 @@ The Design System gives the page its **design tokens** and its **theme**. Tokens
 **Purpose**: Avoid a flash of the wrong theme.  
 **Responsibilities**:
 - `renderThemeCss(tokens)` returns a stylesheet with the base values and the modes as media queries and attribute selectors. The app serves it in the `<head>`, so the first paint has the right theme before the platform starts.
-- `renderThemeScript()` returns a small inline script that sets the root attributes from the stored settings before the first paint.
+- `renderThemeScript()` returns a small inline script that sets the root attributes before the first paint. The kernel's persistence is asynchronous, so the Design System keeps a copy of the resolved attributes in `localStorage` (`platform:theme`) for the script.
 - **Weight**: LOW.
 
 ---

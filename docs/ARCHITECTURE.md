@@ -1006,7 +1006,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.4 Design System
 
-`@platform/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) is written in M9 and agreed before the package is built.
+`@platform/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) was agreed on 2026-10-06.
 
 - **Tokens** are CSS custom properties, set on `document.documentElement` (or another root): color, space, size, radius, type, shadow, motion and z-index.
 - **The theme** comes from the appearance settings (color scheme, contrast, density, font scale, reduced motion) and the user agent (`prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-motion`). The direction comes from Translation (`dir` and `lang` on the root).
