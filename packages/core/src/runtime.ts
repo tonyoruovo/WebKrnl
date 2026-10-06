@@ -332,7 +332,51 @@ export class UnitRuntime {
       return;
     }
 
-    this.#transition('INITIALIZING');
+    await this.#initialize();
+  }
+
+  /**
+   * @summary Starts a running or suspended Page-scope unit again, as a new page (ARCHITECTURE §22.1).
+   * @description Tears it down, sets its state back to the initial value
+   * (persisted keys are restored again), and initializes it. The reason of the
+   * lifecycle snapshot is `reason`.
+   * @param {string} reason The lifecycle reason, for example `route`.
+   * @returns {Promise<void>} Resolves when the new start attempt is over.
+   */
+  async renew(reason: string): Promise<void> {
+    if (!this.running && this.status !== 'SUSPENDED') return;
+    await this.#teardown();
+    this.state.reset();
+    this.#initialized = false;
+    await this.#initialize(reason);
+  }
+
+  /**
+   * @summary Tells a Page-scope unit that the path changed: `pageChange`, or a renew.
+   * @param {string} path The new path.
+   * @returns {Promise<void>} Resolves when the change is handled.
+   */
+  async changePage(path: string): Promise<void> {
+    if (!this.running && this.status !== 'SUSPENDED') return;
+    const handler = this.definition.pageChange;
+    if (handler && this.#context) {
+      try {
+        await handler(path, this.#context);
+        return;
+      } catch (error) {
+        this.host.reportError(error, this.id);
+      }
+    }
+    await this.renew('route');
+  }
+
+  /**
+   * @summary The part of a start after the dependency check: processors, `init`, features, control.
+   * @param {string} [reason] The lifecycle reason of `INITIALIZING`.
+   * @returns {Promise<void>} Resolves when the attempt is over.
+   */
+  async #initialize(reason?: string): Promise<void> {
+    this.#transition('INITIALIZING', reason ? { reason } : undefined);
     this.#abort = new AbortController();
     const context = this.#createContext(this.#abort.signal);
     this.#context = context;

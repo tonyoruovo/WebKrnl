@@ -472,6 +472,22 @@ export interface UnitDefinition<
    */
   suspend?(ctx: UnitContext<S>): void | Promise<void>;
   /**
+   * @summary Handles a change of the path, instead of a restart (Page scope only, ARCHITECTURE §22.1).
+   * @description Without it, a Page-scope unit restarts as a new page when the
+   * path changes. Give it when the unit does not depend on the path, so a
+   * restart costs more than it gives. If it throws, the error is reported and
+   * the unit restarts.
+   * @example
+   * Keeping a theme across pages
+   * ```ts
+   * pageChange: () => {},
+   * ```
+   * @param {string} path The new path.
+   * @param {UnitContext<S>} ctx The context of the unit.
+   * @returns {void | Promise<void>} Resolves when the change is handled.
+   */
+  pageChange?(path: string, ctx: UnitContext<S>): void | Promise<void>;
+  /**
    * @summary Continues the work after `suspend`.
    * @description If it throws, the unit goes to `FAILED`.
    * @example

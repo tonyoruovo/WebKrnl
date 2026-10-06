@@ -135,6 +135,7 @@ One state machine applies to every unit. It replaces `PlatformManagerExecutionSt
 
 - **DEGRADED** means "serving, with some features off". It is the normal result of a feature failure.
 - **SUSPENDED** covers bfcache (`pagehide` with `persisted`), hidden tabs, and platform back-pressure. Processors stop taking work. State is kept.
+- **Renew** (M10, §22.1): a running or suspended Page-scope unit goes back to `INITIALIZING` when the path changes. It is torn down first, and its state starts again from the initial value.
 - Centralized subsystems never enter `DESTROYING` on request. Only platform shutdown destroys them.
 - The platform status (`PlatformStatus` in GlobalState) is derived from the unit states. It is never set by hand.
 
@@ -631,7 +632,7 @@ packages/
   react/                optional adapter (§14.1), considered later
 ```
 
-- Scope name: `@webkrnl/*`. It is a **placeholder until M9**, when the final name is chosen. The version stays `0.0.2` until all milestones and the alpha validation are done (docs/PLAN.md §4.1).
+- Scope name: `@webkrnl/*` (the project is **WebKrnl**, decided 2026-10-06). The version stays `0.0.2` until all milestones and the alpha validation are done (docs/PLAN.md §4.1).
 - Each package exports `.` (factory, packet types, state types). Worker entries are separate exports (`./worker`, `./shared-worker`). The package spawns them with `new Worker(new URL('./x.worker.js', import.meta.url), { type: 'module' })`, so bundlers can find them.
 - All packages share one version (fixed versioning).
 - `platform` is the only package with hard `dependencies` on other subsystems. Every other package uses peer dependencies (§7.3).

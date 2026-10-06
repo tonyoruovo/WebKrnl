@@ -294,6 +294,12 @@ export interface StateCell<S> {
    * @returns {boolean} `true` when the state was restored; `false` on a version mismatch.
    */
   restore(persisted: PersistedState<S>): boolean;
+  /**
+   * @summary Sets the state back to its initial value.
+   * @description A Page-scope unit starts a new page with it (ARCHITECTURE §22.1).
+   * @returns {void}
+   */
+  reset(): void;
 }
 
 /**
@@ -409,5 +415,6 @@ export function createStateCell<S extends object>(
       store.set(clone({ ...(store.view.getSnapshot() as S), ...restored }));
       return true;
     },
+    reset: () => store.set(clone(definition.initial)),
   };
 }

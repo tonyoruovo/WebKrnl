@@ -402,6 +402,8 @@ export function createDesignSystem(
         previewing: { readable: true },
       },
     },
+    // The theme does not depend on the path: a new page keeps it (ARCHITECTURE §22.1).
+    pageChange: () => {},
     init(ctx) {
       const queries = {
         dark: matchMedia('(prefers-color-scheme: dark)'),

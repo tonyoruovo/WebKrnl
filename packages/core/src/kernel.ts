@@ -58,6 +58,7 @@ import {
   type OutgoingPacket,
   type PacketEnvelope,
 } from './packet';
+import { createBrowserRouteSource, type RouteSource } from './route';
 import { UnitRuntime, type RuntimeHost, type StatePersistence } from './runtime';
 import { assertSendAllowed, type Scope } from './scope';
 import type { ProcessorRunnerOptions } from './supervisor';
@@ -262,6 +263,13 @@ export interface KernelOptions {
    * @summary The scheduler, worker budget and slice budget for all processors (ARCHITECTURE §8).
    */
   readonly processors?: ProcessorRunnerOptions;
+  /**
+   * @summary Tells the kernel when the path changes, so Page scope ends (ARCHITECTURE §11.2.1, §22.1).
+   * @description The default is `createBrowserRouteSource()` in a browser, and
+   * nothing elsewhere. `null` turns it off. A router adapter gives its own,
+   * for example the `vue-router` source of `@webkrnl/vue`.
+   */
+  readonly routes?: RouteSource | null;
 }
 
 /**
@@ -450,6 +458,10 @@ export class Kernel {
   #reconcileQueued = false;
   #started = false;
   #stopping = false;
+  #stopRoutes: (() => void) | null = null;
+  readonly #routes: RouteSource | null | undefined;
+  #pageChanges: Promise<void> = Promise.resolve();
+  #path: string | null = null;
 
   /**
    * @summary Creates the kernel and checks the dependency graph. No unit starts until `start`.
@@ -460,6 +472,7 @@ export class Kernel {
    */
   constructor(subsystems: readonly SubsystemDefinition[], options: KernelOptions = {}) {
     this.#ids = options.ids ?? (() => crypto.randomUUID());
+    this.#routes = options.routes;
     this.#now = options.now ?? Date.now;
     this.#onError =
       options.onError ?? ((error, unitId) => console.error(`[kernel] ${unitId}:`, error));
@@ -578,6 +591,39 @@ export class Kernel {
     for (const runtime of centralized) await runtime.start();
     for (const runtime of featurized) await runtime.start();
     await this.settled();
+
+    const routes =
+      this.#routes !== undefined
+        ? this.#routes
+        : typeof location !== 'undefined' && typeof history !== 'undefined'
+          ? createBrowserRouteSource()
+          : null;
+    this.#path = routes?.current() ?? null;
+    this.#stopRoutes = routes?.subscribe((path) => void this.changePage(path)) ?? null;
+  }
+
+  /**
+   * @summary Ends Page scope: every running Page-scope subsystem handles the new path, or restarts as a new page.
+   * @description The route source calls it. Changes run one after the other.
+   * The same path again does nothing.
+   * @example
+   * From a router that the kernel does not know
+   * ```ts
+   * router.afterEach((to) => kernel.changePage(to.path));
+   * ```
+   * @param {string} path The new path.
+   * @returns {Promise<void>} Resolves when every Page-scope subsystem handled it.
+   */
+  changePage(path: string): Promise<void> {
+    this.#pageChanges = this.#pageChanges.then(async () => {
+      if (this.#stopping || path === this.#path) return;
+      this.#path = path;
+      for (const runtime of this.#order) {
+        if (!runtime.parent && runtime.subsystem.scope === 'page') await runtime.changePage(path);
+      }
+      await this.settled();
+    });
+    return this.#pageChanges;
   }
 
   /**
@@ -585,6 +631,9 @@ export class Kernel {
    * @returns {Promise<void>} Resolves once every subsystem is `DESTROYED`.
    */
   async stop(): Promise<void> {
+    this.#stopRoutes?.();
+    this.#stopRoutes = null;
+    await this.#pageChanges;
     await this.settled();
     this.#stopping = true;
     for (const runtime of [...this.#order].reverse()) if (!runtime.parent) await runtime.destroy();
