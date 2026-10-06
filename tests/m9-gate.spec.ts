@@ -1,7 +1,7 @@
 /**
  * The M9 gate, Node part (docs/ARCHITECTURE.md §21.6): the whole catalogue
  * boots in one kernel, and the product subsystems work together: a setting
- * changes the locale of Translation, Analytics sends nothing until the
+ * changes the locale of Translation and the theme, Analytics sends nothing until the
  * analytics grant, and a sign-out wipes the user data of each subsystem.
  */
 import 'fake-indexeddb/auto';
@@ -16,6 +16,12 @@ import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers } from '@platf
 import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
 import { Kernel, type SubsystemDefinition } from '@platform/core';
 import { createCrypto } from '@platform/crypto';
+import {
+  APPEARANCE_SETTINGS,
+  DESIGN_SYSTEM_ID,
+  createDesignSystem,
+  type DesignSystemControl,
+} from '@platform/design-system';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
@@ -105,6 +111,7 @@ describe('M9 gate: the whole catalogue', () => {
         }),
         createConsent(),
         createSettings({
+          definitions: APPEARANCE_SETTINGS,
           handlers: {
             load: async () => Object.fromEntries(userSettings),
             save: async (changes) => {
@@ -134,6 +141,7 @@ describe('M9 gate: the whole catalogue', () => {
           ],
         }),
         createAnalytics({ send: async (batch) => void batches.push(batch), random: () => 0 }),
+        createDesignSystem({ root: null, matchMedia: () => null, storage: null }),
       ] as SubsystemDefinition[],
       { router: queue.router, onError: (error) => void errors.push(error) },
     );
@@ -178,13 +186,21 @@ describe('M9 gate: the whole catalogue', () => {
     expect(batches.flatMap((b) => b.events.map((e) => e.name))).toEqual(['purchase']);
     expect(consent.commands.isGranted('analytics')).toBe(true);
 
-    // 5. A sign-out wipes the user data: the user's locale goes, and so does the buffer.
+    // 5. An appearance setting changes the theme; the locale gives its direction and language.
+    const ds = kernel.unit<DesignSystemControl>(DESIGN_SYSTEM_ID).control!;
+    await settings.commands.set('appearance.colorScheme', 'dark');
+    await vi.waitFor(() =>
+      expect(ds.views.theme.getSnapshot()).toMatchObject({ colorScheme: 'dark', lang: 'fr' }),
+    );
+
+    // 6. A sign-out wipes the user data: the user's locale goes, and so does the buffer.
     analytics.commands.track('private');
     await auth.commands.logout();
     await kernel.settled();
     await vi.waitFor(() => expect(settings.commands.get('locale')).toBeNull());
     await vi.waitFor(() => expect(i18n.views.state.getSnapshot().locale).toBe('en'));
     await vi.waitFor(() => expect(analytics.views.state.getSnapshot().buffered).toBe(0));
+    expect(ds.views.theme.getSnapshot().colorScheme).toBe('dark'); // a device setting: it stays
     expect(errors).toEqual([]);
   });
 });

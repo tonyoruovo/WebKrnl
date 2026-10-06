@@ -181,7 +181,7 @@ No code is written until both steps are done.
 - `design-system` (§21.4): write its proposal first, agree it, then build it
 - Delete `src/managers/`
 
-**Gate:** all subsystems in the catalogue (§13) are ported, and `src/managers/` is empty.
+**Gate:** all subsystems in the catalogue (§13) are ported, and `src/managers/` is empty. _Done 2026-10-06: every subsystem of the catalogue is a package, and `src/managers/` is deleted. `tests/m9-gate.spec.ts` boots the whole catalogue in one kernel in Node; `tests/m9-gate.browser.spec.ts` runs two tabs in real browsers: a setting in one changes the locale of Translation and the theme of the Design System in the other, and Analytics sends nothing until the analytics grant (ARCHITECTURE §21.6)._
 
 ### M10 — Platform, template, release
 

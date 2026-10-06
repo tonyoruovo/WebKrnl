@@ -187,7 +187,7 @@ Conformance of the subsystems that exist now:
 | Settings | The `user` settings (for example `locale`); the `device` settings are not user data | Yes (the `user` settings return to their defaults) |
 | Analytics | The buffer and the waiting batches (`analytics.outbox`), the session id | Yes (a new session starts) |
 | Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
-| Crypto, Consent, Global State, Notification, hub, Translation | No user data (keys, decisions, catalogs and state of the device) | Not applicable |
+| Crypto, Consent, Global State, Notification, hub, Translation, Design System | No user data (keys, decisions, catalogs, the theme and state of the device) | Not applicable |
 
 Each of them uses `watchSignOut` of `@platform/core`, which turns the state of Auth into the two reasons (`sign-out`, `user-changed`). Tests use `createTestAuth` of `@platform/core/testing`. (Done in M8, §20.4.)
 
