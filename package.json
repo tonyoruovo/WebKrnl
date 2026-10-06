@@ -44,6 +44,7 @@
     "@platform/consent": "workspace:*",
     "@platform/core": "workspace:*",
     "@platform/crypto": "workspace:*",
+    "@platform/design-system": "workspace:*",
     "@platform/global-state": "workspace:*",
     "@platform/hub": "workspace:*",
     "@platform/logger": "workspace:*",

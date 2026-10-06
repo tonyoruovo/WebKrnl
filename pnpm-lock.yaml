@@ -228,6 +228,9 @@ importers:
       '@platform/crypto':
         specifier: workspace:*
         version: link:packages/crypto
+      '@platform/design-system':
+        specifier: workspace:*
+        version: link:packages/design-system
       '@platform/global-state':
         specifier: workspace:*
         version: link:packages/global-state
@@ -387,6 +390,27 @@ importers:
       '@platform/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/design-system:
+    devDependencies:
+      '@platform/consent':
+        specifier: workspace:*
+        version: link:../consent
+      '@platform/core':
+        specifier: workspace:*
+        version: link:../core
+      '@platform/notification':
+        specifier: workspace:*
+        version: link:../notification
+      '@platform/queue':
+        specifier: workspace:*
+        version: link:../queue
+      '@platform/settings':
+        specifier: workspace:*
+        version: link:../settings
+      '@platform/translation':
+        specifier: workspace:*
+        version: link:../translation
 
   packages/global-state:
     devDependencies:
