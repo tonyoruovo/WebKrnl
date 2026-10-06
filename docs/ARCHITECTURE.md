@@ -1061,8 +1061,8 @@ This section is the design of milestone M10. The monorepo is named **WebKrnl**, 
 ### 22.3 The Vue adapter: `@webkrnl/vue`
 
 - `useView(view)` returns a `Readonly<ShallowRef<T>>` that follows the view, and unsubscribes when the effect scope ends.
-- `createWebKrnl(platform, { router? })` is a Vue plugin. `app.use` provides the platform, starts it if it does not run, and, with a router, gives the kernel the vue-router route source. `usePlatform()` and `useUnit<C>(id)` read it in components.
-- `useT()` returns `t`, bound to the `revision` and `locale` of Translation, so a template renders again when catalogs or the locale change. Vue escapes text, so the adapter calls `t` with escaping off only through `useT({ escape: false })`; the default follows the Translation option.
+- `createWebKrnl(platform, { router? })` is a Vue plugin. `app.use` provides the platform and starts it if it does not run. With a router, each `afterEach` calls `kernel.changePage(path)`, so Page scope follows vue-router (give the platform `routes: null` then). `usePlatform()` and `useUnit(id)` read it in components.
+- `useT()` returns `t`, bound to the `revision` and `locale` of Translation, so a template renders again when catalogs or the locale change. Vue escapes text itself, so an app with Vue turns Translation's `escapeParams` off (the Vue template of the scaffolder does), and text is not escaped twice.
 - `createVueRouterRouteSource(router)` follows `router.afterEach` (§11.2.1).
 - `vue` and `vue-router` are peer dependencies of the adapter only. The adapter adds no behaviour that the core lacks (§14.1).
 

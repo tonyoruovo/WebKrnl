@@ -39,6 +39,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/lodash": "^4.17.25",
+    "@types/node": "24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitest/browser-playwright": "4.1.11",
+    "@vitest/coverage-v8": "4.1.11",
     "@webkrnl/analytics": "workspace:*",
     "@webkrnl/auth": "workspace:*",
     "@webkrnl/consent": "workspace:*",
@@ -56,13 +63,6 @@
     "@webkrnl/storage": "workspace:*",
     "@webkrnl/sync": "workspace:*",
     "@webkrnl/translation": "workspace:*",
-    "@types/lodash": "^4.17.25",
-    "@types/node": "24.1.0",
-    "@typescript-eslint/eslint-plugin": "^8.70.0",
-    "@typescript-eslint/parser": "^8.70.0",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/browser-playwright": "4.1.11",
-    "@vitest/coverage-v8": "4.1.11",
     "browserslist": "^4.29.3",
     "eslint": "^10.7.0",
     "eslint-plugin-import-x": "^4.17.1",
@@ -72,7 +72,9 @@
     "rolldown": "1.2.11",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.64.0",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "vue": "^3.5.43",
+    "vue-router": "^4.6.4"
   },
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",

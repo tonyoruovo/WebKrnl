@@ -210,6 +210,15 @@ async function bundle(example: Example): Promise<string> {
     input: join(work, example.id, 'main.ts'),
     platform: example.runtime === 'browser' ? 'browser' : 'neutral',
     resolve: { alias: map },
+    // What an app's bundler defines: Vue's bundler build reads them.
+    transform: {
+      define: {
+        'process.env.NODE_ENV': '"production"',
+        __VUE_OPTIONS_API__: 'true',
+        __VUE_PROD_DEVTOOLS__: 'false',
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+      },
+    },
     logLevel: 'silent',
   });
   const { output } = await build.generate({ format: 'esm' });
