@@ -1,5 +1,5 @@
 {
-  "name": "@platform/crypto",
+  "name": "@webkrnl/crypto",
   "version": "0.0.2",
   "description": "The Crypto subsystem: non-extractable keys that persist in IndexedDB, encryption, HMAC, signatures and digests, in a shared worker.",
   "type": "module",
@@ -14,10 +14,10 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "license": "ISC"
 }

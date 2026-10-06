@@ -1,6 +1,6 @@
-# @platform/analytics
+# @webkrnl/analytics
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Analytics** subsystem (id `analytics`, featurized, Tab scope, requires Consent). It collects metrics and usage events, and sends them in batches. It is the sink of the platform: units report to it, and no unit depends on it.
 
@@ -19,9 +19,9 @@ It runs on the main thread. The proposal asked for a worker, but the beacon in `
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/consent": "workspace:*",
-    "@platform/analytics": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/consent": "workspace:*",
+    "@webkrnl/analytics": "workspace:*"
   }
 }
 ```
@@ -30,12 +30,12 @@ It runs on the main thread. The proposal asked for a worker, but the beacon in `
 
 | Import | Contents |
 |---|---|
-| `@platform/analytics` | `createAnalytics`, `summarize`, `ANALYTICS_ID`, `ANALYTICS_OUTBOX`, types |
+| `@webkrnl/analytics` | `createAnalytics`, `summarize`, `ANALYTICS_ID`, `ANALYTICS_OUTBOX`, types |
 
 ## Usage
 
 ```ts
-import { createAnalytics, type AnalyticsControl } from '@platform/analytics';
+import { createAnalytics, type AnalyticsControl } from '@webkrnl/analytics';
 
 const kernel = new Kernel(
   [...centralized, createConsent(), createSettings(), createNetwork(), createStorage({ keys }), createAnalytics({ endpoint: '/t/batch', sampleRate: 0.25 })],

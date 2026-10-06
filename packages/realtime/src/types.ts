@@ -16,7 +16,7 @@
  * @author MathAid
  */
 
-import type { HostKind, View } from '@platform/core';
+import type { HostKind, View } from '@webkrnl/core';
 
 import type { GlobalOptions, GlobalWindowRelay } from './global';
 
@@ -405,7 +405,7 @@ export interface RealtimeControl {
     presence(peer: string): Presence | undefined;
     /**
      * @summary Returns the Window relay of the Global transport, or `null` without the option `global`.
-     * @description The window transport of `@platform/hub` uses it (docs/ARCHITECTURE.md §20.2).
+     * @description The window transport of `@webkrnl/hub` uses it (docs/ARCHITECTURE.md §20.2).
      * @example
      * In the hub
      * ```ts

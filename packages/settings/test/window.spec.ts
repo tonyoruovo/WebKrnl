@@ -2,16 +2,16 @@
  * Settings in Window scope (docs/ARCHITECTURE.md §21.1): every tab of the
  * site shares the settings, and a rollback reaches the other tabs.
  */
-import { createConsent } from '@platform/consent';
-import { Kernel, type Scheduler, type StatePersistence } from '@platform/core';
-import { createMemoryPersistence } from '@platform/core/testing';
+import { createConsent } from '@webkrnl/consent';
+import { Kernel, type Scheduler, type StatePersistence } from '@webkrnl/core';
+import { createMemoryPersistence } from '@webkrnl/core/testing';
 import {
   WINDOW_TRANSPORT_ID,
   createWindowTransport,
   type WindowTransportControl,
-} from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SETTINGS_ID, createSettings, type SettingsOptions, type SettingsControl } from '../src';

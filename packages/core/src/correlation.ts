@@ -17,7 +17,7 @@
  * @example
  * Correlating requests over a raw port
  * ```ts
- * import { CorrelationRegistry } from '@platform/core';
+ * import { CorrelationRegistry } from '@webkrnl/core';
  *
  * const registry = new CorrelationRegistry();
  * port.onmessage = ({ data }) => registry.resolve(data.correlationId, data.result);

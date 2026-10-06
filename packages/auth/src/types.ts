@@ -18,7 +18,7 @@
  * @author MathAid
  */
 
-import type { View } from '@platform/core';
+import type { View } from '@webkrnl/core';
 
 /**
  * @summary The signed-in user.
@@ -116,7 +116,7 @@ export interface Elevation {
 
 /**
  * @summary The part of the Network control that Auth gives to handlers.
- * @description Auth does not import `@platform/network`. Requests made through
+ * @description Auth does not import `@webkrnl/network`. Requests made through
  * it skip the token refresh of Auth, so a refresh handler cannot loop.
  * @public
  */

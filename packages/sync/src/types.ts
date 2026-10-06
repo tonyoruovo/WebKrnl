@@ -21,7 +21,7 @@
  * @author MathAid
  */
 
-import type { View } from '@platform/core';
+import type { View } from '@webkrnl/core';
 
 /**
  * @summary The kinds of change.
@@ -158,7 +158,7 @@ export type ConflictStrategy = 'server-wins' | 'client-wins' | 'merge' | 'manual
 
 /**
  * @summary The part of the Network control that Sync gives to handlers.
- * @description Sync does not import `@platform/network`. Errors with a
+ * @description Sync does not import `@webkrnl/network`. Errors with a
  * `status` of 4xx (except 408, 425 and 429) are permanent; other errors are transient.
  * @public
  */

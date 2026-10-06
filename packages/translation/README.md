@@ -1,6 +1,6 @@
-# @platform/translation
+# @webkrnl/translation
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Translation** subsystem (id `translation`, featurized, Tab scope, no required dependency). It gives the UI localized messages and locale-aware formatting, and works offline.
 
@@ -21,8 +21,8 @@ Design: [ARCHITECTURE §21.2](../../docs/ARCHITECTURE.md#212-translation) and th
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/translation": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/translation": "workspace:*"
   }
 }
 ```
@@ -33,13 +33,13 @@ The package starts its worker with `new Worker(new URL('./compile.worker.ts', im
 
 | Import | Contents |
 |---|---|
-| `@platform/translation` | `createTranslation`, `parseMessage`, `formatMessage`, `createFormatContext`, `escapeHtml`, `resolveLocaleChain`, `canonicalLocale`, `textDirection`, `compileCatalog`, constants, errors, types |
-| `@platform/translation/worker` | The worker entry. It serves the processor `compile`. You do not import it yourself. |
+| `@webkrnl/translation` | `createTranslation`, `parseMessage`, `formatMessage`, `createFormatContext`, `escapeHtml`, `resolveLocaleChain`, `canonicalLocale`, `textDirection`, `compileCatalog`, constants, errors, types |
+| `@webkrnl/translation/worker` | The worker entry. It serves the processor `compile`. You do not import it yourself. |
 
 ## Usage
 
 ```ts
-import { createTranslation, type TranslationControl } from '@platform/translation';
+import { createTranslation, type TranslationControl } from '@webkrnl/translation';
 
 const kernel = new Kernel(
   [

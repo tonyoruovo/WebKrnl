@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-`@platform` is a **platform runtime** for browser applications. An app boots it once and hands it the work that must not fail. It is shipped as a monorepo of npm packages, one package per subsystem, plus a scaffolder.
+**WebKrnl** (`@webkrnl/*`) is a **platform runtime** for browser applications. An app boots it once and hands it the work that must not fail. It is shipped as a monorepo of npm packages, one package per subsystem, plus a scaffolder.
 
 It gives three guarantees:
 
@@ -105,11 +105,11 @@ The README says an initializer "pushes the token used to initialize it". In this
 
 ### 3.3 Kernel
 
-The kernel (`@platform/core`) registers subsystem definitions, validates the dependency graph, and runs every unit's lifecycle. It delivers packets through a pluggable **packet router**: a direct in-realm router by default, the Queue in an application (§10.1).
+The kernel (`@webkrnl/core`) registers subsystem definitions, validates the dependency graph, and runs every unit's lifecycle. It delivers packets through a pluggable **packet router**: a direct in-realm router by default, the Queue in an application (§10.1).
 
 - A unit whose required dependency is not met stays `UNINITIALIZED` and reports what it is `waitingFor`. It starts as soon as the dependency is met (§7.1).
 - A unit with `features` reports `DEGRADED` while any feature is not running.
-- `@platform/core/testing` provides an in-memory platform with an in-memory router, for tests that boot real units without browser APIs.
+- `@webkrnl/core/testing` provides an in-memory platform with an in-memory router, for tests that boot real units without browser APIs.
 
 ---
 
@@ -163,7 +163,7 @@ interface StateCell<S> {
 
 - **User data** is any value that came from, or describes, the signed-in user: profile fields, documents, messages, orders, cached private responses, queued changes, payloads, log context, tokens. Data of the device or the browser (a theme, the tab id, consent decisions of the browser) is not user data. Each subsystem decides for each state key and each collection, and documents the decision.
 - **When.** A subsystem wipes when the user signs out (Auth leaves `AUTHENTICATED` and `EXPIRED` for `UNAUTHENTICATED`), and when a **different** user signs in (`user.id` changes). A refresh of the same user is not a sign-out.
-- **The signal.** `auth:changed` is a Window broadcast, and a Tab-scoped unit cannot subscribe to it (§11.2). So a subsystem watches the state of Auth: `watchSignOut(ctx, listener)` of `@platform/core` does it, with `auth` declared as an optional dependency. Auth adopts a sign-out from every tab of the site, so this one signal is enough in every tab. Views notify in batches, so a sign-out followed at once by the sign-in of another user arrives as `user-changed`, which wipes too.
+- **The signal.** `auth:changed` is a Window broadcast, and a Tab-scoped unit cannot subscribe to it (§11.2). So a subsystem watches the state of Auth: `watchSignOut(ctx, listener)` of `@webkrnl/core` does it, with `auth` declared as an optional dependency. Auth adopts a sign-out from every tab of the site, so this one signal is enough in every tab. Views notify in batches, so a sign-out followed at once by the sign-in of another user arrives as `user-changed`, which wipes too.
 - **What to wipe**, all of it, in the same step:
   1. the **state** keys with user data, back to their initial values;
   2. the **persisted state** (the kernel's persistence, `persisted` keys): the wiped state is persisted at once, so a reload cannot bring the old values back;
@@ -189,7 +189,7 @@ Conformance of the subsystems that exist now:
 | Storage | Only what other subsystems and the app put in it | Not applicable: each owner clears its collections |
 | Crypto, Consent, Global State, Notification, hub, Translation, Design System | No user data (keys, decisions, catalogs, the theme and state of the device) | Not applicable |
 
-Each of them uses `watchSignOut` of `@platform/core`, which turns the state of Auth into the two reasons (`sign-out`, `user-changed`). Tests use `createTestAuth` of `@platform/core/testing`. (Done in M8, §20.4.)
+Each of them uses `watchSignOut` of `@webkrnl/core`, which turns the state of Auth into the two reasons (`sign-out`, `user-changed`). Tests use `createTestAuth` of `@webkrnl/core/testing`. (Done in M8, §20.4.)
 
 ---
 
@@ -262,7 +262,7 @@ This one mechanism covers the Logger's sink, dead-letter persistence, and Global
 |---|---|
 | required, by a subsystem's core | `peerDependencies` |
 | optional, or only required by some features | `peerDependencies` + `peerDependenciesMeta.<pkg>.optional: true`, and a runtime presence check that turns the features off |
-| `@platform/core` | `peerDependencies` (every package) |
+| `@webkrnl/core` | `peerDependencies` (every package) |
 
 ---
 
@@ -305,7 +305,7 @@ interface ProcessorDef<In, Out> {
 type HostKind = 'shared' | 'dedicated' | 'virtual';
 ```
 
-- The worker entry file calls `serveProcessor(module)` from `@platform/core/worker`. It answers the handshake, calls, and heartbeats.
+- The worker entry file calls `serveProcessor(module)` from `@webkrnl/core/worker`. It answers the handshake, calls, and heartbeats.
 - Bundlers (Vite, webpack, Rollup) only detect `new Worker(new URL(..., import.meta.url))` written literally. That is why the definition, not the library, creates the worker.
 - Hosts talk to workers over a small request/response protocol (handshake, call, ping, one-way post). The same protocol carries envelopes over `MessageChannel` transports.
 - A unit's processors start before its `init` and stop during teardown. The context exposes them as `ctx.processor(id)`.
@@ -359,7 +359,7 @@ When `setup` throws, the host does not start and the runner fails over to the ne
 
 ### 8.8 Portable functions (M6)
 
-Structured clone, `postMessage` and IndexedDB refuse functions, but a processor often needs code from its caller: a migration, a serializer, a query predicate, an eviction comparator. Function boundaries must not limit the design, so `@platform/core` makes functions portable:
+Structured clone, `postMessage` and IndexedDB refuse functions, but a processor often needs code from its caller: a migration, a serializer, a query predicate, an eviction comparator. Function boundaries must not limit the design, so `@webkrnl/core` makes functions portable:
 
 ```text
   toPortable(value)    each function --> { __portable: 'function', id, source }   (the realm keeps id --> function)
@@ -393,7 +393,7 @@ Packet
      └─ onLog          called on completion AND on error
 ```
 
-This keeps the split of the old `src/managers/packet.dto.ts` (ported to `@platform/core`; the old code was deleted in M9). The `BasePacket` in `global_PROPOSAL.md` (with `eventId: symbol` and inline callbacks) is replaced by it.
+This keeps the split of the old `src/managers/packet.dto.ts` (ported to `@webkrnl/core`; the old code was deleted in M9). The `BasePacket` in `global_PROPOSAL.md` (with `eventId: symbol` and inline callbacks) is replaced by it.
 
 ### 9.2 Read-once payload
 
@@ -445,7 +445,7 @@ Queue admission reads GlobalState. When the platform is `BUSY`, only `CRITICAL` 
 
 ### 10.1 How the three centralized subsystems fit together (M3)
 
-Each is its own package (`@platform/global-state`, `@platform/queue`, `@platform/notification`) and exports a factory. The Queue and the NotificationCenter also return a piece that plugs into the kernel or into each other, so no package imports another:
+Each is its own package (`@webkrnl/global-state`, `@webkrnl/queue`, `@webkrnl/notification`) and exports a factory. The Queue and the NotificationCenter also return a piece that plugs into the kernel or into each other, so no package imports another:
 
 ```ts
 const globalState = createGlobalState();
@@ -467,7 +467,7 @@ const kernel = new Kernel([globalState, queue.subsystem, notification.subsystem,
 **Queue** (`queue`), the kernel's packet router
 - The single entry point. It checks the send rule, then admission through GlobalState (when it runs), then a depth limit. Rejected packets fail with `QueueRejectedError`.
 - Holds packets in priority tiers, keeps packets with the same `orderingKey` in order, and runs a bounded number at once. `CRITICAL` packets dispatch at once; others in the next scheduler task.
-- 1-to-1: delivers through the kernel. A target that exists but is not running is retried with backoff (the backoff library moves to `@platform/core`). After the last retry, or when the TTL passes, the packet becomes a dead letter and the request rejects. A target's own error (its `receive` threw) goes straight back to the requester: it is not retried, because retrying could repeat side effects.
+- 1-to-1: delivers through the kernel. A target that exists but is not running is retried with backoff (the backoff library moves to `@webkrnl/core`). After the last retry, or when the TTL passes, the packet becomes a dead letter and the request rejects. A target's own error (its `receive` threw) goes straight back to the requester: it is not retried, because retrying could repeat side effects.
 - 1-to-N: hands the envelope to `fanOut` (the NotificationCenter), or to the kernel's direct broadcast when there is none.
 - Dead letters are kept in memory and written through a `LateBinding` that Storage binds in M6.
 - Records each settled packet's final fingerprint trail (`sent`, `enqueued`, `dispatched`, `delivered`, `completed` or `failed`).
@@ -539,7 +539,7 @@ The default route source uses the Navigation API when it is present, and otherwi
 
 **The hub**
 
-- The `@platform/hub` package ships a static hub page. The app deploys it on the **apex** origin of the site (for example `https://example.com/__platform/hub.html`; the path is configurable).
+- The `@webkrnl/hub` package ships a static hub page. The app deploys it on the **apex** origin of the site (for example `https://example.com/__platform/hub.html`; the path is configurable).
 - The apex must allow its subdomains to frame the hub page: `Content-Security-Policy: frame-ancestors https://example.com https://*.example.com`, and no `X-Frame-Options` header on that path (`SAMEORIGIN` would block subdomains, because they are different origins).
 - Tabs on the apex itself are on the hub's origin. They join the hub's `BroadcastChannel` directly, without an iframe.
 - The iframe checks `event.origin` against an allowlist of the site's origins, and the hub does the same. Messages are envelopes only.
@@ -566,7 +566,7 @@ Global scope is **server-backed**. Its transport is a feature of Realtime, with 
 - **Offline:** the Queue persists outgoing Global packets (through Storage) and replays them on reconnect.
 - **Delivery:** at least once. Receivers deduplicate by `messageId`.
 - **Window relay:** a Window-scope envelope carries the sender's `window` id. The server forwards it to every other connection that presented the same window id, and nowhere else (§11.3).
-- **Wire protocol:** a versioned JSON envelope schema, published in `@platform/core`, which servers implement. This project ships **only the wire protocol**: the schema, its documentation, and conformance fixtures. Servers are built by the app's own backend. The test suite uses a minimal in-memory test double that is never published.
+- **Wire protocol:** a versioned JSON envelope schema, published in `@webkrnl/core`, which servers implement. This project ships **only the wire protocol**: the schema, its documentation, and conformance fixtures. Servers are built by the app's own backend. The test suite uses a minimal in-memory test double that is never published.
 
 ---
 
@@ -595,7 +595,7 @@ Shutdown runs disposers in reverse order. Persisting state is part of each unit'
 | NotificationCenter | centralized | Tab | virtual | GlobalState, Queue | `notification` |
 | Logger | featurized | Tab | virtual | — (late-bound: NotificationCenter, Storage) | `logger` |
 | Crypto | featurized | Tab (key cache shared per origin) | shared → dedicated → virtual | — | `crypto` |
-| Storage | featurized | Tab (coordinator shared per origin) | shared → virtual | — (uses the key store of `@platform/crypto`) | `storage`, backends |
+| Storage | featurized | Tab (coordinator shared per origin) | shared → virtual | — (uses the key store of `@webkrnl/crypto`) | `storage`, backends |
 | Consent | featurized | Window | virtual | — (grants persist through the kernel's persistence, which Storage backs from M6) | `consent` |
 | Settings | featurized | Window | virtual | Consent (Auth optional, §21.1) | `settings` |
 | Network | featurized | Tab | virtual | — (GlobalState optional, §19.1) | `network` |
@@ -621,13 +621,13 @@ packages/
   sync/  realtime/  translation/  analytics/  design-system/
   hub/                  Window-scope hub page + client
   platform/             orchestrator: boots a chosen set of subsystems
-  create/               scaffolder (the npm template), published as @platform/create
-                        so that `npm init @platform` runs it
+  create/               scaffolder (the npm template), published as @webkrnl/create
+                        so that `npm init @webkrnl` runs it
   vue/                  optional adapter (§14.1)
   react/                optional adapter (§14.1), considered later
 ```
 
-- Scope name: `@platform/*`. It is a **placeholder until M9**, when the final name is chosen. The version stays `0.0.2` until all milestones and the alpha validation are done (docs/PLAN.md §4.1).
+- Scope name: `@webkrnl/*`. It is a **placeholder until M9**, when the final name is chosen. The version stays `0.0.2` until all milestones and the alpha validation are done (docs/PLAN.md §4.1).
 - Each package exports `.` (factory, packet types, state types). Worker entries are separate exports (`./worker`, `./shared-worker`). The package spawns them with `new Worker(new URL('./x.worker.js', import.meta.url), { type: 'module' })`, so bundlers can find them.
 - All packages share one version (fixed versioning).
 - `platform` is the only package with hard `dependencies` on other subsystems. Every other package uses peer dependencies (§7.3).
@@ -638,8 +638,8 @@ An adapter exists only where a framework can do something better than the neutra
 
 | Adapter | Scope of the package | Priority |
 |---|---|---|
-| `@platform/vue` | `useView(view)` → `Readonly<ShallowRef<T>>` (subscribes, and unsubscribes on scope dispose); a Vue plugin that boots `platform` and `provide`s it, read with `usePlatform()`; a `vue-router` route source (§11.2.1); Page-scope units tied to component or route lifetime | First. Built in M10. |
-| `@platform/react` | `useView` on top of `useSyncExternalStore`; a context provider; route sources for common routers | To be considered after 1.0 |
+| `@webkrnl/vue` | `useView(view)` → `Readonly<ShallowRef<T>>` (subscribes, and unsubscribes on scope dispose); a Vue plugin that boots `platform` and `provide`s it, read with `usePlatform()`; a `vue-router` route source (§11.2.1); Page-scope units tied to component or route lifetime | First. Built in M10. |
+| `@webkrnl/react` | `useView` on top of `useSyncExternalStore`; a context provider; route sources for common routers | To be considered after 1.0 |
 
 `vue`, `vue-router`, `react`, and router packages are **peer dependencies** of their adapter only.
 
@@ -707,7 +707,7 @@ This section is the design of milestone M6. It amends the `crypto` and `storage`
 
 ### 18.1 Crypto
 
-`@platform/crypto` gives the subsystem `crypto` (featurized, Tab scope, no required dependency). Its work runs in the processor `crypto`, on the hosts `shared`, then `dedicated`, then `virtual`.
+`@webkrnl/crypto` gives the subsystem `crypto` (featurized, Tab scope, no required dependency). Its work runs in the processor `crypto`, on the hosts `shared`, then `dedicated`, then `virtual`.
 
 ```text
   caller --> crypto.commands.encrypt(text) --> processor 'crypto' (shared worker, or fallback)
@@ -728,7 +728,7 @@ This section is the design of milestone M6. It amends the `crypto` and `storage`
 
 ### 18.2 Storage
 
-`@platform/storage` gives the subsystem `storage` (featurized, Tab scope, no required dependency). It uses the key store of `@platform/crypto` for encryption.
+`@webkrnl/storage` gives the subsystem `storage` (featurized, Tab scope, no required dependency). It uses the key store of `@webkrnl/crypto` for encryption.
 
 ```text
   tab (main thread)                     coordinator processor (shared worker --> virtual)
@@ -749,7 +749,7 @@ This section is the design of milestone M6. It amends the `crypto` and `storage`
 - **Collections.** Callers use `commands.collection(definition)`. A definition names the calling module and can give a schema (zod, or any object with `safeParse`; the package has no dependency on zod), a schema version with migrations, a time to live, an eviction weight, encryption, compression and a maximum number of entries. Keys are canonical: `<domain>:<platform>:<platformVersion>:<module>:<key>`.
 - **Payload format.** A payload is `<flags>:<data>`. The flag `z` means gzip and `e` means AES-GCM. A read undoes what the flags say, so a collection can turn on compression or encryption later. The HMAC tag of an encrypted entry is `envelope.integrity`. (The M6 tests found that the IndexedDB and OPFS backends dropped `integrity`; they keep it now.)
 - **Pipeline in the coordinator.** The coordinator runs the pipeline, as the proposal intended: serialization, compression, encryption and the HMAC tag on a write, and the reverse with migration on a read. The functions of a collection (serializers, migrations, query predicates, eviction comparators) travel to the worker as portable functions (§8.8). The caller validates with the zod schema before a write and after a read, in its own realm, so the full schema applies.
-- **Encryption without a second hop.** The coordinator opens the key store of `@platform/crypto` itself. It reads the same IndexedDB keys as the Crypto subsystem, so Storage and Crypto use the same keys, and a write needs no message to another worker. Storage reloads the keys when Crypto broadcasts `crypto:keys-changed`.
+- **Encryption without a second hop.** The coordinator opens the key store of `@webkrnl/crypto` itself. It reads the same IndexedDB keys as the Crypto subsystem, so Storage and Crypto use the same keys, and a write needs no message to another worker. Storage reloads the keys when Crypto broadcasts `crypto:keys-changed`.
 - **Strict CSP.** A worker that cannot evaluate portable functions refuses to start, so the coordinator runs on the main thread.
 - **Keys in setup.** The coordinator opens the key store in `setup`. A worker that cannot open it refuses to start. WebKit cannot store a `CryptoKey` in IndexedDB from a shared worker (§18.1), so there the coordinator runs on the main thread. On the main thread, a failure to open the keys does not stop Storage: the key store opens again at the first encrypted operation. Give `createStorage` the same key source as `createCrypto`.
 - **Hosts.** The default hosts are `shared`, then `virtual`. A dedicated worker per tab would add a second writer for no gain, because IndexedDB is the same on both hosts.
@@ -814,11 +814,11 @@ This section is the design of milestone M7. It amends the proposals `network`, `
      +---------------------- fetch -------------------- server <---------------+ (through Network)
 ```
 
-Every package depends on `@platform/core`. Global State is optional everywhere: without it, the online and visible states come from `navigator.onLine` and `document.visibilityState`.
+Every package depends on `@webkrnl/core`. Global State is optional everywhere: without it, the online and visible states come from `navigator.onLine` and `document.visibilityState`.
 
 ### 19.1 Network
 
-`@platform/network` gives the subsystem `network` (featurized, Tab scope, no required dependency). It runs on the main thread (virtual host only): a `Response` body is a stream, and callers need it in their own realm.
+`@webkrnl/network` gives the subsystem `network` (featurized, Tab scope, no required dependency). It runs on the main thread (virtual host only): a `Response` body is a stream, and callers need it in their own realm.
 
 - **Requests.** `commands.request(config)` and the shorthands `get`, `post`, `put`, `patch` and `delete`. The result is a `NetworkResponse` with `status`, `headers`, `data` (parsed by content type), `fromCache` and `attempts`. Each request has an id, and `abort(id)` and `abortAll()` cancel requests.
 - **Timeouts.** Each request has a timeout (default 30 s). A timeout is a `NetworkTimeoutError`, not a network error.
@@ -835,7 +835,7 @@ Every package depends on `@platform/core`. Global State is optional everywhere: 
 
 ### 19.2 Auth
 
-`@platform/auth` gives the subsystem `auth` (featurized, **Window** scope). Network is optional. Storage and Crypto are optional and late-bound.
+`@webkrnl/auth` gives the subsystem `auth` (featurized, **Window** scope). Network is optional. Storage and Crypto are optional and late-bound.
 
 - **Handlers, not endpoints.** The app gives the functions that talk to its server: `login(credentials, tools)`, `refresh(session, tools)`, and optionally `logout`, `elevate` and `restore`. `tools` has the Network (when it runs) and `fetch`. Auth does not know the shape of the credentials, so MFA, OAuth and passkeys stay in the app's handlers.
 - **Tokens.** A session has an access token, a refresh token, their expiry times, and the user (`id`, `roles`, `permissions`, `level`). Auth refreshes the access token `refreshBeforeMs` before it expires (default 60 s). One refresh runs at a time. A failed refresh retries with backoff, then sets the status to `EXPIRED`.
@@ -851,7 +851,7 @@ Every package depends on `@platform/core`. Global State is optional everywhere: 
 
 ### 19.3 Sync
 
-`@platform/sync` gives the subsystem `sync` (featurized, Tab scope). Network is **required**. Storage is optional and late-bound.
+`@webkrnl/sync` gives the subsystem `sync` (featurized, Tab scope). Network is **required**. Storage is optional and late-bound.
 
 - **Virtual host.** The work of Sync is requests through Network, which runs on the main thread, so a dedicated worker gives no gain. The catalogue row changes to `virtual`.
 - **Entities.** `commands.entity(definition)` declares an entity type: its `push` handler, and optionally `pull`, `apply`, `merge` and a conflict strategy. Like Storage collections, it returns a handle: `save(id, data)`, `remove(id)`, and `pending()`.
@@ -868,7 +868,7 @@ Every package depends on `@platform/core`. Global State is optional everywhere: 
 
 ### 19.4 Realtime
 
-`@platform/realtime` gives the subsystem `realtime` (featurized, Tab scope, no required dependency). Auth is optional.
+`@webkrnl/realtime` gives the subsystem `realtime` (featurized, Tab scope, no required dependency). Auth is optional.
 
 - **Socket in a worker.** The processor `socket` owns the `WebSocket`, on the hosts `dedicated`, then `virtual`. A worker keeps heartbeats on time when the main thread is busy. The processor posts each incoming message and each status change to the unit (`scope.post`, §8).
 - **Protocol.** The default protocol is JSON frames: `{ type: 'subscribe' | 'unsubscribe' | 'publish' | 'message' | 'ping' | 'pong' | 'presence', topic?, data? }`. An app with another protocol gives `protocol: { encode, decode }` as portable functions (§8.8).
@@ -910,7 +910,7 @@ This section is the design of milestone M8. It makes §11.4 concrete, gives WebK
 
 - **A feature of Realtime.** `createRealtime({ url, global: { ... } })` adds the feature `global` to Realtime. It uses the Realtime socket, so it shares the connection, the reconnects, the heartbeats and the Auth token. When the feature fails, Realtime is `DEGRADED`, not `FAILED`.
 - **Reserved topics.** Global envelopes travel on the topic `platform:global`, and Window envelopes of the relay on `platform:window:<windowId>`. The frames are the Realtime frames (§19.4) with one addition: the server answers each accepted `publish` on a reserved topic with `{ "type": "ack", "data": "<messageId>" }`.
-- **The envelope.** The `data` of a frame is a wire envelope, version 1 (`encodeWire` and `decodeWire` of `@platform/core`). A receiver drops an envelope that does not decode, and reports it.
+- **The envelope.** The `data` of a frame is a wire envelope, version 1 (`encodeWire` and `decodeWire` of `@webkrnl/core`). A receiver drops an envelope that does not decode, and reports it.
 - **Sending.** The feature attaches to the Notification Center as the scope relay of `global` (§11.3, the same mechanism as Window). Each local Global broadcast goes into the **outbox**, then out.
 - **The outbox.** An envelope stays in the outbox until the server acknowledges it. Without an acknowledgement, it is sent again after a reconnect, or after `ackTimeoutMs` (default 10 s). When Storage runs, the outbox is the collection `realtime.global-outbox`, so it survives a reload. An envelope whose `ttl` has passed is dropped. The outbox is bounded (`maxOutbox`, default 500): the oldest envelope goes first, and is counted.
 - **Receiving.** An envelope from the server goes to `Queue.ingest`, which drops repeats by `messageId` and fans it out in this tab. The feature also drops the envelopes that its own tab sent, when they come back: a long poll cannot leave out the sender, and the Queue only knows the envelopes that it ingested. (Found by the HTTP fallback test.)
@@ -924,13 +924,13 @@ This section is the design of milestone M8. It makes §11.4 concrete, gives WebK
 
 - The feature gives a `WindowRelay` (§11.3): `publish(windowId, envelope)` sends on `platform:window:<windowId>`, `subscribe(windowId, listener)` receives from it, and `connected` is `true` while the socket is open or HTTP polling runs.
 - The server forwards an envelope on `platform:window:<id>` only to the other connections that subscribed to the same window id (§11.4). The window id comes from the session cookie on the apex domain, so only the tabs of one browser session share it.
-- `@platform/hub` binds the relay late: the window transport watches Realtime (`ctx.watch('realtime')`) and gives the relay of its `global` feature to the window client (`setRelay`). The client uses the relay only while the hub is not known to be `shared`, as before.
+- `@webkrnl/hub` binds the relay late: the window transport watches Realtime (`ctx.watch('realtime')`) and gives the relay of its `global` feature to the window client (`setRelay`). The client uses the relay only while the hub is not known to be `shared`, as before.
 
 ### 20.3 The wire protocol and conformance
 
 - **`docs/WIRE-PROTOCOL.md`** is the contract for backend teams: the envelope (v1) and its rules, the socket frames and the reserved topics, the acknowledgement, the HTTP endpoints, the audience and the Window rule, and what the server must not do (for example, add fingerprints, §9.4).
-- **Fixtures.** `@platform/core` ships valid and invalid wire envelopes as JSON (`fixtures/wire`), with the reason that each invalid one fails.
-- **A conformance runner.** `@platform/realtime/conformance` exports `runConformance({ url, http?, token? })`. It connects two or three clients to a server and checks the rules: ping and pong, subscribe and forward, acknowledgements, no echo of Window envelopes to other window ids, invalid envelopes refused, and the HTTP endpoints when `http` is given. It returns one result for each rule, so a backend team can run it in its own CI.
+- **Fixtures.** `@webkrnl/core` ships valid and invalid wire envelopes as JSON (`fixtures/wire`), with the reason that each invalid one fails.
+- **A conformance runner.** `@webkrnl/realtime/conformance` exports `runConformance({ url, http?, token? })`. It connects two or three clients to a server and checks the rules: ping and pong, subscribe and forward, acknowledgements, no echo of Window envelopes to other window ids, invalid envelopes refused, and the HTTP endpoints when `http` is given. It returns one result for each rule, so a backend team can run it in its own CI.
 - **The test double.** An in-memory server (`packages/realtime/test/global-server.ts`) implements the protocol for the tests of this repository. It is never published. The browser tests use the WebSocket test server (`scripts/test-ws-server.ts`), which also implements the reserved topics, so the conformance runner runs against it.
 
 ### 20.4 Sign-out in the other subsystems (§5.1)
@@ -967,7 +967,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.1 Settings
 
-`@platform/settings` gives the subsystem `settings` (featurized, **Window** scope, requires Consent). It runs on the main thread.
+`@webkrnl/settings` gives the subsystem `settings` (featurized, **Window** scope, requires Consent). It runs on the main thread.
 
 - **Definitions.** A setting has a key, a default, an optional `validate(value)`, and a kind: `device` (the default) or `user`. The built-in settings are `syncInterval` (300 000 ms), `bandwidthMode` (`FULL`, `CONSERVATIVE` or `MINIMAL`), `dataSaver` (`false`) and `locale` (`null`: the device decides). The app and other packages add their own (`createSettings({ definitions })`). The design system exports the definitions of its appearance settings (§21.4).
 - **Reading and writing.** `commands.get(key)`, `commands.set(key, value)`, `commands.reset(key?)`, and one view of all values. A value that fails `validate` is a `RangeError`. A change applies at once: no reload.
@@ -978,7 +978,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.2 Translation
 
-`@platform/translation` gives the subsystem `translation` (featurized, Tab scope). Storage, Network and Settings are optional and late-bound. The processor `compile` runs on `dedicated`, then `virtual`.
+`@webkrnl/translation` gives the subsystem `translation` (featurized, Tab scope). Storage, Network and Settings are optional and late-bound. The processor `compile` runs on `dedicated`, then `virtual`.
 
 - **`t()` is synchronous.** It runs on the main thread, because templates call it while they render. `t(key, params?)` finds the key through the locale chain and formats the compiled message. `views.state` has the locale, the direction, the chain and the loaded namespaces, so an adapter renders again when they change.
 - **The message format** is an ICU MessageFormat subset, parsed by the package (no dependency): `{name}` arguments, `plural` and `selectordinal` (with `#`, `=N` and `offset`), `select`, `number`, `date` and `time` with their styles, nested messages, and apostrophe escaping. Plural categories come from `Intl.PluralRules`, and a missing category uses `other`. The separate `plurals` map of the proposal is dropped: ICU plural covers it.
@@ -993,7 +993,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.3 Analytics
 
-`@platform/analytics` gives the subsystem `analytics` (featurized, Tab scope, requires Consent). Network, Storage, Settings, Global State and Auth are optional.
+`@webkrnl/analytics` gives the subsystem `analytics` (featurized, Tab scope, requires Consent). Network, Storage, Settings, Global State and Auth are optional.
 
 - **The main thread only.** The proposal asks for a dedicated worker. But the last batch goes out with `navigator.sendBeacon` in `pagehide`, and that handler must build the payload at once: it cannot wait for a worker. The aggregation is small, so it stays on the main thread (as Network, §19.1).
 - **Collecting.** `increment(name, n?)`, `gauge(name, value)`, `histogram(name, value)` and `track(name, properties?)`. Nothing is collected without the `analytics` grant of Consent. When the grant is revoked, the buffer and the stored batches are deleted.
@@ -1006,7 +1006,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.4 Design System
 
-`@platform/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) was agreed on 2026-10-06.
+`@webkrnl/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) was agreed on 2026-10-06.
 
 - **Tokens** are CSS custom properties, set on `document.documentElement` (or another root): color, space, size, radius, type, shadow, motion and z-index.
 - **The theme** comes from the appearance settings (color scheme, contrast, density, font scale, reduced motion) and the user agent (`prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-motion`). The direction comes from Translation (`dir` and `lang` on the root).

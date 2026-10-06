@@ -14,7 +14,7 @@ import {
   MemoryBackend,
   OPFSBackend,
   type IStorageBackend,
-} from '@platform/storage';
+} from '@webkrnl/storage';
 
 async function firstAvailable(chain: IStorageBackend<unknown>[]) {
   for (const backend of chain) {
@@ -53,7 +53,7 @@ import {
   LocalStorageBackend,
   buildCanonicalKey,
   type IStorageBackend,
-} from '@platform/storage';
+} from '@webkrnl/storage';
 
 async function copyModule(from: IStorageBackend, to: IStorageBackend, prefix: string) {
   const rows = await from.query({ prefix });

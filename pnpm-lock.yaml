@@ -213,57 +213,6 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.11.0(supports-color@7.2.0))
-      '@platform/analytics':
-        specifier: workspace:*
-        version: link:packages/analytics
-      '@platform/auth':
-        specifier: workspace:*
-        version: link:packages/auth
-      '@platform/consent':
-        specifier: workspace:*
-        version: link:packages/consent
-      '@platform/core':
-        specifier: workspace:*
-        version: link:packages/core
-      '@platform/crypto':
-        specifier: workspace:*
-        version: link:packages/crypto
-      '@platform/design-system':
-        specifier: workspace:*
-        version: link:packages/design-system
-      '@platform/global-state':
-        specifier: workspace:*
-        version: link:packages/global-state
-      '@platform/hub':
-        specifier: workspace:*
-        version: link:packages/hub
-      '@platform/logger':
-        specifier: workspace:*
-        version: link:packages/logger
-      '@platform/network':
-        specifier: workspace:*
-        version: link:packages/network
-      '@platform/notification':
-        specifier: workspace:*
-        version: link:packages/notification
-      '@platform/queue':
-        specifier: workspace:*
-        version: link:packages/queue
-      '@platform/realtime':
-        specifier: workspace:*
-        version: link:packages/realtime
-      '@platform/settings':
-        specifier: workspace:*
-        version: link:packages/settings
-      '@platform/storage':
-        specifier: workspace:*
-        version: link:packages/storage
-      '@platform/sync':
-        specifier: workspace:*
-        version: link:packages/sync
-      '@platform/translation':
-        specifier: workspace:*
-        version: link:packages/translation
       '@types/lodash':
         specifier: ^4.17.25
         version: 4.17.25
@@ -285,6 +234,57 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(@vitest/browser@4.1.11)(vitest@4.1.11)
+      '@webkrnl/analytics':
+        specifier: workspace:*
+        version: link:packages/analytics
+      '@webkrnl/auth':
+        specifier: workspace:*
+        version: link:packages/auth
+      '@webkrnl/consent':
+        specifier: workspace:*
+        version: link:packages/consent
+      '@webkrnl/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@webkrnl/crypto':
+        specifier: workspace:*
+        version: link:packages/crypto
+      '@webkrnl/design-system':
+        specifier: workspace:*
+        version: link:packages/design-system
+      '@webkrnl/global-state':
+        specifier: workspace:*
+        version: link:packages/global-state
+      '@webkrnl/hub':
+        specifier: workspace:*
+        version: link:packages/hub
+      '@webkrnl/logger':
+        specifier: workspace:*
+        version: link:packages/logger
+      '@webkrnl/network':
+        specifier: workspace:*
+        version: link:packages/network
+      '@webkrnl/notification':
+        specifier: workspace:*
+        version: link:packages/notification
+      '@webkrnl/queue':
+        specifier: workspace:*
+        version: link:packages/queue
+      '@webkrnl/realtime':
+        specifier: workspace:*
+        version: link:packages/realtime
+      '@webkrnl/settings':
+        specifier: workspace:*
+        version: link:packages/settings
+      '@webkrnl/storage':
+        specifier: workspace:*
+        version: link:packages/storage
+      '@webkrnl/sync':
+        specifier: workspace:*
+        version: link:packages/sync
+      '@webkrnl/translation':
+        specifier: workspace:*
+        version: link:packages/translation
       browserslist:
         specifier: ^4.29.3
         version: 4.29.3
@@ -318,64 +318,64 @@ importers:
 
   packages/analytics:
     devDependencies:
-      '@platform/consent':
+      '@webkrnl/consent':
         specifier: workspace:*
         version: link:../consent
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/global-state':
+      '@webkrnl/global-state':
         specifier: workspace:*
         version: link:../global-state
-      '@platform/network':
+      '@webkrnl/network':
         specifier: workspace:*
         version: link:../network
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/settings':
+      '@webkrnl/settings':
         specifier: workspace:*
         version: link:../settings
 
   packages/auth:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/crypto':
+      '@webkrnl/crypto':
         specifier: workspace:*
         version: link:../crypto
-      '@platform/hub':
+      '@webkrnl/hub':
         specifier: workspace:*
         version: link:../hub
-      '@platform/network':
+      '@webkrnl/network':
         specifier: workspace:*
         version: link:../network
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/storage':
+      '@webkrnl/storage':
         specifier: workspace:*
         version: link:../storage
 
   packages/consent:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/hub':
+      '@webkrnl/hub':
         specifier: workspace:*
         version: link:../hub
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
 
@@ -387,148 +387,148 @@ importers:
 
   packages/crypto:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
 
   packages/design-system:
     devDependencies:
-      '@platform/consent':
+      '@webkrnl/consent':
         specifier: workspace:*
         version: link:../consent
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/settings':
+      '@webkrnl/settings':
         specifier: workspace:*
         version: link:../settings
-      '@platform/translation':
+      '@webkrnl/translation':
         specifier: workspace:*
         version: link:../translation
 
   packages/global-state:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
 
   packages/hub:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
 
   packages/logger:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
 
   packages/network:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/global-state':
+      '@webkrnl/global-state':
         specifier: workspace:*
         version: link:../global-state
-      '@platform/storage':
+      '@webkrnl/storage':
         specifier: workspace:*
         version: link:../storage
 
   packages/notification:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
 
   packages/queue:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/global-state':
+      '@webkrnl/global-state':
         specifier: workspace:*
         version: link:../global-state
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
 
   packages/realtime:
     devDependencies:
-      '@platform/auth':
+      '@webkrnl/auth':
         specifier: workspace:*
         version: link:../auth
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/global-state':
+      '@webkrnl/global-state':
         specifier: workspace:*
         version: link:../global-state
-      '@platform/hub':
+      '@webkrnl/hub':
         specifier: workspace:*
         version: link:../hub
-      '@platform/network':
+      '@webkrnl/network':
         specifier: workspace:*
         version: link:../network
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/storage':
+      '@webkrnl/storage':
         specifier: workspace:*
         version: link:../storage
 
   packages/settings:
     devDependencies:
-      '@platform/consent':
+      '@webkrnl/consent':
         specifier: workspace:*
         version: link:../consent
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/hub':
+      '@webkrnl/hub':
         specifier: workspace:*
         version: link:../hub
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
 
   packages/storage:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/crypto':
+      '@webkrnl/crypto':
         specifier: workspace:*
         version: link:../crypto
-      '@platform/logger':
+      '@webkrnl/logger':
         specifier: workspace:*
         version: link:../logger
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
       zod:
@@ -537,46 +537,46 @@ importers:
 
   packages/sync:
     devDependencies:
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/global-state':
+      '@webkrnl/global-state':
         specifier: workspace:*
         version: link:../global-state
-      '@platform/network':
+      '@webkrnl/network':
         specifier: workspace:*
         version: link:../network
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/storage':
+      '@webkrnl/storage':
         specifier: workspace:*
         version: link:../storage
 
   packages/translation:
     devDependencies:
-      '@platform/consent':
+      '@webkrnl/consent':
         specifier: workspace:*
         version: link:../consent
-      '@platform/core':
+      '@webkrnl/core':
         specifier: workspace:*
         version: link:../core
-      '@platform/network':
+      '@webkrnl/network':
         specifier: workspace:*
         version: link:../network
-      '@platform/notification':
+      '@webkrnl/notification':
         specifier: workspace:*
         version: link:../notification
-      '@platform/queue':
+      '@webkrnl/queue':
         specifier: workspace:*
         version: link:../queue
-      '@platform/settings':
+      '@webkrnl/settings':
         specifier: workspace:*
         version: link:../settings
-      '@platform/storage':
+      '@webkrnl/storage':
         specifier: workspace:*
         version: link:../storage
 

@@ -27,7 +27,7 @@
  * @author MathAid
  */
 
-import { createStore, type View } from '@platform/core';
+import { createStore, type View } from '@webkrnl/core';
 
 import type { TabChannel } from './tab-identity';
 

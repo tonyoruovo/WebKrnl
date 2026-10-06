@@ -27,7 +27,7 @@
  * @author MathAid
  */
 
-import type { PacketEnvelope } from '@platform/core';
+import type { PacketEnvelope } from '@webkrnl/core';
 
 import { DEFAULT_CHANNEL, HUB_TAG, isHubMessage, isWindowBroadcast } from './shared';
 

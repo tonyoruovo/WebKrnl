@@ -3,8 +3,8 @@
  * IndexedDB, the main thread reads the same data, and a coordinator that dies
  * during a write fails over to the main thread without data loss (the M6 gate).
  */
-import type { ProcessorDef, SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import type { ProcessorDef, SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { STORAGE_ID, createStorage, type StorageControl, type StorageOptions } from '../src';

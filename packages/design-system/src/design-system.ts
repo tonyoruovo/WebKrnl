@@ -31,7 +31,7 @@ import {
   type ControlInterface,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import {
   APPEARANCE_KEYS,

@@ -25,7 +25,7 @@
 
 | Area | State |
 |---|---|
-| Repository | A single package, not under git. `src/managers/package.json` declares `@platform/managers`. Both `package.json` files are at version `0.0.1`. |
+| Repository | A single package, not under git. `src/managers/package.json` declares `@webkrnl/managers`. Both `package.json` files are at version `0.0.1`. |
 | Code | 13 managers as standalone classes. None of them exchanges packets: they are joined by constructor closures in `platform.ts`. `IPlatformWorker` is not used anywhere. |
 | Bus | `MessageQueue`, `NotificationCenter`, `NotificationBridge`, `ChannelTransport`, `CorrelationRegistry`, and the envelope/callback packet split exist and are usable. |
 | Tests | 38 of 49 suites fail to load. There is no vitest config, so the `@/` path alias does not resolve, and `dist/` is collected as tests too. |
@@ -186,8 +186,8 @@ No code is written until both steps are done.
 ### M10 — Platform, template, release
 
 - `platform`: an orchestrator that boots a chosen set of subsystems
-- `@platform/create`: the scaffolder (workspace, config, worker entries, test harness), with a Vue template first
-- `@platform/vue`: `useView`, the Vue plugin, the `vue-router` route source (§14.1)
+- `@webkrnl/create`: the scaffolder (workspace, config, worker entries, test harness), with a Vue template first
+- `@webkrnl/vue`: `useView`, the Vue plugin, the `vue-router` route source (§14.1)
 - Documentation site (typedoc), changelog, fixed-version release
 
 **Gate:** a freshly scaffolded Vue app boots, goes offline, recovers, and passes its generated tests. A plain-TypeScript app does the same without the adapter, which proves the core is framework-agnostic.
@@ -208,7 +208,7 @@ M5 (hub) and M6/M7 can run in parallel after the pilot. M8 needs Realtime (M7) a
 
 All packages share one version. **Milestone gates do not change the version** (decided 2026-10-01): it stays `0.0.2` until every milestone is complete **and** the alpha validation (§4.2) has passed. The next version is decided then.
 
-The `@platform` scope is a placeholder until M9, when the final package name is chosen.
+The monorepo is named **WebKrnl**, and every package is in the npm scope `@webkrnl` (decided 2026-10-06; the placeholder until then was `@platform`).
 
 ### 4.2 Alpha validation
 
@@ -234,7 +234,7 @@ After M10, the packages are installed into real applications built with **React,
 | # | Question | Needed by | Answer |
 |---|---|---|---|
 | Q1 | Platforms in scope | M0 | Desktop and mobile (Android, iOS) browsers. In-app WebViews are out. |
-| Q2 | The npm scope name | M0 | `@platform`, a placeholder until M9. |
+| Q2 | The npm scope name | M0 | Decided 2026-10-06: **WebKrnl**, scope `@webkrnl`. |
 | Q3 | Reference server, or wire protocol only? | M1 | Wire protocol only. |
 | Q4 | The hub origin | M5 | The apex domain. |
 | Q5 | Framework support | M10 | Framework-agnostic core. A Vue adapter first; React to be considered later. |

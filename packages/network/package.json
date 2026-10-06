@@ -1,5 +1,5 @@
 {
-  "name": "@platform/network",
+  "name": "@webkrnl/network",
   "version": "0.0.2",
   "description": "The Network subsystem: requests with timeouts, retries, deduplication, a cache, a circuit breaker and interceptors.",
   "type": "module",
@@ -13,12 +13,12 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*",
-    "@platform/storage": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*",
+    "@webkrnl/storage": "workspace:*"
   },
   "license": "ISC"
 }

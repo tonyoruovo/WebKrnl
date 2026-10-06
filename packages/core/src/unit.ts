@@ -17,7 +17,7 @@
  * @example
  * A subsystem with a command, a view and an optional dependency
  * ```ts
- * import { defineSubsystem } from '@platform/core';
+ * import { defineSubsystem } from '@webkrnl/core';
  *
  * export const consent = defineSubsystem({
  *   id: 'consent',
@@ -40,7 +40,7 @@
  * @example
  * A feature that can fail without failing its subsystem
  * ```ts
- * import { defineUnit } from '@platform/core';
+ * import { defineUnit } from '@webkrnl/core';
  *
  * export const idb = defineUnit({
  *   id: 'idb',
@@ -209,7 +209,7 @@ export interface PacketPort {
  *
  * The kernel passes it to `init`, `suspend`, `resume`, `control` and
  * `receive`. It is the only way a unit touches the platform, which keeps
- * units testable with `@platform/core/testing`.
+ * units testable with `@webkrnl/core/testing`.
  *
  * @example
  * Example 1: Cancelling work on teardown

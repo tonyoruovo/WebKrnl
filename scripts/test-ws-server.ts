@@ -2,7 +2,7 @@
  * @fileoverview
  * @summary A small WebSocket server for the browser tests of Realtime (vitest `globalSetup`).
  * @description
- * It speaks the default JSON frames of `@platform/realtime`, with the reserved
+ * It speaks the default JSON frames of `@webkrnl/realtime`, with the reserved
  * topics of the Global transport (docs/WIRE-PROTOCOL.md): it answers
  * `ping` with `pong`, remembers `subscribe` and `unsubscribe`, and sends each
  * `publish` as a `message` to every subscriber of the topic. It is not a

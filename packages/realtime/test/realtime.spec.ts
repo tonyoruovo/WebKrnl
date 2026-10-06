@@ -1,7 +1,7 @@
-import { AUTH_ID, createAuth, type AuthControl } from '@platform/auth';
-import { NO_CONTROL, type SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
-import { createGlobalState, createStaticEnvironment } from '@platform/global-state';
+import { AUTH_ID, createAuth, type AuthControl } from '@webkrnl/auth';
+import { NO_CONTROL, type SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
+import { createGlobalState, createStaticEnvironment } from '@webkrnl/global-state';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

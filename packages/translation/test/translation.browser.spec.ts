@@ -2,8 +2,8 @@
  * Translation in real browsers: the processor `compile` parses catalogs in a
  * dedicated worker, and Intl gives the plural rules of the locale.
  */
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { TRANSLATION_ID, createTranslation, type TranslationControl } from '../src';

@@ -1,13 +1,13 @@
 /**
  * @fileoverview
- * @module @platform/logger
- * @summary The public API of `@platform/logger`.
+ * @module @webkrnl/logger
+ * @summary The public API of `@webkrnl/logger`.
  * @description
  * Re-exports the Logger subsystem ({@linkcode createLogger}), its entry
  * formatter, and the sanitizer it runs on every context.
  *
  * ```text
- *   @platform/logger
+ *   @webkrnl/logger
  *   +-- createLogger      the subsystem: id 'logger', featurized, Tab scope
  *   +-- formatEntry       one entry as a line of text
  *   +-- LEVEL_RANK        DEBUG < INFO < WARN < ERROR < FATAL
@@ -18,7 +18,7 @@
  * @example
  * Registering the Logger
  * ```ts
- * import { createLogger } from '@platform/logger';
+ * import { createLogger } from '@webkrnl/logger';
  *
  * const kernel = new Kernel([...centralized, createLogger({ console: 'WARN' }), ...subsystems], {
  *   router: queue.router,
@@ -28,7 +28,7 @@
  * @example
  * Reading a trace
  * ```ts
- * import type { LoggerControl } from '@platform/logger';
+ * import type { LoggerControl } from '@webkrnl/logger';
  *
  * const { commands } = kernel.unit<LoggerControl>('logger').control!;
  * commands.trace(traceId);

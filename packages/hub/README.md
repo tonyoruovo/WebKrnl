@@ -1,11 +1,11 @@
-# @platform/hub
+# @webkrnl/hub
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 **Window scope**: broadcasts that reach every tab of a site, across its subdomains, in one browser session. `BroadcastChannel` and IndexedDB stop at the origin, and `a.example.com` and `b.example.com` are different origins, so Window scope needs:
 
 - a **hub page** on the apex (`https://example.com/__platform/hub.html`), which every subdomain tab frames, and whose `BroadcastChannel` they share;
-- a **relay** where the browser partitions that hub. **WebKit (Safari, and every browser on iOS) does**: its framed hubs are keyed by the top-level origin, so `a.` and `b.` never meet through it ([spike](../../spikes/m5-hub/FINDINGS.md)). The relay is the Global transport of `@platform/realtime` (option `global`): when Realtime runs with it, the window transport takes the relay by itself. Without it, Window scope on WebKit reaches the tabs of one origin, and the client says so.
+- a **relay** where the browser partitions that hub. **WebKit (Safari, and every browser on iOS) does**: its framed hubs are keyed by the top-level origin, so `a.` and `b.` never meet through it ([spike](../../spikes/m5-hub/FINDINGS.md)). The relay is the Global transport of `@webkrnl/realtime` (option `global`): when Realtime runs with it, the window transport takes the relay by itself. Without it, Window scope on WebKit reaches the tabs of one origin, and the client says so.
 
 The client detects which case it is in, uses the relay only when needed, and delivers each broadcast once. Design: [ARCHITECTURE §11.3](../../docs/ARCHITECTURE.md#113-window-scope-the-hub-and-the-relay) (amendment A11).
 
@@ -14,8 +14,8 @@ The client detects which case it is in, uses the relay only when needed, and del
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/hub": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/hub": "workspace:*"
   }
 }
 ```
@@ -24,14 +24,14 @@ The client detects which case it is in, uses the relay only when needed, and del
 
 | Import          | Contents                                                                                                                               |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `@platform/hub` | `createWindowTransport`, `createWindowClient`, `renderHubPage`, `iframeLink`, `channelLink`, the window cookie, `originAllowed`, types |
+| `@webkrnl/hub` | `createWindowTransport`, `createWindowClient`, `renderHubPage`, `iframeLink`, `channelLink`, the window cookie, `originAllowed`, types |
 
 ## Usage
 
 Register the Window transport with the kernel, next to the Queue and the NotificationCenter. Subsystems with `scope: 'window'` then broadcast to every tab:
 
 ```ts
-import { createWindowTransport } from '@platform/hub';
+import { createWindowTransport } from '@webkrnl/hub';
 
 const kernel = new Kernel(
   [
@@ -55,7 +55,7 @@ const kernel = new Kernel(
 Reading the state:
 
 ```ts
-import type { WindowTransportControl } from '@platform/hub';
+import type { WindowTransportControl } from '@webkrnl/hub';
 
 const { views } = kernel.unit<WindowTransportControl>('window').control!;
 views.state.getSnapshot();
@@ -70,7 +70,7 @@ views.state.getSnapshot();
 
    ```ts
    import { writeFile } from 'node:fs/promises';
-   import { renderHubPage } from '@platform/hub';
+   import { renderHubPage } from '@webkrnl/hub';
 
    const page = await renderHubPage({
      allowedOrigins: ['https://example.com', 'https://*.example.com'],

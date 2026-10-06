@@ -1,4 +1,4 @@
-# Examples: `@platform/notification`
+# Examples: `@webkrnl/notification`
 
 The Notification Center routes broadcasts. It keeps a registry of events with access control, delivers each broadcast to its subscribers, stops calling a subscriber that keeps failing, and records a history with one trail for each broadcast.
 
@@ -9,14 +9,14 @@ The Notification Center routes broadcasts. It keeps a registry of events with ac
 Only Auth may announce `auth:login`. When another subsystem tries, the broadcast is refused and recorded, and the real subscribers never see it.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
 import {
   BroadcastRejectedError,
   NOTIFICATION_ID,
   createNotificationCenter,
   type NotificationControl,
-} from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 const ports: Record<string, PacketPort> = {};
 const sender = (id: string) =>
@@ -73,13 +73,13 @@ history: ["auth:fanned-out","ads:rejected"]
 A toast component listens to `sync:done` without being a subsystem. The filter skips empty syncs, and `maxExecutions` removes the subscription after the first toast.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
 import {
   NOTIFICATION_ID,
   createNotificationCenter,
   type NotificationControl,
-} from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 let syncPort: PacketPort | undefined;
 const sync = defineSubsystem({
@@ -122,13 +122,13 @@ toast: 3 changes synced
 A chat widget throws while its server is down. After two failures in a row, its circuit opens and the center skips it, so each broadcast does not wait for a broken subscriber. After the reset time, the center tries it again.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
 import {
   NOTIFICATION_ID,
   createNotificationCenter,
   type NotificationControl,
-} from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 let now = 0;
 let serverDown = true;

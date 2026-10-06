@@ -1,8 +1,8 @@
-# @platform
+# WebKrnl
 
-> **Status: pre-alpha (`0.0.2`).** The architecture is agreed. The kernel and its worker runtime (`@platform/core`, M1 and M2), the three centralized subsystems (`@platform/global-state`, `@platform/queue`, `@platform/notification`, M3), the pilot subsystems (`@platform/logger`, `@platform/consent`, M4), Window scope across subdomains (`@platform/hub`, M5), the data foundation (`@platform/crypto`, `@platform/storage`, M6), and connectivity (`@platform/network`, `@platform/auth`, `@platform/sync`, `@platform/realtime`, M7), Global scope (the Global transport of `@platform/realtime` and the [wire protocol](docs/WIRE-PROTOCOL.md), M8), and the product subsystems (`@platform/settings`, `@platform/translation`, `@platform/analytics`, `@platform/design-system`, M9) are built. Every subsystem of the catalogue is on the kernel; the orchestrator, the Vue adapter and the scaffolder come in M10. Nothing here is ready for production use, and every API shown below may change.
+> **Status: pre-alpha (`0.0.2`).** The architecture is agreed. The kernel and its worker runtime (`@webkrnl/core`, M1 and M2), the three centralized subsystems (`@webkrnl/global-state`, `@webkrnl/queue`, `@webkrnl/notification`, M3), the pilot subsystems (`@webkrnl/logger`, `@webkrnl/consent`, M4), Window scope across subdomains (`@webkrnl/hub`, M5), the data foundation (`@webkrnl/crypto`, `@webkrnl/storage`, M6), and connectivity (`@webkrnl/network`, `@webkrnl/auth`, `@webkrnl/sync`, `@webkrnl/realtime`, M7), Global scope (the Global transport of `@webkrnl/realtime` and the [wire protocol](docs/WIRE-PROTOCOL.md), M8), and the product subsystems (`@webkrnl/settings`, `@webkrnl/translation`, `@webkrnl/analytics`, `@webkrnl/design-system`, M9) are built. Every subsystem of the catalogue is on the kernel; the orchestrator, the Vue adapter and the scaffolder come in M10. Nothing here is ready for production use, and every API shown below may change.
 >
-> `@platform` is a **placeholder name** until the alpha (M10): the final name is chosen before the first release.
+> **WebKrnl** is the name of the monorepo. Every package is in the npm scope `@webkrnl` (chosen on 2026-10-06; until then the placeholder was `@platform`).
 
 A framework-agnostic **platform runtime** for browser applications. Your app boots it once and hands it the work that must not fail: storage, network calls, authentication, sync, real-time messaging, and the messages between them.
 
@@ -33,36 +33,36 @@ Each subsystem is its own package. Packages depend on each other through peer de
 
 | Package                   | Purpose                                                                                          |
 | ------------------------- | ------------------------------------------------------------------------------------------------ |
-| `@platform/core`          | Units, lifecycle, dependency resolution, packets, scopes, worker hosts, the Global wire protocol |
-| `@platform/global-state`  | Environment detection, platform status, tab identity, pending work                               |
-| `@platform/queue`         | Single entry point for packets: admission, priority, retry, dead letters                         |
-| `@platform/notification`  | Broadcast routing, subscriptions, access control                                                 |
-| `@platform/logger`        | Logs and traces, buffered from the first moment of boot                                          |
-| `@platform/crypto`        | Keys, encryption, signing                                                                        |
-| `@platform/storage`       | One schema-validated interface over IndexedDB, OPFS, Cache, Web Storage, and memory              |
-| `@platform/consent`       | Consent grants                                                                                   |
-| `@platform/settings`      | User settings, with optimistic updates                                                           |
-| `@platform/network`       | Requests with retry, deduplication, caching, and interceptors                                    |
-| `@platform/auth`          | Tokens, refresh, permissions, elevation                                                          |
-| `@platform/sync`          | Server sync with intervals, offline replay, and conflict resolution                              |
-| `@platform/realtime`      | WebSocket and SSE connections, and the Global scope transport                                    |
-| `@platform/translation`   | Translation catalogs                                                                             |
-| `@platform/analytics`     | Consent-gated, sampled analytics                                                                 |
-| `@platform/design-system` | Design tokens and the theme: color scheme, contrast, density, motion                             |
-| `@platform/hub`           | The page that connects tabs across subdomains (Window scope)                                     |
-| `@platform/platform`      | Boots a chosen set of subsystems                                                                 |
-| `@platform/vue`           | Vue adapter                                                                                      |
-| `@platform/create`        | Project scaffolder: `npm init @platform`                                                         |
+| `@webkrnl/core`          | Units, lifecycle, dependency resolution, packets, scopes, worker hosts, the Global wire protocol |
+| `@webkrnl/global-state`  | Environment detection, platform status, tab identity, pending work                               |
+| `@webkrnl/queue`         | Single entry point for packets: admission, priority, retry, dead letters                         |
+| `@webkrnl/notification`  | Broadcast routing, subscriptions, access control                                                 |
+| `@webkrnl/logger`        | Logs and traces, buffered from the first moment of boot                                          |
+| `@webkrnl/crypto`        | Keys, encryption, signing                                                                        |
+| `@webkrnl/storage`       | One schema-validated interface over IndexedDB, OPFS, Cache, Web Storage, and memory              |
+| `@webkrnl/consent`       | Consent grants                                                                                   |
+| `@webkrnl/settings`      | User settings, with optimistic updates                                                           |
+| `@webkrnl/network`       | Requests with retry, deduplication, caching, and interceptors                                    |
+| `@webkrnl/auth`          | Tokens, refresh, permissions, elevation                                                          |
+| `@webkrnl/sync`          | Server sync with intervals, offline replay, and conflict resolution                              |
+| `@webkrnl/realtime`      | WebSocket and SSE connections, and the Global scope transport                                    |
+| `@webkrnl/translation`   | Translation catalogs                                                                             |
+| `@webkrnl/analytics`     | Consent-gated, sampled analytics                                                                 |
+| `@webkrnl/design-system` | Design tokens and the theme: color scheme, contrast, density, motion                             |
+| `@webkrnl/hub`           | The page that connects tabs across subdomains (Window scope)                                     |
+| `@webkrnl/platform`      | Boots a chosen set of subsystems                                                                 |
+| `@webkrnl/vue`           | Vue adapter                                                                                      |
+| `@webkrnl/create`        | Project scaffolder: `npm init @webkrnl`                                                         |
 
 ## Intended usage
 
 > Illustrative only. These APIs are designed in milestones M1–M10 and may change.
 
 ```ts
-import { createPlatform } from '@platform/platform';
-import { storage } from '@platform/storage';
-import { network } from '@platform/network';
-import { auth } from '@platform/auth';
+import { createPlatform } from '@webkrnl/platform';
+import { storage } from '@webkrnl/storage';
+import { network } from '@webkrnl/network';
+import { auth } from '@webkrnl/auth';
 
 const platform = await createPlatform({
   subsystems: [storage(), network(), auth({ refreshFn })],
@@ -77,7 +77,7 @@ With Vue:
 
 ```ts
 import { createApp } from 'vue';
-import { platformPlugin, usePlatform, useView } from '@platform/vue';
+import { platformPlugin, usePlatform, useView } from '@webkrnl/vue';
 
 createApp(App)
   .use(platformPlugin, { subsystems: [storage(), network()] })
@@ -102,7 +102,7 @@ In-app WebViews are not supported. Packages can be imported in server-side rende
 
 ## Deployment notes
 
-- **Window scope** (across subdomains) needs the hub page from `@platform/hub`, served from your **apex** domain. That path must allow your subdomains to frame it: send `Content-Security-Policy: frame-ancestors https://example.com https://*.example.com`, and don't send `X-Frame-Options`.
+- **Window scope** (across subdomains) needs the hub page from `@webkrnl/hub`, served from your **apex** domain. That path must allow your subdomains to frame it: send `Content-Security-Policy: frame-ancestors https://example.com https://*.example.com`, and don't send `X-Frame-Options`.
 - **Global scope** needs a server that implements the platform's wire protocol. This project ships the protocol schema and conformance fixtures, not a server.
 
 ## Repository layout

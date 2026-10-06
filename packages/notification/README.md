@@ -1,6 +1,6 @@
-# @platform/notification
+# @webkrnl/notification
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Notification Center**: the platform's broadcast router. It is a centralized subsystem (id `notification`, Tab scope) that owns **routing only** (amendment A10):
 
@@ -9,15 +9,15 @@ The **Notification Center**: the platform's broadcast router. It is a centralize
 - a **circuit breaker** per subscriber, so one that keeps failing stops slowing every broadcast down;
 - **history**: the last broadcasts, each with its deliveries and one full fingerprint trail.
 
-It has no queue and no retries: the Queue (`@platform/queue`) schedules every packet and hands broadcasts to `fanOut`. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Notification proposal](../../proposals/notification_PROPOSAL.md).
+It has no queue and no retries: the Queue (`@webkrnl/queue`) schedules every packet and hands broadcasts to `fanOut`. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Notification proposal](../../proposals/notification_PROPOSAL.md).
 
 ## Installation
 
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/notification": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/notification": "workspace:*"
   }
 }
 ```
@@ -25,9 +25,9 @@ It has no queue and no retries: the Queue (`@platform/queue`) schedules every pa
 ## Usage
 
 ```ts
-import { Kernel } from '@platform/core';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel } from '@webkrnl/core';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 const notification = createNotificationCenter({
   events: [
@@ -56,7 +56,7 @@ defineSubsystem({
 Application code subscribes through the control interface:
 
 ```ts
-import type { NotificationControl } from '@platform/notification';
+import type { NotificationControl } from '@webkrnl/notification';
 
 const { commands, views } = kernel.unit<NotificationControl>('notification').control!;
 const stop = commands.subscribe('auth:login', (payload) => showWelcome(payload), {
@@ -66,7 +66,7 @@ const stop = commands.subscribe('auth:login', (payload) => showWelcome(payload),
 views.history.subscribe(() => console.table(views.history.getSnapshot()));
 
 // Window and Global broadcasts sent from this tab also go to the relay attached for their scope
-// (the Window transport attaches itself; see @platform/hub).
+// (the Window transport attaches itself; see @webkrnl/hub).
 const detach = commands.attachRelay({ scope: 'window', publish: (envelope) => send(envelope) });
 
 // The history keeps the last `historySize` records; observe to see every one.

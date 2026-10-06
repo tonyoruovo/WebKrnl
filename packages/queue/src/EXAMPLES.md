@@ -1,4 +1,4 @@
-# Examples: `@platform/queue`
+# Examples: `@webkrnl/queue`
 
 The Queue is the packet router of the kernel. Every packet goes through it. It checks admission, delivers by priority, keeps related packets in order, retries a target that does not run, and keeps the packets that it cannot deliver as dead letters.
 
@@ -9,8 +9,8 @@ The Queue is the packet router of the kernel. Every packet goes through it. It c
 A chat sends messages to a sync subsystem. The messages of one conversation share an `orderingKey`, so they arrive in order. A `HIGH` read receipt goes before the waiting `MEDIUM` messages.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
-import { createQueue } from '@platform/queue';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
+import { createQueue } from '@webkrnl/queue';
 
 let chat: PacketPort | undefined;
 const app = defineSubsystem({
@@ -62,8 +62,8 @@ synced: Call me
 The Queue retries a packet while its target is suspended. After the last retry, the packet becomes a dead letter. When the target runs again, the app replays the dead letter.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
-import { QUEUE_ID, createQueue, type QueueControl } from '@platform/queue';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
+import { QUEUE_ID, createQueue, type QueueControl } from '@webkrnl/queue';
 
 let app: PacketPort | undefined;
 const sender = defineSubsystem({
@@ -118,14 +118,14 @@ dead letters left: 0
 With Global State in the kernel, the Queue asks it about each packet. While the platform is `BUSY`, `LOW` packets such as analytics are refused, and `CRITICAL` packets still pass.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
-import { QueueRejectedError, createQueue } from '@platform/queue';
+} from '@webkrnl/global-state';
+import { QueueRejectedError, createQueue } from '@webkrnl/queue';
 
 let app: PacketPort | undefined;
 const sender = defineSubsystem({
@@ -183,9 +183,9 @@ delivered: payment:confirm
 A payment request fails while the billing service is down, and the user reloads the page. With Storage in the kernel, the dead letter comes back after the reload, so the app can still replay it.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
-import { QUEUE_ID, createQueue, type QueueControl } from '@platform/queue';
-import { createStorage } from '@platform/storage';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
+import { QUEUE_ID, createQueue, type QueueControl } from '@webkrnl/queue';
+import { createStorage } from '@webkrnl/storage';
 
 async function pageLoad() {
   let port: PacketPort | undefined;

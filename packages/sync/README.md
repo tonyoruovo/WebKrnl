@@ -1,6 +1,6 @@
-# @platform/sync
+# @webkrnl/sync
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Sync** subsystem (id `sync`, featurized, Tab scope). It gets the changes of the user to the server, **exactly once**, also after hours offline:
 
@@ -20,9 +20,9 @@ Network is required; Storage is late-bound. Design: [ARCHITECTURE §19.3](../../
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/network": "workspace:*",
-    "@platform/sync": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/network": "workspace:*",
+    "@webkrnl/sync": "workspace:*"
   }
 }
 ```
@@ -31,12 +31,12 @@ Network is required; Storage is late-bound. Design: [ARCHITECTURE §19.3](../../
 
 | Import           | Contents                                                                   |
 | ---------------- | -------------------------------------------------------------------------- |
-| `@platform/sync` | `createSync`, `Outbox`, `mergeOps`, `isPermanent`, and the types            |
+| `@webkrnl/sync` | `createSync`, `Outbox`, `mergeOps`, `isPermanent`, and the types            |
 
 ## Usage
 
 ```ts
-import { createSync, type SyncControl } from '@platform/sync';
+import { createSync, type SyncControl } from '@webkrnl/sync';
 
 const kernel = new Kernel([...centralized, createStorage(), createNetwork(), createSync()], { router: queue.router });
 await kernel.start();

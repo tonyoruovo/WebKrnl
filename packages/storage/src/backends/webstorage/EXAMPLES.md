@@ -9,7 +9,7 @@
 A checkout form keeps its progress for the current tab only. `sessionStorage` forgets it when the tab closes. The key prefix keeps the entries apart from other code on the page.
 
 ```ts file=main.ts
-import { SessionStorageBackend, buildCanonicalKey } from '@platform/storage';
+import { SessionStorageBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new SessionStorageBackend({ keyPrefix: 'shop:' });
 await backend.initialize();
@@ -33,7 +33,7 @@ raw key in sessionStorage: shop:shop:browser:1:checkout:step
 A settings import buffers several writes, then drops the ones that the user did not confirm. `rollback(predicate)` removes the matching operations and keeps the transaction open.
 
 ```ts file=main.ts
-import { LocalStorageBackend, buildCanonicalKey } from '@platform/storage';
+import { LocalStorageBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new LocalStorageBackend({ keyPrefix: 'app:' });
 await backend.initialize();

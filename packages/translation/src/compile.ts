@@ -23,7 +23,7 @@
  * @author MathAid
  */
 
-import { defineProcessor, type ProcessorModule } from '@platform/core';
+import { defineProcessor, type ProcessorModule } from '@webkrnl/core';
 
 import { parseMessage, type CompiledMessage } from './icu';
 

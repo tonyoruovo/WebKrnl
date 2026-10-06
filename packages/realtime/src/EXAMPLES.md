@@ -1,4 +1,4 @@
-# Examples: `@platform/realtime`
+# Examples: `@webkrnl/realtime`
 
 Realtime keeps one socket for many topics. In an app, the socket runs in a dedicated worker and talks to your server. These examples run the socket on the main thread (`hosts: ['virtual']`) with a small fake server, so they run in every sandbox.
 
@@ -9,8 +9,8 @@ Realtime keeps one socket for many topics. In an app, the socket runs in a dedic
 A chat room listens to its topic and sends messages to it. One socket carries every topic. The fake server sends each publish back as a message.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@platform/realtime';
+import { Kernel } from '@webkrnl/core';
+import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@webkrnl/realtime';
 
 // A fake echo server: each publish comes back as a message to its topic.
 function echoSocket(): SocketLike {
@@ -62,8 +62,8 @@ topics: room:42
 The connection drops. Realtime reconnects with backoff and subscribes every topic again, so no listener has to do anything.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@platform/realtime';
+import { Kernel } from '@webkrnl/core';
+import { REALTIME_ID, createRealtime, type RealtimeControl, type SocketLike } from '@webkrnl/realtime';
 
 const sockets: SocketLike[] = [];
 const subscribes: string[] = [];
@@ -125,10 +125,10 @@ socket 2: orders
 The user changes a setting on the laptop. The phone gets the change. Each device runs Realtime with the option `global`; the fake server forwards `platform:global` to the other sockets and acknowledges each envelope, as [the wire protocol](../../../docs/WIRE-PROTOCOL.md) says.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@platform/core';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { REALTIME_ID, createRealtime, type GlobalControl, type SocketLike } from '@platform/realtime';
+import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@webkrnl/core';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { REALTIME_ID, createRealtime, type GlobalControl, type SocketLike } from '@webkrnl/realtime';
 
 // A fake server: it forwards a reserved topic to the other subscribers, then sends an ack.
 const subscribers = new Map<SocketLike, Set<string>>();

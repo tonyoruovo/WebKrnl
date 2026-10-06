@@ -26,7 +26,7 @@
  * @example
  * Hosts are normally created by a ProcessorRunner; creating one by hand
  * ```ts
- * import { createHost, createScheduler } from '@platform/core';
+ * import { createHost, createScheduler } from '@webkrnl/core';
  *
  * const host = createHost('dedicated', processorDef, { scheduler: createScheduler(), sliceBudgetMs: 5 });
  * host.onFailure((failure) => console.warn(failure.trigger));

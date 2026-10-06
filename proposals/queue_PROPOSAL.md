@@ -5,7 +5,7 @@
 > - Admission reads Global State (`canAccept(importance)`) when it is running.
 > - Only delivery failures are retried (the target is not running). A target's own error goes back to the requester unretried.
 > - Dead letters are kept in memory and written through a `LateBinding`, which Storage binds from M6.
-> - `navigator.locks` and `MessageChannel` move to transports (`@platform/core`); the in-realm Queue does not need them.
+> - `navigator.locks` and `MessageChannel` move to transports (`@webkrnl/core`); the in-realm Queue does not need them.
 
 # Message Queue Manager
 - Use the `navigator.locks` API for locking requests to the queue

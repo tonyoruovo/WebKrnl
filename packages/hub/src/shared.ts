@@ -28,7 +28,7 @@
  * @author MathAid
  */
 
-import type { PacketEnvelope } from '@platform/core';
+import type { PacketEnvelope } from '@webkrnl/core';
 
 /**
  * @summary Whether an origin matches an allowlist.

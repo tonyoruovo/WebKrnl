@@ -1,10 +1,10 @@
-# @platform/core
+# @webkrnl/core
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
-The kernel of the platform. Every other `@platform/*` package is built on it.
+The kernel of the platform. Every other `@webkrnl/*` package is built on it.
 
-`@platform/core` defines what a **subsystem** is, runs every subsystem's **lifecycle**, enforces the **dependencies** between them, carries **packets** between them, and runs their **processors** on the main thread or in workers. It has no framework dependency and no subsystem of its own: Storage, Auth, the Queue and the rest are separate packages that register with the kernel.
+`@webkrnl/core` defines what a **subsystem** is, runs every subsystem's **lifecycle**, enforces the **dependencies** between them, carries **packets** between them, and runs their **processors** on the main thread or in workers. It has no framework dependency and no subsystem of its own: Storage, Auth, the Queue and the rest are separate packages that register with the kernel.
 
 - [What is in the package](#what-is-in-the-package)
 - [Installation](#installation)
@@ -37,7 +37,7 @@ Inside this monorepo, depend on the workspace package:
 
 ```json
 {
-  "peerDependencies": { "@platform/core": "workspace:*" }
+  "peerDependencies": { "@webkrnl/core": "workspace:*" }
 }
 ```
 
@@ -51,17 +51,17 @@ Runs in the supported browsers (see the [root README](../../README.md#supported-
 
 | Import                   | Use it for                                                                        |
 | ------------------------ | --------------------------------------------------------------------------------- |
-| `@platform/core`         | Everything an app or a subsystem package needs.                                   |
-| `@platform/core/testing` | `createTestPlatform` and helpers: boot real units in tests, without browser APIs. |
-| `@platform/core/worker`  | `serveProcessor`: the one call a worker entry file makes.                         |
-| `@platform/core/fixtures/wire/*` | JSON fixtures of the wire protocol: `valid/*.json` and `invalid/*.json` (with the `reason`). For server tests. |
+| `@webkrnl/core`         | Everything an app or a subsystem package needs.                                   |
+| `@webkrnl/core/testing` | `createTestPlatform` and helpers: boot real units in tests, without browser APIs. |
+| `@webkrnl/core/worker`  | `serveProcessor`: the one call a worker entry file makes.                         |
+| `@webkrnl/core/fixtures/wire/*` | JSON fixtures of the wire protocol: `valid/*.json` and `invalid/*.json` (with the `reason`). For server tests. |
 
 ## Quick start
 
 Define two subsystems, one depending on the other, and boot them:
 
 ```ts
-import { Kernel, defineSubsystem } from '@platform/core';
+import { Kernel, defineSubsystem } from '@webkrnl/core';
 
 const counter = defineSubsystem({
   id: 'counter',
@@ -105,7 +105,7 @@ await kernel.stop();
 A subsystem and a feature share one shape, the **unit**. A subsystem also has a `scope`, a `kind`, and a packet port. A feature belongs to a subsystem: it can fail without failing its parent, which then reports `DEGRADED`.
 
 ```ts
-import { defineSubsystem, defineUnit } from '@platform/core';
+import { defineSubsystem, defineUnit } from '@webkrnl/core';
 
 const idb = defineUnit({
   id: 'idb',
@@ -243,7 +243,7 @@ The kernel fills in ids, source, scope, timestamps and trace ids, and stamps `se
 
 ### Routers
 
-Every packet a port produces goes through the kernel's **router**, a `PacketRouter` with one method, `route(envelope, expectReply)`. The default, `directRouter`, hands requests to `kernel.deliver` and broadcasts to `kernel.broadcast`, in the same realm, at once. In an application the Queue (`@platform/queue`) replaces it, adding admission, priorities, ordering, retries and dead letters:
+Every packet a port produces goes through the kernel's **router**, a `PacketRouter` with one method, `route(envelope, expectReply)`. The default, `directRouter`, hands requests to `kernel.deliver` and broadcasts to `kernel.broadcast`, in the same realm, at once. In an application the Queue (`@webkrnl/queue`) replaces it, adding admission, priorities, ordering, retries and dead letters:
 
 ```ts
 const queue = createQueue({ fanOut: notification.fanOut });
@@ -271,7 +271,7 @@ A processor is one message-handler module that runs on any host: a shared worker
 
 ```ts
 // sync.processor.ts
-import { defineProcessor } from '@platform/core';
+import { defineProcessor } from '@webkrnl/core';
 
 export const syncProcessor = defineProcessor<{ items: number[] }, number>({
   async handle({ items }, scope) {
@@ -287,7 +287,7 @@ export const syncProcessor = defineProcessor<{ items: number[] }, number>({
 
 ```ts
 // sync.worker.ts: the worker entry file
-import { serveProcessor } from '@platform/core/worker';
+import { serveProcessor } from '@webkrnl/core/worker';
 import { syncProcessor } from './sync.processor';
 
 serveProcessor(syncProcessor);
@@ -322,7 +322,7 @@ If the worker is unavailable, errors, does not answer the handshake, or stops an
 Transports move envelopes between realms. The Queue (M3) and the Window hub (M5) build on them.
 
 ```ts
-import { createChannelTransportPair, createEnvelope } from '@platform/core';
+import { createChannelTransportPair, createEnvelope } from '@webkrnl/core';
 
 const [main, worker] = createChannelTransportPair();
 worker.onEnvelope((envelope) => ({ ok: true, from: envelope.metadata.source }));
@@ -340,10 +340,10 @@ Page scope ends when the path changes. `createBrowserRouteSource()` reports path
 
 ### Testing
 
-`@platform/core/testing` boots real units in Node, with deterministic ids, a controllable clock, captured errors and a recording router:
+`@webkrnl/core/testing` boots real units in Node, with deterministic ids, a controllable clock, captured errors and a recording router:
 
 ```ts
-import { createTestPlatform, createMemoryPersistence } from '@platform/core/testing';
+import { createTestPlatform, createMemoryPersistence } from '@webkrnl/core/testing';
 
 const platform = createTestPlatform([storage, auth], { persistence: createMemoryPersistence() });
 await platform.start();

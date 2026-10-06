@@ -1,7 +1,7 @@
 /**
  * @fileoverview
- * @module @platform/core/testing
- * @summary `@platform/core/testing`: boot real units in tests, without browser APIs.
+ * @module @webkrnl/core/testing
+ * @summary `@webkrnl/core/testing`: boot real units in tests, without browser APIs.
  * @description
  * The entry point for tests. {@linkcode createTestPlatform} wraps a real
  * `Kernel` with the direct router (recording every routed envelope),
@@ -21,7 +21,7 @@
  * @example
  * Testing a subsystem's boot and its packets
  * ```ts
- * import { createTestPlatform } from '@platform/core/testing';
+ * import { createTestPlatform } from '@webkrnl/core/testing';
  *
  * const platform = createTestPlatform([storage, auth]);
  * await platform.start();
@@ -34,7 +34,7 @@
  * @example
  * Testing persistence and time to live
  * ```ts
- * import { createMemoryPersistence, createTestPlatform } from '@platform/core/testing';
+ * import { createMemoryPersistence, createTestPlatform } from '@webkrnl/core/testing';
  *
  * const persistence = createMemoryPersistence({ prefs: { version: 1, data: { theme: 'dark' } } });
  * const platform = createTestPlatform([prefs], { persistence });
@@ -418,7 +418,7 @@ export function createTestPlatform(
 /**
  * @summary A test stand-in for Auth: a unit `auth` whose sign-in state the test sets.
  * @description Units that wipe user data on sign-out (`watchSignOut`,
- * docs/ARCHITECTURE.md §5.1) can be tested without `@platform/auth`. After
+ * docs/ARCHITECTURE.md §5.1) can be tested without `@webkrnl/auth`. After
  * each call, await `platform.settle()`: views notify in batches.
  * @public
  */

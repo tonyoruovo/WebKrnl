@@ -17,7 +17,7 @@
  * @example
  * Two endpoints over a MessageChannel
  * ```ts
- * import { RpcEndpoint } from '@platform/core';
+ * import { RpcEndpoint } from '@webkrnl/core';
  *
  * const { port1, port2 } = new MessageChannel();
  * const client = new RpcEndpoint(port1);

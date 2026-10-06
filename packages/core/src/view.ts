@@ -20,7 +20,7 @@
  * @example
  * Owning a store and handing out its view
  * ```ts
- * import { createStore } from '@platform/core';
+ * import { createStore } from '@webkrnl/core';
  *
  * const online = createStore({ online: navigator.onLine });
  * addEventListener('online', () => online.set({ online: true }));
@@ -31,7 +31,7 @@
  * @example
  * Deriving a narrower view
  * ```ts
- * import { deriveView } from '@platform/core';
+ * import { deriveView } from '@webkrnl/core';
  *
  * const isOnline = deriveView(onlineView, (s) => s.online);
  * isOnline.subscribe(() => console.log('online:', isOnline.getSnapshot()));

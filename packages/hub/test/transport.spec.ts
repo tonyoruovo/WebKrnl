@@ -4,9 +4,9 @@ import {
   type PacketPort,
   type Scheduler,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue, type QueueControl } from '@platform/queue';
+} from '@webkrnl/core';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue, type QueueControl } from '@webkrnl/queue';
 import { IDBFactory } from 'fake-indexeddb';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 

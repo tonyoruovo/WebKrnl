@@ -1,14 +1,14 @@
 /**
  * @fileoverview
- * @module @platform/consent
- * @summary The public API of `@platform/consent`.
+ * @module @webkrnl/consent
+ * @summary The public API of `@webkrnl/consent`.
  * @description
  * Re-exports the Consent subsystem ({@linkcode createConsent}), the grant
  * rule it applies ({@linkcode isConsentGranted}), its event and category
  * constants, and its types.
  *
  * ```text
- *   @platform/consent
+ *   @webkrnl/consent
  *   +-- createConsent      the subsystem: id 'consent', featurized, Window scope
  *   +-- isConsentGranted   necessary always; otherwise granted under the current policy
  *   +-- CONSENT_CHANGED    'consent:changed', broadcast with every change
@@ -20,7 +20,7 @@
  * @example
  * Registering it
  * ```ts
- * import { createConsent } from '@platform/consent';
+ * import { createConsent } from '@webkrnl/consent';
  *
  * const kernel = new Kernel([...centralized, createConsent({ policyVersion: 2 })], { persistence });
  * ```
@@ -28,7 +28,7 @@
  * @example
  * Gating on it
  * ```ts
- * import type { ConsentControl } from '@platform/consent';
+ * import type { ConsentControl } from '@webkrnl/consent';
  *
  * ctx.dependency<ConsentControl>('consent')?.commands.isGranted('analytics');
  * ```

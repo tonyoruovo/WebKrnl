@@ -1,13 +1,13 @@
 /**
  * @fileoverview
- * @module @platform/queue
- * @summary The public API of `@platform/queue`.
+ * @module @webkrnl/queue
+ * @summary The public API of `@webkrnl/queue`.
  * @description
  * Re-exports the Queue ({@linkcode createQueue}), its id, its rejection
  * error, and the types of its options, records and control interface.
  *
  * ```text
- *   @platform/queue
+ *   @webkrnl/queue
  *   +-- createQueue          { subsystem, router }
  *   |   subsystem: id 'queue', centralized, Tab scope
  *   |   router:    the kernel's `router` option; every packet goes through it
@@ -19,10 +19,10 @@
  * @example
  * Wiring the three centralized subsystems
  * ```ts
- * import { Kernel } from '@platform/core';
- * import { createGlobalState } from '@platform/global-state';
- * import { createNotificationCenter } from '@platform/notification';
- * import { createQueue } from '@platform/queue';
+ * import { Kernel } from '@webkrnl/core';
+ * import { createGlobalState } from '@webkrnl/global-state';
+ * import { createNotificationCenter } from '@webkrnl/notification';
+ * import { createQueue } from '@webkrnl/queue';
  *
  * const notification = createNotificationCenter();
  * const queue = createQueue({ fanOut: notification.fanOut });
@@ -35,7 +35,7 @@
  * @example
  * Watching dead letters
  * ```ts
- * import type { QueueControl } from '@platform/queue';
+ * import type { QueueControl } from '@webkrnl/queue';
  *
  * const { views } = kernel.unit<QueueControl>('queue').control!;
  * views.deadLetters.subscribe(() => console.warn(views.deadLetters.getSnapshot()));

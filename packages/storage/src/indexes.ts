@@ -23,7 +23,7 @@
  * @author MathAid
  */
 
-import { toBase64Url, utf8, type KeyRecord, type KeyStore } from '@platform/crypto';
+import { toBase64Url, utf8, type KeyRecord, type KeyStore } from '@webkrnl/crypto';
 
 /**
  * @summary A value that an index function can return: one value, or several for a multi-entry index.

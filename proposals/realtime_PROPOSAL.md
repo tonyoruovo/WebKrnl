@@ -3,7 +3,7 @@
 > - Realtime is a featurized, Tab-scoped subsystem with no required dependency. Auth is optional.
 > - The socket runs in the processor `socket` on the hosts dedicated, then virtual.
 > - The protocol is pluggable (`encode`, `decode` as portable functions). The default is JSON frames.
-> - The reconnect backoff comes from `@platform/core`, so Network is not a dependency.
+> - The reconnect backoff comes from `@webkrnl/core`, so Network is not a dependency.
 > - `publish` while disconnected waits in a bounded buffer.
 > - The Global transport is added in M8.
 

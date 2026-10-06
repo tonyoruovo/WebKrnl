@@ -23,7 +23,7 @@
  * @example
  * Persisting unit state to localStorage
  * ```ts
- * import { Kernel, type StatePersistence } from '@platform/core';
+ * import { Kernel, type StatePersistence } from '@webkrnl/core';
  *
  * const persistence: StatePersistence = {
  *   load: (id) => JSON.parse(localStorage.getItem(`unit:${id}`) ?? 'null') ?? undefined,
@@ -74,7 +74,7 @@ import type { Schedule, View } from './view';
  * @example
  * Example 2: In memory, for tests
  * ```ts
- * import { createMemoryPersistence } from '@platform/core/testing';
+ * import { createMemoryPersistence } from '@webkrnl/core/testing';
  * const persistence = createMemoryPersistence({ prefs: { version: 1, data: { theme: 'dark' } } });
  * ```
  *

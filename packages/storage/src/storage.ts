@@ -34,13 +34,13 @@ import {
   type UnitContext,
   toPortable,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 import {
   CRYPTO_ID,
   CRYPTO_KEYS_CHANGED,
   type CryptoConfig,
   type CryptoControl,
-} from '@platform/crypto';
+} from '@webkrnl/crypto';
 
 import {
   Batch,
@@ -204,7 +204,7 @@ export interface StorageOptions {
    */
   readonly database?: string;
   /**
-   * @summary The key store of `@platform/crypto`, or `null` for no encryption.
+   * @summary The key store of `@webkrnl/crypto`, or `null` for no encryption.
    * @description Give the same source as `createCrypto`. The default is the device keys.
    */
   readonly keys?: CryptoConfig | null;

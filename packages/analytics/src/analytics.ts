@@ -36,7 +36,7 @@ import {
   type ControlInterface,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 /**
  * @summary The id the Analytics subsystem registers under.

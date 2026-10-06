@@ -1,5 +1,5 @@
 {
-  "name": "@platform/storage",
+  "name": "@webkrnl/storage",
   "version": "0.0.2",
   "description": "The Storage subsystem: collections over IndexedDB, OPFS, Cache, Web Storage and memory, run by one coordinator for the origin.",
   "type": "module",
@@ -14,14 +14,14 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/crypto": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*",
-    "@platform/logger": "workspace:*",
-    "@platform/queue": "workspace:*",
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/crypto": "workspace:*",
+    "@webkrnl/logger": "workspace:*",
+    "@webkrnl/queue": "workspace:*",
     "zod": "^4.6.5"
   },
   "license": "ISC"

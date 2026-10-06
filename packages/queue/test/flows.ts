@@ -24,18 +24,18 @@ import {
   type FingerprintTrail,
   type PacketPort,
   type SubsystemDefinition,
-} from '@platform/core';
+} from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   type EnvironmentSource as GlobalEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
+} from '@webkrnl/global-state';
 import {
   NOTIFICATION_ID,
   createNotificationCenter,
   type NotificationControl,
-} from '@platform/notification';
+} from '@webkrnl/notification';
 import { expect, vi } from 'vitest';
 
 import { QUEUE_ID, createQueue, type QueueControl } from '../src';

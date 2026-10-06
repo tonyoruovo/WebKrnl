@@ -1,10 +1,5 @@
-import {
-  Kernel,
-  NO_CONTROL,
-  type StatePersistence,
-  type SubsystemDefinition,
-} from '@platform/core';
-import { createMemoryPersistence, createTestPlatform } from '@platform/core/testing';
+import { Kernel, NO_CONTROL, type StatePersistence, type SubsystemDefinition } from '@webkrnl/core';
+import { createMemoryPersistence, createTestPlatform } from '@webkrnl/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 
 import {

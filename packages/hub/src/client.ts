@@ -44,7 +44,7 @@ import {
   createStore,
   type PacketEnvelope,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import {
   documentCookies,

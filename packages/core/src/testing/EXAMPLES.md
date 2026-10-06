@@ -1,4 +1,4 @@
-# Examples: `@platform/core/testing`
+# Examples: `@webkrnl/core/testing`
 
 Tools to test subsystems without a browser. The test platform runs the real kernel with stable ids, a test clock, a router that records each packet, and a list of the errors that the kernel reports.
 
@@ -9,8 +9,8 @@ Tools to test subsystems without a browser. The test platform runs the real kern
 A rate limiter allows three calls in each minute. The test platform gives it a clock that the test controls, so the test does not wait one real minute.
 
 ```ts file=main.ts
-import { defineSubsystem } from '@platform/core';
-import { createTestClock, createTestPlatform } from '@platform/core/testing';
+import { defineSubsystem } from '@webkrnl/core';
+import { createTestClock, createTestPlatform } from '@webkrnl/core/testing';
 
 const clock = createTestClock(0);
 
@@ -56,8 +56,8 @@ status: READY
 The router of the test platform records each envelope. A test can check the event, the target and the trail, and the ids are stable from one run to the next.
 
 ```ts file=main.ts
-import { NO_CONTROL, defineSubsystem } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import { NO_CONTROL, defineSubsystem } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 
 const cart = defineSubsystem({
   id: 'cart',
@@ -105,8 +105,8 @@ trail: ["sent:cart"]
 Memory persistence stands in for real storage. A test can fill it before the start, and read what the subsystem saved after the stop.
 
 ```ts file=main.ts
-import { defineSubsystem } from '@platform/core';
-import { createMemoryPersistence, createTestPlatform } from '@platform/core/testing';
+import { defineSubsystem } from '@webkrnl/core';
+import { createMemoryPersistence, createTestPlatform } from '@webkrnl/core/testing';
 
 const onboarding = defineSubsystem({
   id: 'onboarding',

@@ -1,12 +1,12 @@
-import { Kernel, type Scheduler, type StatePersistence } from '@platform/core';
-import { createMemoryPersistence } from '@platform/core/testing';
+import { Kernel, type Scheduler, type StatePersistence } from '@webkrnl/core';
+import { createMemoryPersistence } from '@webkrnl/core/testing';
 import {
   WINDOW_TRANSPORT_ID,
   createWindowTransport,
   type WindowTransportControl,
-} from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CONSENT_ID, createConsent, type ConsentControl } from '../src';

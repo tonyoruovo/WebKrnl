@@ -1,10 +1,10 @@
 import 'fake-indexeddb/auto';
 
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestAuth, createTestPlatform } from '@platform/core/testing';
-import { createGlobalState, createStaticEnvironment } from '@platform/global-state';
-import { createNetwork } from '@platform/network';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestAuth, createTestPlatform } from '@webkrnl/core/testing';
+import { createGlobalState, createStaticEnvironment } from '@webkrnl/global-state';
+import { createNetwork } from '@webkrnl/network';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 import { describe, expect, it } from 'vitest';
 
 import { SYNC_ID, createSync, type SyncControl } from '../src';

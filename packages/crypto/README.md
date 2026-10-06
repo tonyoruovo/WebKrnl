@@ -1,6 +1,6 @@
-# @platform/crypto
+# @webkrnl/crypto
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Crypto** subsystem (id `crypto`, featurized, Tab scope, no required dependency). It owns the keys of the platform and the operations that use them:
 
@@ -16,8 +16,8 @@ The keys are **non-extractable** `CryptoKey` objects: the platform can use them 
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/crypto": "workspace:*"
   }
 }
 ```
@@ -28,13 +28,13 @@ The package starts its worker with `new SharedWorker(new URL('./crypto.worker.ts
 
 | Import                    | Contents                                                                                     |
 | ------------------------- | -------------------------------------------------------------------------------------------- |
-| `@platform/crypto`        | `createCrypto`, `createCryptoProcessor`, `KeyStore`, the cipher functions (`encryptText`, `decryptText`, `hmacText`, `verifyHmacText`), the key source types, encodings, errors |
-| `@platform/crypto/worker` | The worker entry. It serves the Crypto processor. You do not import it yourself.             |
+| `@webkrnl/crypto`        | `createCrypto`, `createCryptoProcessor`, `KeyStore`, the cipher functions (`encryptText`, `decryptText`, `hmacText`, `verifyHmacText`), the key source types, encodings, errors |
+| `@webkrnl/crypto/worker` | The worker entry. It serves the Crypto processor. You do not import it yourself.             |
 
 ## Usage
 
 ```ts
-import { createCrypto, type CryptoControl } from '@platform/crypto';
+import { createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([...centralized, createCrypto()], { router: queue.router });
 await kernel.start();

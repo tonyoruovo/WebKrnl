@@ -8,16 +8,16 @@ import {
   createEnvelope,
   type PacketPort,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createTestAuth } from '@platform/core/testing';
+} from '@webkrnl/core';
+import { createTestAuth } from '@webkrnl/core/testing';
 import {
   createGlobalState,
   createStaticEnvironment,
   type StaticEnvironment,
-} from '@platform/global-state';
-import { createNetwork } from '@platform/network';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/global-state';
+import { createNetwork } from '@webkrnl/network';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

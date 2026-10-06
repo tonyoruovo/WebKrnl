@@ -2,12 +2,12 @@
  * The Translation subsystem (docs/ARCHITECTURE.md §21.2): the chain, the
  * catalog sources, offline catalogs, Settings, missing keys and formatting.
  */
-import { createConsent } from '@platform/consent';
-import { Kernel, NO_CONTROL, type Scheduler, type SubsystemDefinition } from '@platform/core';
-import { createNetwork } from '@platform/network';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
+import { createConsent } from '@webkrnl/consent';
+import { Kernel, NO_CONTROL, type Scheduler, type SubsystemDefinition } from '@webkrnl/core';
+import { createNetwork } from '@webkrnl/network';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {

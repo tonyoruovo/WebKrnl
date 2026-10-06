@@ -5,15 +5,15 @@
  */
 import 'fake-indexeddb/auto';
 
-import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@platform/core';
+import { Kernel, NO_CONTROL, type PacketPort, type SubsystemDefinition } from '@webkrnl/core';
 import {
   createGlobalState,
   createStaticEnvironment,
   type StaticEnvironment,
-} from '@platform/global-state';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { createStorage } from '@platform/storage';
+} from '@webkrnl/global-state';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { createStorage } from '@webkrnl/storage';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { REALTIME_ID, createRealtime, type GlobalControl } from '../src';

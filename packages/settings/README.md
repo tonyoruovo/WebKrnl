@@ -1,13 +1,13 @@
-# @platform/settings
+# @webkrnl/settings
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Settings** subsystem (id `settings`, featurized, Window scope, requires Consent). It keeps the preferences of the user and of the device, and is the state behind a settings page.
 
 - **Definitions**: each setting has a default, an optional check, and a kind: `device` (the default) or `user`. Built in: `syncInterval`, `bandwidthMode`, `dataSaver` and `locale`. The app adds its own.
 - **Live**: a change applies at once. No reload.
 - **Persisted**: the values are kept through the kernel's persistence, and saved after each change.
-- **Shared by every tab of the site** (Window scope, with the Window transport of `@platform/hub`): a change reaches the other tabs, and a new tab asks the open ones (`settings:sync`). For each key, the newer change wins.
+- **Shared by every tab of the site** (Window scope, with the Window transport of `@webkrnl/hub`): a change reaches the other tabs, and a new tab asks the open ones (`settings:sync`). For each key, the newer change wins.
 - **On the server (optional)**: with `handlers.save`, user settings go to the server, and a failed save rolls the change back in every tab. With `handlers.load`, the user settings of the server apply when a user signs in.
 - **Analytics opt-out**: `enableAnalytics` and `disableAnalytics` change the `analytics` grant of Consent. Opting out never stops essential work.
 - **`optimisticUpdate(apply, commit, rollback)`**: the primitive that Settings uses for saves, exported for the app.
@@ -19,9 +19,9 @@ Design: [ARCHITECTURE §21.1](../../docs/ARCHITECTURE.md#211-settings) and the [
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/consent": "workspace:*",
-    "@platform/settings": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/consent": "workspace:*",
+    "@webkrnl/settings": "workspace:*"
   }
 }
 ```
@@ -30,13 +30,13 @@ Design: [ARCHITECTURE §21.1](../../docs/ARCHITECTURE.md#211-settings) and the [
 
 | Import | Contents |
 |---|---|
-| `@platform/settings` | `createSettings`, `BUILT_IN_SETTINGS`, `optimisticUpdate`, `mergeSettingRecords`, `SETTINGS_ID`, `SETTINGS_CHANGED`, `SETTINGS_SYNC`, `SETTINGS_STATE`, types |
+| `@webkrnl/settings` | `createSettings`, `BUILT_IN_SETTINGS`, `optimisticUpdate`, `mergeSettingRecords`, `SETTINGS_ID`, `SETTINGS_CHANGED`, `SETTINGS_SYNC`, `SETTINGS_STATE`, types |
 
 ## Usage
 
 ```ts
-import { createConsent } from '@platform/consent';
-import { createSettings } from '@platform/settings';
+import { createConsent } from '@webkrnl/consent';
+import { createSettings } from '@webkrnl/settings';
 
 const kernel = new Kernel(
   [
@@ -62,7 +62,7 @@ const kernel = new Kernel(
 A settings page:
 
 ```ts
-import type { SettingsControl } from '@platform/settings';
+import type { SettingsControl } from '@webkrnl/settings';
 
 const { commands, views } = kernel.unit<SettingsControl>('settings').control!;
 

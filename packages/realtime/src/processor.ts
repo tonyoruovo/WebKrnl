@@ -30,7 +30,7 @@ import {
   fromPortable,
   type ProcessorModule,
   type ProcessorScope,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import type { Frame, RealtimeProtocol, RealtimeStatus, SocketFactory, SocketLike } from './types';
 

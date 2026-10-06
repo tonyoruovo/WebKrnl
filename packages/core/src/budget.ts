@@ -18,7 +18,7 @@
  * @example
  * The default budget for this device
  * ```ts
- * import { WorkerBudget } from '@platform/core';
+ * import { WorkerBudget } from '@webkrnl/core';
  *
  * const budget = WorkerBudget.forDevice(); // e.g. 4 on an 8-core laptop
  * ```

@@ -26,7 +26,7 @@
  * @author MathAid
  */
 
-import type { SettingDefinition } from '@platform/settings';
+import type { SettingDefinition } from '@webkrnl/settings';
 
 import { cssVar, type TokenSet } from './tokens';
 

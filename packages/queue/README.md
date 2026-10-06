@@ -1,25 +1,25 @@
-# @platform/queue
+# @webkrnl/queue
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Queue**: the platform's packet router. It is a centralized subsystem (id `queue`, Tab scope), and its `router` replaces the kernel's direct router, so every packet a subsystem sends goes through it. The Queue owns **scheduling**:
 
-- **admission**: asks Global State (`@platform/global-state`) whether the packet's importance is accepted now, and registers it as pending work until it settles;
+- **admission**: asks Global State (`@webkrnl/global-state`) whether the packet's importance is accepted now, and registers it as pending work until it settles;
 - **priorities**: `CRITICAL` > `HIGH` > `MEDIUM` > `LOW`, first in first out within a tier; `CRITICAL` packets are dispatched at once and never refused for depth;
 - **ordering**: packets that share an `orderingKey` are delivered one at a time, in order;
 - **retries**: a packet whose target is not running (waiting, starting, suspended or failed) is retried with backoff;
 - **dead letters**: packets that run out of retries or expire are kept and can be replayed. When Storage runs, they are also kept in the collection `queue.dead-letters`, so they survive a reload;
 - **trails**: every settled packet is recorded with its full fingerprint trail.
 
-The kernel owns delivery, and the Notification Center (`@platform/notification`) owns broadcast fan-out. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Queue proposal](../../proposals/queue_PROPOSAL.md).
+The kernel owns delivery, and the Notification Center (`@webkrnl/notification`) owns broadcast fan-out. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Queue proposal](../../proposals/queue_PROPOSAL.md).
 
 ## Installation
 
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/queue": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
   }
 }
 ```
@@ -28,15 +28,15 @@ The kernel owns delivery, and the Notification Center (`@platform/notification`)
 
 | Import            | Contents                                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `@platform/queue` | `createQueue`, `QUEUE_ID`, `QueueRejectedError`, and the types `QueueOptions`, `QueueControl`, `SettledPacket`, `DeadLetter`, … |
+| `@webkrnl/queue` | `createQueue`, `QUEUE_ID`, `QueueRejectedError`, and the types `QueueOptions`, `QueueControl`, `SettledPacket`, `DeadLetter`, … |
 
 ## Usage
 
 ```ts
-import { Kernel } from '@platform/core';
-import { createGlobalState } from '@platform/global-state';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel } from '@webkrnl/core';
+import { createGlobalState } from '@webkrnl/global-state';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 const notification = createNotificationCenter();
 const queue = createQueue({ fanOut: notification.fanOut });
@@ -64,7 +64,7 @@ await ctx.port.send({
 Application code watches and steers it through the control interface:
 
 ```ts
-import type { QueueControl } from '@platform/queue';
+import type { QueueControl } from '@webkrnl/queue';
 
 const { commands, views } = kernel.unit<QueueControl>('queue').control!;
 views.state.subscribe(() => console.log(views.state.getSnapshot())); // depth, inFlight, ...

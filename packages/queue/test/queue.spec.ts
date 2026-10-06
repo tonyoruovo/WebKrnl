@@ -7,18 +7,18 @@ import {
   type PacketPort,
   type Scheduler,
   type SubsystemDefinition,
-} from '@platform/core';
+} from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
+} from '@webkrnl/global-state';
 import {
   NOTIFICATION_ID,
   createNotificationCenter,
   type NotificationControl,
-} from '@platform/notification';
+} from '@webkrnl/notification';
 import { describe, expect, it, vi } from 'vitest';
 
 import {

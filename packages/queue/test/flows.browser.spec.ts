@@ -1,4 +1,4 @@
-import { createBrowserEnvironment } from '@platform/global-state';
+import { createBrowserEnvironment } from '@webkrnl/global-state';
 import { it } from 'vitest';
 
 import { runFlows } from './flows';

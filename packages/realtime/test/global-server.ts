@@ -7,7 +7,7 @@
  * to the sender. HTTP: POST <base>/publish and GET <base>/poll (long poll).
  * Faults: drop the next acks, deliver each envelope twice.
  */
-import { decodeWire } from '@platform/core';
+import { decodeWire } from '@webkrnl/core';
 
 import type { Frame, SocketLike } from '../src';
 

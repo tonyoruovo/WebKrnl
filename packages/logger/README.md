@@ -1,6 +1,6 @@
-# @platform/logger
+# @webkrnl/logger
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Logger** subsystem (id `logger`, featurized, Tab scope). It keeps:
 
@@ -16,8 +16,8 @@ Design: [ARCHITECTURE §7.2 and §13](../../docs/ARCHITECTURE.md#72-late-binding
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/logger": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/logger": "workspace:*"
   }
 }
 ```
@@ -26,12 +26,12 @@ Design: [ARCHITECTURE §7.2 and §13](../../docs/ARCHITECTURE.md#72-late-binding
 
 | Import             | Contents                                                                                                              |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `@platform/logger` | `createLogger`, `formatEntry`, `LEVEL_RANK`, `LOGGER_ID`, `sanitize`, `DEFAULT_SENSITIVE_PATTERNS`, `REDACTED`, types |
+| `@webkrnl/logger` | `createLogger`, `formatEntry`, `LEVEL_RANK`, `LOGGER_ID`, `sanitize`, `DEFAULT_SENSITIVE_PATTERNS`, `REDACTED`, types |
 
 ## Usage
 
 ```ts
-import { createLogger } from '@platform/logger';
+import { createLogger } from '@webkrnl/logger';
 
 const kernel = new Kernel(
   [createGlobalState(), queue.subsystem, notification.subsystem, createLogger(), ...subsystems],
@@ -42,7 +42,7 @@ const kernel = new Kernel(
 A subsystem logs through an optional dependency, so it also runs without a Logger:
 
 ```ts
-import type { LoggerControl } from '@platform/logger';
+import type { LoggerControl } from '@webkrnl/logger';
 
 defineSubsystem({
   id: 'storage',

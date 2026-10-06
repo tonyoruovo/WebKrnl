@@ -39,7 +39,7 @@ import {
   type UnitContext,
   type View,
   watchSignOut,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { Outbox, mergeOps, type OutboxStore } from './outbox';
 import type {

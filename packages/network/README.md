@@ -1,6 +1,6 @@
-# @platform/network
+# @webkrnl/network
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Network** subsystem (id `network`, featurized, Tab scope, no required dependency). It sends the HTTP requests of every subsystem and of the app:
 
@@ -21,8 +21,8 @@ It runs on the main thread: a response body is a stream that callers need in the
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/network": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/network": "workspace:*"
   }
 }
 ```
@@ -31,12 +31,12 @@ It runs on the main thread: a response body is a stream that callers need in the
 
 | Import              | Contents                                                                          |
 | ------------------- | --------------------------------------------------------------------------------- |
-| `@platform/network` | `createNetwork`, the errors, `ResponseCache`, `Breakers`, and the types            |
+| `@webkrnl/network` | `createNetwork`, the errors, `ResponseCache`, `Breakers`, and the types            |
 
 ## Usage
 
 ```ts
-import { createNetwork, HttpError, type NetworkControl } from '@platform/network';
+import { createNetwork, HttpError, type NetworkControl } from '@webkrnl/network';
 
 const kernel = new Kernel([...centralized, createNetwork({ baseUrl: 'https://api.shop.example/' })], {
   router: queue.router,

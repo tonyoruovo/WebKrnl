@@ -4,9 +4,9 @@
  */
 import 'fake-indexeddb/auto';
 
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
-import { CRYPTO_ID, createCrypto, type CryptoControl } from '@platform/crypto';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
+import { CRYPTO_ID, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

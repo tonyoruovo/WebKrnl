@@ -1,7 +1,7 @@
 /**
  * @fileoverview
- * @module @platform/core/worker
- * @summary `@platform/core/worker`: serve a processor module from a worker entry file.
+ * @module @webkrnl/core/worker
+ * @summary `@webkrnl/core/worker`: serve a processor module from a worker entry file.
  * @description
  * The entry point worker files import. A worker entry file is two lines:
  * import the processor module, and pass it to {@linkcode serveProcessor}.
@@ -24,7 +24,7 @@
  * A dedicated or shared worker entry file
  * ```ts
  * // sync.worker.ts
- * import { serveProcessor } from '@platform/core/worker';
+ * import { serveProcessor } from '@webkrnl/core/worker';
  * import { syncProcessor } from './sync.processor';
  *
  * serveProcessor(syncProcessor);
@@ -94,7 +94,7 @@ export type WorkerScopeLike = PortLike & {
  * @example
  * Example 1: The whole worker entry file
  * ```ts
- * import { serveProcessor } from '@platform/core/worker';
+ * import { serveProcessor } from '@webkrnl/core/worker';
  * import { sum } from './sum.processor';
  *
  * serveProcessor(sum);

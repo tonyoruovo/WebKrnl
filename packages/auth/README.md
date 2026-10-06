@@ -1,6 +1,6 @@
-# @platform/auth
+# @webkrnl/auth
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Auth** subsystem (id `auth`, featurized, **Window** scope). It keeps the session of the user:
 
@@ -20,8 +20,8 @@ Network is optional; Storage and Crypto are late-bound. Design: [ARCHITECTURE §
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/auth": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/auth": "workspace:*"
   }
 }
 ```
@@ -30,12 +30,12 @@ Network is optional; Storage and Crypto are late-bound. Design: [ARCHITECTURE §
 
 | Import           | Contents                                                              |
 | ---------------- | --------------------------------------------------------------------- |
-| `@platform/auth` | `createAuth`, `meetsRequirement`, `AuthLockedError`, and the types     |
+| `@webkrnl/auth` | `createAuth`, `meetsRequirement`, `AuthLockedError`, and the types     |
 
 ## Usage
 
 ```ts
-import { createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@platform/auth';
+import { createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@webkrnl/auth';
 
 const handlers: AuthHandlers<{ email: string; password: string }> = {
   login: async (credentials, { network }) =>

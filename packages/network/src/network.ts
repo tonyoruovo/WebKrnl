@@ -40,7 +40,7 @@ import {
   type UnitContext,
   type View,
   watchSignOut,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { Breakers } from './breaker';
 import { ResponseCache, type CacheCollection, type CacheEntry } from './cache';

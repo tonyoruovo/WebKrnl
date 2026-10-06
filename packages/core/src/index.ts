@@ -1,9 +1,9 @@
 /**
  * @fileoverview
- * @module @platform/core
- * @summary The public API of `@platform/core`: the kernel every `@platform/*` package builds on.
+ * @module @webkrnl/core
+ * @summary The public API of `@webkrnl/core`: the kernel every `@webkrnl/*` package builds on.
  * @description
- * This barrel re-exports every public module of the package. `@platform/core`
+ * This barrel re-exports every public module of the package. `@webkrnl/core`
  * defines what a subsystem is, runs each subsystem's lifecycle, enforces the
  * dependencies between subsystems, moves packets between them, and runs their
  * processors on the main thread or in workers. It ships no subsystem itself.
@@ -22,14 +22,14 @@
  *   toPortable/fromPortable functions across worker and storage boundaries (portable.ts)
  *   ```
  *
- * Two more entry points exist: `@platform/core/testing` (an in-memory test
- * platform) and `@platform/core/worker` (`serveProcessor` for worker entry
+ * Two more entry points exist: `@webkrnl/core/testing` (an in-memory test
+ * platform) and `@webkrnl/core/worker` (`serveProcessor` for worker entry
  * files).
  *
  * @example
  * Booting two subsystems, one depending on the other
  * ```ts
- * import { Kernel, defineSubsystem } from '@platform/core';
+ * import { Kernel, defineSubsystem } from '@webkrnl/core';
  *
  * const storage = defineSubsystem({
  *   id: 'storage',
@@ -54,7 +54,7 @@
  * @example
  * Sending a request from one subsystem to another
  * ```ts
- * import { defineSubsystem } from '@platform/core';
+ * import { defineSubsystem } from '@webkrnl/core';
  *
  * export const client = defineSubsystem({
  *   id: 'client',
@@ -74,7 +74,7 @@
  * Binding a unit's view to React without an adapter
  * ```tsx
  * import { useSyncExternalStore } from 'react';
- * import type { Kernel } from '@platform/core';
+ * import type { Kernel } from '@webkrnl/core';
  *
  * function KeyCount({ kernel }: { kernel: Kernel }) {
  *   const view = kernel.unit('storage').control!.views.state;

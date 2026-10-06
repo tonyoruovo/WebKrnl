@@ -46,7 +46,7 @@
  * @author MathAid
  */
 
-import { defineSubsystem, deriveView, type SubsystemDefinition, type View } from '@platform/core';
+import { defineSubsystem, deriveView, type SubsystemDefinition, type View } from '@webkrnl/core';
 
 /**
  * @summary The id the Consent subsystem registers under.
@@ -435,7 +435,7 @@ export function mergeConsentRecords(
  * Window scope). Decisions persist through the kernel's `persistence`. Every
  * change is broadcast as {@linkcode CONSENT_CHANGED}; a failed broadcast is
  * reported, and the change stands. With the Window transport (`window`,
- * `@platform/hub`), every tab of the site shares the decisions; Consent
+ * `@webkrnl/hub`), every tab of the site shares the decisions; Consent
  * starts after it, so its first `consent:sync` leaves the tab.
  *
  * @example

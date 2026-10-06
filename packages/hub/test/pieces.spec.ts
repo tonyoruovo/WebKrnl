@@ -1,4 +1,4 @@
-import { createEnvelope } from '@platform/core';
+import { createEnvelope } from '@webkrnl/core';
 import { IDBFactory } from 'fake-indexeddb';
 import { describe, expect, it } from 'vitest';
 

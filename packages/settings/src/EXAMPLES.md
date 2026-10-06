@@ -1,4 +1,4 @@
-# Examples: `@platform/settings`
+# Examples: `@webkrnl/settings`
 
 Settings keeps the preferences of the user and of the device. A change applies at once, reaches the other tabs of the site, and, for a `user` setting, goes to the server.
 
@@ -9,9 +9,9 @@ Settings keeps the preferences of the user and of the device. A change applies a
 The page shows every value, with the defaults. The user turns on the data saver and picks a font size that the app defined. A wrong value is refused, and nothing changes.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createConsent } from '@platform/consent';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
+import { Kernel } from '@webkrnl/core';
+import { createConsent } from '@webkrnl/consent';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
 
 const kernel = new Kernel([
   createConsent(),
@@ -46,9 +46,9 @@ after: {"syncInterval":300000,"bandwidthMode":"FULL","dataSaver":true,"locale":n
 The language is a `user` setting, so it goes to the server. The first save fails: the change applies at once, then rolls back, and `set` resolves with `false`. The second save works.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createConsent } from '@platform/consent';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
+import { Kernel } from '@webkrnl/core';
+import { createConsent } from '@webkrnl/consent';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
 
 let online = false;
 const kernel = new Kernel(

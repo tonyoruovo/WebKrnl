@@ -1,13 +1,13 @@
 /**
  * @fileoverview
- * @module @platform/analytics
- * @summary The public API of `@platform/analytics`.
+ * @module @webkrnl/analytics
+ * @summary The public API of `@webkrnl/analytics`.
  * @description
  * Re-exports the Analytics subsystem ({@linkcode createAnalytics}), the
  * histogram summary, and the types.
  *
  * ```text
- *   @platform/analytics
+ *   @webkrnl/analytics
  *   +-- createAnalytics     the subsystem: id 'analytics', featurized, Tab scope, requires Consent
  *   +-- summarize           count, sum, min, max, p50, p90, p99
  *   +-- ANALYTICS_ID, ANALYTICS_OUTBOX
@@ -17,7 +17,7 @@
  * @example
  * Registering it
  * ```ts
- * import { createAnalytics } from '@platform/analytics';
+ * import { createAnalytics } from '@webkrnl/analytics';
  *
  * const kernel = new Kernel([...centralized, createConsent(), createNetwork(), createAnalytics({ endpoint: '/t/batch' })]);
  * ```

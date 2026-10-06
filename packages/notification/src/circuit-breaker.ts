@@ -17,7 +17,7 @@
  * @example
  * Guarding a delivery
  * ```ts
- * import { CircuitBreakers } from '@platform/notification';
+ * import { CircuitBreakers } from '@webkrnl/notification';
  *
  * const breakers = new CircuitBreakers({ failureThreshold: 3, resetTimeoutMs: 30_000 });
  * if (breakers.allows('analytics')) {

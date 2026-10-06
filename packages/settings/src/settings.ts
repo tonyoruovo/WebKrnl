@@ -37,7 +37,7 @@ import {
   type ControlInterface,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { optimisticUpdate } from './optimistic';
 
@@ -447,7 +447,7 @@ export interface SettingsControl {
   };
 }
 
-/** The part of Consent that Settings uses. Settings does not import `@platform/consent`. */
+/** The part of Consent that Settings uses. Settings does not import `@webkrnl/consent`. */
 interface ConsentLike extends ControlInterface {
   readonly commands: {
     isGranted(category: string): boolean;

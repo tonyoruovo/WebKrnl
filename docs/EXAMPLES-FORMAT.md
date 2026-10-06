@@ -8,16 +8,16 @@ This document is the contract between the authors of the examples and the doc co
 
 | Directory | Doc page | Import path in the examples |
 |---|---|---|
-| `packages/core/src` | `@platform/core` | `@platform/core`, `@platform/core/worker` |
-| `packages/core/src/testing` | `@platform/core/testing` | `@platform/core/testing` |
-| `packages/<name>/src` | `@platform/<name>` | `@platform/<name>` |
+| `packages/core/src` | `@webkrnl/core` | `@webkrnl/core`, `@webkrnl/core/worker` |
+| `packages/core/src/testing` | `@webkrnl/core/testing` | `@webkrnl/core/testing` |
+| `packages/<name>/src` | `@webkrnl/<name>` | `@webkrnl/<name>` |
 
 Test directories (`test/`) have no `EXAMPLES.md`. They are not published and have no doc page.
 
 ## Structure of a file
 
 ````markdown
-# Examples: `@platform/core`
+# Examples: `@webkrnl/core`
 
 One paragraph about the module.
 
@@ -28,7 +28,7 @@ One paragraph about the module.
 One to three sentences: the real-world problem, and what the example shows.
 
 ```ts file=main.ts
-import { Kernel, defineSubsystem } from '@platform/core';
+import { Kernel, defineSubsystem } from '@webkrnl/core';
 // ...
 console.log(count);
 ```
@@ -60,7 +60,7 @@ console.log(count);
 - The info string is `ts file=<name>`. The name is a path relative to the root of the sandbox.
 - Each example has exactly one `main.ts`. It is the entry point.
 - An example can have more files, for example `processor.ts`. `main.ts` imports them with relative paths.
-- Code imports only `@platform/*` packages, files of the same example, and the standard globals of the runtime. It has no other dependencies.
+- Code imports only `@webkrnl/*` packages, files of the same example, and the standard globals of the runtime. It has no other dependencies.
 - Code shows results with `console.log`. It does not use test frameworks.
 - `console.log` gets only strings, numbers and booleans. Use `JSON.stringify` for an object or an array. Node and the browser console format objects differently, so the output of an object is not the same in every sandbox.
 - Code is complete: it type-checks with the settings of the repository and ends by itself.
@@ -75,7 +75,7 @@ console.log(count);
 ## What the doc compiler must do
 
 1. Read each `EXAMPLES.md` under `packages/*/src`.
-2. For each example, make a sandbox with its files and with the `@platform/*` packages that it imports.
+2. For each example, make a sandbox with its files and with the `@webkrnl/*` packages that it imports.
 3. Run `main.ts`. Use a Node sandbox or a browser sandbox for `runtime="any"`, and a browser sandbox for `runtime="browser"`. Do not run `runtime="none"`.
 4. Show the title, the description, the code and the output block on the doc page of the directory.
 

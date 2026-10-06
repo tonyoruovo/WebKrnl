@@ -10,24 +10,20 @@ import {
   createAnalytics,
   type AnalyticsBatch,
   type AnalyticsControl,
-} from '@platform/analytics';
-import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
-import { Kernel, type SubsystemDefinition } from '@platform/core';
-import { APPEARANCE_SETTINGS, createDesignSystem } from '@platform/design-system';
-import {
-  createGlobalState,
-  GLOBAL_STATE_ID,
-  type GlobalStateControl,
-} from '@platform/global-state';
+} from '@webkrnl/analytics';
+import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
+import { Kernel, type SubsystemDefinition } from '@webkrnl/core';
+import { APPEARANCE_SETTINGS, createDesignSystem } from '@webkrnl/design-system';
+import { createGlobalState, GLOBAL_STATE_ID, type GlobalStateControl } from '@webkrnl/global-state';
 import {
   WINDOW_TRANSPORT_ID,
   createWindowTransport,
   type WindowTransportControl,
-} from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
-import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@platform/translation';
+} from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
+import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 import { afterEach, describe, expect, it } from 'vitest';
 
 const kernels: Kernel[] = [];

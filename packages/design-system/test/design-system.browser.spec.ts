@@ -3,8 +3,8 @@
  * computed style, the stylesheet export paints the right theme without the
  * subsystem, and the font scale changes rendered sizes.
  */
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

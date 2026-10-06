@@ -1,4 +1,4 @@
-# Examples: `@platform/translation`
+# Examples: `@webkrnl/translation`
 
 Translation gives localized messages in ICU MessageFormat and locale-aware formatting. `t()` is synchronous; catalogs load before, in the background. In an app, a dedicated worker compiles the catalogs. These examples compile them on the main thread (`hosts: ['virtual']`), so they run in every sandbox.
 
@@ -9,8 +9,8 @@ Translation gives localized messages in ICU MessageFormat and locale-aware forma
 The device prefers Canadian French. The app has catalogs for French, Canadian French and English. A key comes from the first locale of the chain that has it, and plurals follow the rules of that locale.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@platform/translation';
+import { Kernel } from '@webkrnl/core';
+import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 
 const kernel = new Kernel([
   createTranslation({
@@ -51,8 +51,8 @@ missing.key
 A language menu switches to Arabic. The direction changes to right to left, and numbers, money, dates and lists follow the new locale.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@platform/translation';
+import { Kernel } from '@webkrnl/core';
+import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 
 const kernel = new Kernel([
   createTranslation({ hosts: ['virtual'], supportedLocales: ['en', 'ar'], languages: () => ['en'] }),
@@ -85,8 +85,8 @@ ar (rtl): 1,234.5 | ‏9.99 €
 Only `common` loads at start. The checkout page loads its own namespace with a loader of the app (here a function; in an app, a dynamic `import()`), and frees it when it closes.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@platform/translation';
+import { Kernel } from '@webkrnl/core';
+import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 
 const files: Record<string, Record<string, string>> = {
   'en/common': { title: 'Shop' },

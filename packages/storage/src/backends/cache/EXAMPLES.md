@@ -9,7 +9,7 @@ The Cache backend keeps each envelope as a response in the Cache API. It works i
 A news reader keeps the last articles, so it can show them offline. Expired entries read as `null`.
 
 ```ts file=main.ts
-import { CacheBackend, buildCanonicalKey } from '@platform/storage';
+import { CacheBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new CacheBackend({ cacheName: 'news' });
 console.log('available:', (await backend.probe()).available);
@@ -39,7 +39,7 @@ old: null
 The reader keeps saved articles longer than recent ones. A higher weight is evicted later, so an eviction removes the recent articles first.
 
 ```ts file=main.ts
-import { CacheBackend, buildCanonicalKey } from '@platform/storage';
+import { CacheBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new CacheBackend({ cacheName: 'reader' });
 await backend.initialize();

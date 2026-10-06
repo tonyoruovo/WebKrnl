@@ -10,9 +10,9 @@ import {
   type PacketPort,
   type Scheduler,
   type SubsystemDefinition,
-} from '@platform/core';
-import { LOGGER_ID, createLogger, type LoggerControl } from '@platform/logger';
-import { QUEUE_ID, createQueue, type QueueControl } from '@platform/queue';
+} from '@webkrnl/core';
+import { LOGGER_ID, createLogger, type LoggerControl } from '@webkrnl/logger';
+import { QUEUE_ID, createQueue, type QueueControl } from '@webkrnl/queue';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { STORAGE_ID, createStorage, type StorageControl } from '../src';

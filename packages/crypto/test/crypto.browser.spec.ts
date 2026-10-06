@@ -2,7 +2,7 @@
  * Crypto in real browsers: the processor runs in a shared worker, and the
  * keys it persists in IndexedDB are the same keys on the main thread.
  */
-import { createTestPlatform } from '@platform/core/testing';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { CRYPTO_ID, createCrypto, type CryptoControl, type CryptoOptions } from '../src';

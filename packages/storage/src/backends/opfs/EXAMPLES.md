@@ -9,7 +9,7 @@ The OPFS backend keeps each entry in a file of the Origin Private File System. I
 A photo editor keeps large drafts. OPFS stores each one as a file, so a large value does not slow down other reads.
 
 ```ts file=main.ts
-import { OPFSBackend, buildCanonicalKey } from '@platform/storage';
+import { OPFSBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new OPFSBackend({ rootDirName: 'editor' });
 const probe = await backend.probe();
@@ -42,7 +42,7 @@ after delete: 0
 An import writes several files. When one step fails, a rollback leaves the folder as it was. OPFS transactions are `compensating`, so ask for that strength.
 
 ```ts file=main.ts
-import { OPFSBackend, buildCanonicalKey } from '@platform/storage';
+import { OPFSBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new OPFSBackend({ rootDirName: 'import' });
 await backend.initialize();

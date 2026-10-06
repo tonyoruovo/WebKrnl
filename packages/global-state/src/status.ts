@@ -19,7 +19,7 @@
  * @example
  * Deriving a status from the kernel's statuses
  * ```ts
- * import { derivePlatformStatus, summarizeUnits } from '@platform/global-state';
+ * import { derivePlatformStatus, summarizeUnits } from '@webkrnl/global-state';
  *
  * const summary = summarizeUnits(kernel.statuses.getSnapshot());
  * derivePlatformStatus(summary, 0, 50); // 'IDLE', 'BUSY', 'DEGRADED' or 'INITIALIZING'
@@ -28,7 +28,7 @@
  * @example
  * Checking admission
  * ```ts
- * import { canAccept } from '@platform/global-state';
+ * import { canAccept } from '@webkrnl/global-state';
  *
  * canAccept('BUSY', 'CRITICAL'); // true
  * canAccept('BUSY', 'HIGH');     // false
@@ -37,7 +37,7 @@
  * @author MathAid
  */
 
-import type { Importance, LifecycleSnapshot } from '@platform/core';
+import type { Importance, LifecycleSnapshot } from '@webkrnl/core';
 
 /**
  * @summary The status of the whole platform.

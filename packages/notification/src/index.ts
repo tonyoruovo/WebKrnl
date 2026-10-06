@@ -1,13 +1,13 @@
 /**
  * @fileoverview
- * @module @platform/notification
- * @summary The public API of `@platform/notification`.
+ * @module @webkrnl/notification
+ * @summary The public API of `@webkrnl/notification`.
  * @description
  * Re-exports the Notification Center ({@linkcode createNotificationCenter})
  * and its per-subscriber circuit breakers ({@linkcode CircuitBreakers}).
  *
  * ```text
- *   @platform/notification
+ *   @webkrnl/notification
  *   +-- createNotificationCenter   { subsystem, fanOut }
  *   |   subsystem: id 'notification', centralized, Tab scope
  *   |   fanOut:    passed to the Queue, which hands it every broadcast
@@ -17,10 +17,10 @@
  * @example
  * Wiring the three centralized subsystems
  * ```ts
- * import { Kernel } from '@platform/core';
- * import { createGlobalState } from '@platform/global-state';
- * import { createNotificationCenter } from '@platform/notification';
- * import { createQueue } from '@platform/queue';
+ * import { Kernel } from '@webkrnl/core';
+ * import { createGlobalState } from '@webkrnl/global-state';
+ * import { createNotificationCenter } from '@webkrnl/notification';
+ * import { createQueue } from '@webkrnl/queue';
  *
  * const notification = createNotificationCenter();
  * const queue = createQueue({ fanOut: notification.fanOut });
@@ -33,7 +33,7 @@
  * @example
  * Listening to a broadcast from application code
  * ```ts
- * import type { NotificationControl } from '@platform/notification';
+ * import type { NotificationControl } from '@webkrnl/notification';
  *
  * const { commands } = kernel.unit<NotificationControl>('notification').control!;
  * commands.subscribe('settings:changed', (payload) => applySettings(payload));

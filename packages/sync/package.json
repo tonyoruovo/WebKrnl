@@ -1,5 +1,5 @@
 {
-  "name": "@platform/sync",
+  "name": "@webkrnl/sync",
   "version": "0.0.2",
   "description": "The Sync subsystem: an outbox of changes that reaches the server exactly once, pulls, conflicts, and offline replay.",
   "type": "module",
@@ -13,16 +13,16 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/network": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/network": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*",
-    "@platform/network": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*",
-    "@platform/storage": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*",
+    "@webkrnl/network": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*",
+    "@webkrnl/storage": "workspace:*"
   },
   "license": "ISC"
 }

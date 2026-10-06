@@ -70,7 +70,7 @@ export interface CacheEntry {
 
 /**
  * @summary The part of a Storage collection that the cache uses.
- * @description The Network does not import `@platform/storage`. Any object with this shape works.
+ * @description The Network does not import `@webkrnl/storage`. Any object with this shape works.
  * @public
  */
 export interface CacheCollection {

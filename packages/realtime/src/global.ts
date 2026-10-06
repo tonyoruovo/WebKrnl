@@ -39,7 +39,7 @@ import {
   type UnitContext,
   type UnitDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import type { RealtimeStatus } from './types';
 
@@ -118,7 +118,7 @@ export interface SocketBridge {
 
 /**
  * @summary The Window relay that the feature gives to the hub (docs/ARCHITECTURE.md §20.2).
- * @description It has the shape of `WindowRelay` of `@platform/hub`.
+ * @description It has the shape of `WindowRelay` of `@webkrnl/hub`.
  * @public
  */
 export interface GlobalWindowRelay {

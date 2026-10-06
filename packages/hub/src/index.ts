@@ -1,14 +1,14 @@
 /**
  * @fileoverview
- * @module @platform/hub
- * @summary The public API of `@platform/hub`: Window scope across a site's subdomains.
+ * @module @webkrnl/hub
+ * @summary The public API of `@webkrnl/hub`: Window scope across a site's subdomains.
  * @description
  * Re-exports the hub page renderer, the Window client, its links, the window
  * cookie that detects partitioning, and the Window transport subsystem
  * (docs/ARCHITECTURE.md §11.3).
  *
  * ```text
- *   @platform/hub
+ *   @webkrnl/hub
  *   +-- renderHubPage           the static hub page for the apex, and its CSP
  *   +-- createWindowClient      one tab's connection: iframe | direct | single-origin
  *   |   +-- WindowRelay         the relay where the browser partitions the hub (Global transport, M8)
@@ -21,7 +21,7 @@
  * @example
  * A subdomain app
  * ```ts
- * import { createWindowTransport } from '@platform/hub';
+ * import { createWindowTransport } from '@webkrnl/hub';
  *
  * const kernel = new Kernel(
  *   [...centralized, createWindowTransport({ hubUrl: 'https://example.com/__platform/hub.html' }), ...subsystems],
@@ -32,7 +32,7 @@
  * @example
  * Rendering the hub page at build time
  * ```ts
- * import { renderHubPage } from '@platform/hub';
+ * import { renderHubPage } from '@webkrnl/hub';
  *
  * const { html, csp } = await renderHubPage({ allowedOrigins: ['https://example.com', 'https://*.example.com'] });
  * ```

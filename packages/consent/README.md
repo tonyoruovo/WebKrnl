@@ -1,6 +1,6 @@
-# @platform/consent
+# @webkrnl/consent
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Consent** subsystem (id `consent`, featurized, Window scope). It records what the user agreed to, per category, under a **policy version**, and answers the question every telemetry path asks: `isGranted(category)`.
 
@@ -9,7 +9,7 @@ The **Consent** subsystem (id `consent`, featurized, Window scope). It records w
 - **Policy versions**: raise the version and every earlier decision stops counting; `views.pending` lists what to ask again.
 - **Persisted**: decisions are kept through the kernel's persistence (Storage, from M6).
 - **Broadcast**: every change is announced as `consent:changed`.
-- **Shared by every tab of the site** (Window scope, with `@platform/hub`'s Window transport): a decision in one tab reaches the others, and a new tab asks the open ones for theirs (`consent:sync`, answered with `consent:state`). Per category, the newer decision wins.
+- **Shared by every tab of the site** (Window scope, with `@webkrnl/hub`'s Window transport): a decision in one tab reaches the others, and a new tab asks the open ones for theirs (`consent:sync`, answered with `consent:state`). Per category, the newer decision wins.
 
 Retention rules and data-subject requests (export, erase) need Storage and arrive with it in M6. Design: [ARCHITECTURE §13](../../docs/ARCHITECTURE.md#13-subsystem-catalogue) and the amended [Consent proposal](../../proposals/consent_PROPOSAL.md).
 
@@ -18,8 +18,8 @@ Retention rules and data-subject requests (export, erase) need Storage and arriv
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/consent": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/consent": "workspace:*"
   }
 }
 ```
@@ -28,12 +28,12 @@ Retention rules and data-subject requests (export, erase) need Storage and arriv
 
 | Import              | Contents                                                                                                       |
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `@platform/consent` | `createConsent`, `isConsentGranted`, `CONSENT_ID`, `CONSENT_CHANGED`, `NECESSARY`, `DEFAULT_CATEGORIES`, types |
+| `@webkrnl/consent` | `createConsent`, `isConsentGranted`, `CONSENT_ID`, `CONSENT_CHANGED`, `NECESSARY`, `DEFAULT_CATEGORIES`, types |
 
 ## Usage
 
 ```ts
-import { createConsent } from '@platform/consent';
+import { createConsent } from '@webkrnl/consent';
 
 const kernel = new Kernel([...centralized, createConsent({ policyVersion: 2 }), ...subsystems], {
   router: queue.router,
@@ -44,7 +44,7 @@ const kernel = new Kernel([...centralized, createConsent({ policyVersion: 2 }), 
 A consent banner:
 
 ```ts
-import type { ConsentControl } from '@platform/consent';
+import type { ConsentControl } from '@webkrnl/consent';
 
 const { commands, views } = kernel.unit<ConsentControl>('consent').control!;
 

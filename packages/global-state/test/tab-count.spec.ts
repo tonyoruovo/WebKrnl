@@ -2,7 +2,7 @@
  * The tab count (docs/ARCHITECTURE.md §21.5), with the Web Locks and the
  * BroadcastChannel of Node, which several counters in one process share.
  */
-import { Kernel } from '@platform/core';
+import { Kernel } from '@webkrnl/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {

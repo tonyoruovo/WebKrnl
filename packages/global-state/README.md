@@ -1,6 +1,6 @@
-# @platform/global-state
+# @webkrnl/global-state
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Global State** subsystem: the platform's view of itself. It is a centralized subsystem (id `global-state`, Tab scope) that:
 
@@ -18,23 +18,23 @@ Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centr
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*"
   }
 }
 ```
 
 | Peer dependency  | Why                                |
 | ---------------- | ---------------------------------- |
-| `@platform/core` | The kernel this subsystem runs on. |
+| `@webkrnl/core` | The kernel this subsystem runs on. |
 
 ## Usage
 
 Register it with the kernel, usually first:
 
 ```ts
-import { Kernel } from '@platform/core';
-import { createGlobalState } from '@platform/global-state';
+import { Kernel } from '@webkrnl/core';
+import { createGlobalState } from '@webkrnl/global-state';
 
 const kernel = new Kernel([createGlobalState(), ...subsystems]);
 await kernel.start();
@@ -43,7 +43,7 @@ await kernel.start();
 Read the status, pending work and environment from its view:
 
 ```ts
-import type { GlobalStateControl } from '@platform/global-state';
+import type { GlobalStateControl } from '@webkrnl/global-state';
 
 const state = kernel.unit<GlobalStateControl>('global-state').control!.views.state;
 state.subscribe(() => {
@@ -121,8 +121,8 @@ The tab id is kept in `sessionStorage`, so a reload keeps it. A duplicated tab c
 ## Testing
 
 ```ts
-import { createTestPlatform } from '@platform/core/testing';
-import { createGlobalState, createStaticEnvironment } from '@platform/global-state';
+import { createTestPlatform } from '@webkrnl/core/testing';
+import { createGlobalState, createStaticEnvironment } from '@webkrnl/global-state';
 
 const environment = createStaticEnvironment();
 const platform = createTestPlatform([

@@ -1,6 +1,6 @@
-# @platform/realtime
+# @webkrnl/realtime
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Realtime** subsystem (id `realtime`, featurized, Tab scope, no required dependency). It keeps one WebSocket for many topics:
 
@@ -21,8 +21,8 @@ Design: [ARCHITECTURE §19.4](../../docs/ARCHITECTURE.md#194-realtime) and the a
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/realtime": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/realtime": "workspace:*"
   }
 }
 ```
@@ -33,14 +33,14 @@ The package starts its worker with `new Worker(new URL('./socket.worker.ts', imp
 
 | Import                      | Contents                                                                         |
 | --------------------------- | -------------------------------------------------------------------------------- |
-| `@platform/realtime`        | `createRealtime`, `createSocketProcessor`, `JSON_PROTOCOL`, and the types         |
-| `@platform/realtime/worker` | The worker entry. It serves the socket processor. You do not import it yourself.  |
-| `@platform/realtime/conformance` | `runConformance`: checks your server against the [wire protocol](../../docs/WIRE-PROTOCOL.md). |
+| `@webkrnl/realtime`        | `createRealtime`, `createSocketProcessor`, `JSON_PROTOCOL`, and the types         |
+| `@webkrnl/realtime/worker` | The worker entry. It serves the socket processor. You do not import it yourself.  |
+| `@webkrnl/realtime/conformance` | `runConformance`: checks your server against the [wire protocol](../../docs/WIRE-PROTOCOL.md). |
 
 ## Usage
 
 ```ts
-import { createRealtime, type RealtimeControl } from '@platform/realtime';
+import { createRealtime, type RealtimeControl } from '@webkrnl/realtime';
 
 const kernel = new Kernel([...centralized, createAuth({ handlers }), createRealtime({ url: 'wss://rt.shop.example/socket', auth: 'message' })], {
   router: queue.router,
@@ -83,12 +83,12 @@ await port.send({ eventId: 'settings:changed', payload: { theme: 'dark' } });
 - **Send**: each Global broadcast goes into an outbox (memory, and Storage `realtime.global-outbox` when Storage runs). It leaves the outbox when the server acknowledges it. Without an ack within `ackTimeoutMs`, or after a reconnect, it goes again.
 - **Receive**: each envelope is checked (`decodeWire`) and handed to the Queue's `ingest`, which drops repeats. The envelopes of this tab are dropped.
 - **HTTP fallback**: while the socket cannot open, the transport publishes and long-polls through Network (`POST <http>/publish`, `GET <http>/poll`).
-- **The Window relay**: the window transport of `@platform/hub` takes `commands.windowRelay()` from Realtime by itself, and uses it where the hub is partitioned (Safari and iOS).
+- **The Window relay**: the window transport of `@webkrnl/hub` takes `commands.windowRelay()` from Realtime by itself, and uses it where the hub is partitioned (Safari and iOS).
 
 Check your server with the conformance runner:
 
 ```ts
-import { runConformance } from '@platform/realtime/conformance';
+import { runConformance } from '@webkrnl/realtime/conformance';
 
 const results = await runConformance({ url: 'wss://staging.shop.example/socket', token });
 ```

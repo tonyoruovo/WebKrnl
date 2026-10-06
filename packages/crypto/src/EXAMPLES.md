@@ -1,4 +1,4 @@
-# Examples: `@platform/crypto`
+# Examples: `@webkrnl/crypto`
 
 Crypto owns the keys of the platform. It encrypts, tags, signs and hashes with non-extractable keys that persist in IndexedDB. In an app, keep the default hosts, so the work runs in a shared worker. These examples use the main thread (`hosts: ['virtual']`) and keep the keys in memory (`indexedDB: null`), so they run in every sandbox.
 
@@ -9,8 +9,8 @@ Crypto owns the keys of the platform. It encrypts, tags, signs and hashes with n
 A notes app encrypts a note before it leaves the main thread. The token names its key, and each call uses a new random IV, so the same text gives a different token each time.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, createCrypto, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([createCrypto({ hosts: ['virtual'], indexedDB: null })]);
 await kernel.start();
@@ -39,8 +39,8 @@ decrypted: Door code: 4512
 The device sends its public key to the server one time. After that, it signs each sensitive request, and the server checks the signature with the public key.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, createCrypto, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([createCrypto({ hosts: ['virtual'], indexedDB: null })]);
 await kernel.start();
@@ -69,8 +69,8 @@ changed body valid: false
 A security policy asks for a new key every quarter. After `rotate`, new tokens use the new key, and tokens from before still decrypt.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, createCrypto, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([createCrypto({ hosts: ['virtual'], indexedDB: null })]);
 await kernel.start();
@@ -99,8 +99,8 @@ keys kept: 4
 Two devices of one user must read the same encrypted data, so the server gives the key material. Here two kernels stand in for two devices that got the same material.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, createCrypto, toBase64Url, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, createCrypto, toBase64Url, type CryptoControl } from '@webkrnl/crypto';
 
 // In an app, this comes from your server. It must be 32 random bytes.
 const encrypt = toBase64Url(new Uint8Array(32).fill(42));
@@ -134,8 +134,8 @@ same key id: true
 When a user closes the account, `forget` deletes the keys and makes new ones. Every value that the old keys encrypted becomes unreadable at once, even copies in caches and backups (crypto-shredding).
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, UnknownKeyError, createCrypto, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, UnknownKeyError, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([createCrypto({ hosts: ['virtual'], indexedDB: null })]);
 await kernel.start();
@@ -166,8 +166,8 @@ new keys work: New account
 A cache keys large queries by their digest, so the cache key has a fixed length.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CRYPTO_ID, createCrypto, type CryptoControl } from '@platform/crypto';
+import { Kernel } from '@webkrnl/core';
+import { CRYPTO_ID, createCrypto, type CryptoControl } from '@webkrnl/crypto';
 
 const kernel = new Kernel([createCrypto({ hosts: ['virtual'], indexedDB: null })]);
 await kernel.start();
@@ -192,7 +192,7 @@ sha-256 of "abc": ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015
 A tool, or the Storage coordinator, opens the key store itself and uses the cipher functions. They make the same tokens as the Crypto subsystem, with no message to a worker.
 
 ```ts file=main.ts
-import { KeyStore, decryptText, encryptText, hmacText, verifyHmacText } from '@platform/crypto';
+import { KeyStore, decryptText, encryptText, hmacText, verifyHmacText } from '@webkrnl/crypto';
 
 // No IndexedDB factory: the keys stay in memory.
 const keys = await KeyStore.open({ source: { kind: 'device' } }, undefined);

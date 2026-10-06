@@ -1,5 +1,5 @@
 {
-  "name": "@platform/queue",
+  "name": "@webkrnl/queue",
   "version": "0.0.2",
   "description": "The Queue subsystem: the kernel's packet router, with admission, priorities, ordering, retries and dead letters.",
   "type": "module",
@@ -13,12 +13,12 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*",
-    "@platform/notification": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*",
+    "@webkrnl/notification": "workspace:*"
   },
   "license": "ISC"
 }

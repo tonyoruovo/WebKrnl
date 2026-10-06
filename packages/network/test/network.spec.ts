@@ -1,14 +1,14 @@
 import 'fake-indexeddb/auto';
 
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
-import { createStorage } from '@platform/storage';
+} from '@webkrnl/global-state';
+import { createStorage } from '@webkrnl/storage';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

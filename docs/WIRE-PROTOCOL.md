@@ -1,6 +1,6 @@
 # The Global wire protocol (version 1)
 
-This document is the contract between the platform and **your server**. The platform ships the protocol only: the envelope schema (`@platform/core`), the fixtures, and a conformance runner (`@platform/realtime/conformance`). Your backend team builds the server. The design is in [ARCHITECTURE §11.4 and §20](ARCHITECTURE.md#20-global-scope-m8).
+This document is the contract between the platform and **your server**. The platform ships the protocol only: the envelope schema (`@webkrnl/core`), the fixtures, and a conformance runner (`@webkrnl/realtime/conformance`). Your backend team builds the server. The design is in [ARCHITECTURE §11.4 and §20](ARCHITECTURE.md#20-global-scope-m8).
 
 The server has two jobs:
 
@@ -9,7 +9,7 @@ The server has two jobs:
 
 ## 1. The envelope
 
-Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeWire` of `@platform/core` make and check it; `WireEnvelopeSchema` is the schema.
+Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeWire` of `@webkrnl/core` make and check it; `WireEnvelopeSchema` is the schema.
 
 ```json
 {
@@ -44,7 +44,7 @@ Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeW
 | `metadata.ttl` | Optional, in milliseconds after `timestamp`. A client drops an expired envelope before it sends it. |
 | `fingerprints` | The trail of the sender. **The server must not add or change fingerprints**: a receiver starts its own trail with the same `traceId` (ARCHITECTURE §9.4). |
 
-**Fixtures.** `@platform/core/fixtures/wire/valid/*.json` and `…/invalid/*.json`. Each file has a `description`, the `envelope`, and for an invalid one the `reason` (the field that fails). Your server must accept every valid fixture and refuse every invalid one.
+**Fixtures.** `@webkrnl/core/fixtures/wire/valid/*.json` and `…/invalid/*.json`. Each file has a `description`, the `envelope`, and for an invalid one the `reason` (the field that fails). Your server must accept every valid fixture and refuse every invalid one.
 
 ## 2. The socket
 
@@ -97,7 +97,7 @@ A client uses HTTP while its socket cannot open. Both endpoints take the same `A
 Run the conformance runner against your server, for example in CI:
 
 ```ts
-import { runConformance } from '@platform/realtime/conformance';
+import { runConformance } from '@webkrnl/realtime/conformance';
 
 const results = await runConformance({
   url: 'wss://staging.example.com/socket',

@@ -1,4 +1,4 @@
-# Examples: `@platform/network`
+# Examples: `@webkrnl/network`
 
 The Network sends requests for every subsystem: with timeouts, retries, a shared fetch for identical requests, a cache, a circuit breaker and interceptors. These examples give the Network a fake `fetch`, so they run in every sandbox without a server.
 
@@ -9,8 +9,8 @@ The Network sends requests for every subsystem: with timeouts, retries, a shared
 A product API answers `503` under load. The Network waits (it honours `Retry-After`) and sends the `GET` again. A `POST` retries only with an idempotency key, so a payment is never sent twice by accident.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { NETWORK_ID, createNetwork, type NetworkControl } from '@platform/network';
+import { Kernel } from '@webkrnl/core';
+import { NETWORK_ID, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 const seen = new Set<string>();
 // A fake server: the first request to each URL gets 503.
@@ -47,8 +47,8 @@ POST attempts: 2 key: order-42
 A settings screen loads the same data often. With `cache-first`, a fresh entry answers at once. When the entry is stale, the Network asks the server with `If-None-Match`, and a `304` reuses the cached body.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { NETWORK_ID, createNetwork, type NetworkControl } from '@platform/network';
+import { Kernel } from '@webkrnl/core';
+import { NETWORK_ID, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 let requests = 0;
 const fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -86,9 +86,9 @@ revalidated: true theme: dark requests: 2
 A news app keeps working in a tunnel. With `network-first`, the Network uses the cache when the platform is offline. A request without a cached answer fails at once with `OfflineError`.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createGlobalState, createStaticEnvironment } from '@platform/global-state';
-import { NETWORK_ID, OfflineError, createNetwork, type NetworkControl } from '@platform/network';
+import { Kernel } from '@webkrnl/core';
+import { createGlobalState, createStaticEnvironment } from '@webkrnl/global-state';
+import { NETWORK_ID, OfflineError, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 const fetch = async () => Response.json(['Rain at noon', 'Market opens']);
 const environment = createStaticEnvironment();
@@ -127,8 +127,8 @@ no cache: true
 A recommendations service is down. After 3 failures in a row, the breaker of its origin opens, and requests fail at once instead of waiting for timeouts. After the cool-down, one trial request closes it again.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CircuitOpenError, NETWORK_ID, createNetwork, type NetworkControl } from '@platform/network';
+import { Kernel } from '@webkrnl/core';
+import { CircuitOpenError, NETWORK_ID, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 let up = false;
 let calls = 0;
@@ -180,8 +180,8 @@ after the cool-down: true
 An app sends its version with each request, and logs slow responses. Interceptors do both without touching the callers. Auth uses the same mechanism for its tokens.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { NETWORK_ID, createNetwork, type NetworkControl } from '@platform/network';
+import { Kernel } from '@webkrnl/core';
+import { NETWORK_ID, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 const fetch = async (input: RequestInfo | URL, init?: RequestInit) =>
   Response.json({ version: new Request(input, init).headers.get('x-app-version') });

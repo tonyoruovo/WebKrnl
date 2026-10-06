@@ -1,4 +1,4 @@
-import { createStaticEnvironment } from '@platform/global-state';
+import { createStaticEnvironment } from '@webkrnl/global-state';
 import { it } from 'vitest';
 
 import { runFlows } from './flows';

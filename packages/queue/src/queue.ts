@@ -77,7 +77,7 @@ import {
   type SubsystemDefinition,
   type TaskPriority,
   type UnitContext,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import {
   DEAD_LETTER_COLLECTION,

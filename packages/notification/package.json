@@ -1,5 +1,5 @@
 {
-  "name": "@platform/notification",
+  "name": "@webkrnl/notification",
   "version": "0.0.2",
   "description": "The Notification Center subsystem: broadcast routing, subscriptions, access control and history.",
   "type": "module",
@@ -13,10 +13,10 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "license": "ISC"
 }

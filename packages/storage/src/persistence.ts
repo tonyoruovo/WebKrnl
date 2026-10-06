@@ -24,7 +24,7 @@
  * @author MathAid
  */
 
-import type { PersistedState, StatePersistence } from '@platform/core';
+import type { PersistedState, StatePersistence } from '@webkrnl/core';
 
 /**
  * @summary Options of {@linkcode createStatePersistence}.

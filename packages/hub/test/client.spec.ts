@@ -1,4 +1,4 @@
-import { createEnvelope, type PacketEnvelope } from '@platform/core';
+import { createEnvelope, type PacketEnvelope } from '@webkrnl/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createWindowClient, type WindowClientOptions } from '../src';

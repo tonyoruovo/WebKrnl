@@ -3,12 +3,12 @@
  * tokens, the theme rules, the stylesheet export, and the subsystem with a
  * fake root, fake media queries, Settings and Translation.
  */
-import { createConsent } from '@platform/consent';
-import { Kernel, type Scheduler, type SubsystemDefinition } from '@platform/core';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
-import { createTranslation } from '@platform/translation';
+import { createConsent } from '@webkrnl/consent';
+import { Kernel, type Scheduler, type SubsystemDefinition } from '@webkrnl/core';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
+import { createTranslation } from '@webkrnl/translation';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {

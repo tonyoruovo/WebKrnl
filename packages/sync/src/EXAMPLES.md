@@ -1,4 +1,4 @@
-# Examples: `@platform/sync`
+# Examples: `@webkrnl/sync`
 
 Sync keeps the changes of the user in an outbox until the server confirms each one, exactly once. These examples use a fake server through the Network's `fetch`, and the outbox in memory, so they run in every sandbox. In an app, add Storage, and the outbox survives a reload.
 
@@ -9,15 +9,15 @@ Sync keeps the changes of the user in an outbox until the server confirms each o
 A to-do app works on a train. The changes wait in the outbox, and changes to one item merge. The pending work in Global State shows what waits. Back online, Sync sends each change once, even when a response is lost and the request is sent again.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
+import { Kernel } from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
-import { createNetwork } from '@platform/network';
-import { SYNC_ID, createSync, type SyncControl } from '@platform/sync';
+} from '@webkrnl/global-state';
+import { createNetwork } from '@webkrnl/network';
+import { SYNC_ID, createSync, type SyncControl } from '@webkrnl/sync';
 
 const applied = new Set<string>(); // the idempotency keys that the server applied
 let requests = 0;
@@ -82,9 +82,9 @@ still shown: 0
 Two people edit the same document. The server answers `409` with its version. With the `manual` strategy, the change waits in `conflicts` until the user chooses.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createNetwork } from '@platform/network';
-import { SYNC_ID, createSync, type SyncControl } from '@platform/sync';
+import { Kernel } from '@webkrnl/core';
+import { createNetwork } from '@webkrnl/network';
+import { SYNC_ID, createSync, type SyncControl } from '@webkrnl/sync';
 
 let serverTitle = 'Plan (edited by Bo)';
 // A fake server: a request without "x-force" conflicts.

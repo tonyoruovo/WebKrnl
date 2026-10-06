@@ -4,8 +4,8 @@ import {
   type PacketPort,
   type Scheduler,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createTestAuth } from '@platform/core/testing';
+} from '@webkrnl/core';
+import { createTestAuth } from '@webkrnl/core/testing';
 import { describe, expect, it } from 'vitest';
 
 import { QUEUE_ID, createQueue, type QueueControl, type StoredCollection } from '../src';

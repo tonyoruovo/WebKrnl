@@ -23,7 +23,7 @@
  * Writing the hub page during a build
  * ```ts
  * import { writeFile } from 'node:fs/promises';
- * import { renderHubPage } from '@platform/hub';
+ * import { renderHubPage } from '@webkrnl/hub';
  *
  * const page = await renderHubPage({ allowedOrigins: ['https://example.com', 'https://*.example.com'] });
  * await writeFile('public/__platform/hub.html', page.html);

@@ -19,8 +19,8 @@
  * @example
  * The worker entry
  * ```ts
- * import { serveProcessor } from '@platform/core/worker';
- * import { createCryptoProcessor } from '@platform/crypto';
+ * import { serveProcessor } from '@webkrnl/core/worker';
+ * import { createCryptoProcessor } from '@webkrnl/crypto';
  *
  * serveProcessor(createCryptoProcessor());
  * ```
@@ -36,7 +36,7 @@
  * @author MathAid
  */
 
-import { defineProcessor, type ProcessorModule } from '@platform/core';
+import { defineProcessor, type ProcessorModule } from '@webkrnl/core';
 
 import { decryptText, encryptText, hmacText, verifyHmacText } from './cipher';
 import { fromBase64Url, toBase64Url, toHex, utf8 } from './encoding';
@@ -190,7 +190,7 @@ function split(text: string, what: string): [string, string] {
  *
  * @description
  * Each call makes a new module with its own key store. The worker entry
- * (`@platform/crypto/worker`) and the virtual host each call it one time.
+ * (`@webkrnl/crypto/worker`) and the virtual host each call it one time.
  *
  * @example
  * Example 1: The worker entry

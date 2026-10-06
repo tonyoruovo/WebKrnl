@@ -26,7 +26,7 @@
  * @example
  * Connecting the main thread to a worker
  * ```ts
- * import { createPortTransport } from '@platform/core';
+ * import { createPortTransport } from '@webkrnl/core';
  *
  * const worker = new Worker(new URL('./realm.worker.ts', import.meta.url), { type: 'module' });
  * const transport = createPortTransport(worker);
@@ -36,7 +36,7 @@
  * @example
  * Testing cross-realm code without workers
  * ```ts
- * import { createInRealmTransportPair } from '@platform/core';
+ * import { createInRealmTransportPair } from '@webkrnl/core';
  *
  * const [main, other] = createInRealmTransportPair();
  * other.onEnvelope((envelope) => ({ received: envelope.eventId }));

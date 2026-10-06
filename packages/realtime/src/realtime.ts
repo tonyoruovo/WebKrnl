@@ -37,7 +37,7 @@ import {
   type UnitContext,
   type View,
   watchSignOut,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { createGlobalFeature, type SocketBridge } from './global';
 import {

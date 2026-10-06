@@ -5,7 +5,7 @@
  * Implements docs/ARCHITECTURE.md §8.1 and §8.6. A processor module does not
  * know which thread it runs on: the virtual host loads it on the main thread,
  * and a worker entry file serves the same module with `serveProcessor`
- * (`@platform/core/worker`).
+ * (`@webkrnl/core/worker`).
  *
  * ```text
  *   sum.processor.ts  -- defineProcessor({ handle })
@@ -21,7 +21,7 @@
  * @example
  * A processor that stays within its slice budget
  * ```ts
- * import { defineProcessor } from '@platform/core';
+ * import { defineProcessor } from '@webkrnl/core';
  *
  * export const sum = defineProcessor<number[], number>({
  *   async handle(items, scope) {

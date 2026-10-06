@@ -35,7 +35,7 @@ import {
   type ProcessorDef,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import type { CryptoConfig, KeyPurpose, KeySource } from './keys';
 import {

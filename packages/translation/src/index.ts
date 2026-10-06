@@ -1,14 +1,14 @@
 /**
  * @fileoverview
- * @module @platform/translation
- * @summary The public API of `@platform/translation`.
+ * @module @webkrnl/translation
+ * @summary The public API of `@webkrnl/translation`.
  * @description
  * Re-exports the Translation subsystem ({@linkcode createTranslation}), the
  * ICU MessageFormat parser and formatter, the locale rules, the processor
  * that compiles catalogs, and the types.
  *
  * ```text
- *   @platform/translation
+ *   @webkrnl/translation
  *   +-- createTranslation      the subsystem: id 'translation', featurized, Tab scope
  *   +-- parseMessage, formatMessage, createFormatContext, escapeHtml, MessageSyntaxError   the ICU subset
  *   +-- resolveLocaleChain, canonicalLocale, textDirection                              the locale rules
@@ -20,7 +20,7 @@
  * @example
  * Registering it
  * ```ts
- * import { createTranslation } from '@platform/translation';
+ * import { createTranslation } from '@webkrnl/translation';
  *
  * const kernel = new Kernel([...centralized, createTranslation({ supportedLocales: ['en', 'fr'], url: '/i18n/{locale}/{namespace}.json' })]);
  * ```
@@ -28,7 +28,7 @@
  * @example
  * Formatting a message without the subsystem
  * ```ts
- * import { createFormatContext, formatMessage, parseMessage } from '@platform/translation';
+ * import { createFormatContext, formatMessage, parseMessage } from '@webkrnl/translation';
  *
  * formatMessage(parseMessage('{n, plural, one {# day} other {# days}}'), { n: 2 }, createFormatContext('en'));
  * ```

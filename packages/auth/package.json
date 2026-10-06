@@ -1,5 +1,5 @@
 {
-  "name": "@platform/auth",
+  "name": "@webkrnl/auth",
   "version": "0.0.2",
   "description": "The Auth subsystem: sessions from app handlers, token refresh, permissions, elevations, and status in every tab of the site.",
   "type": "module",
@@ -13,16 +13,16 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*",
-    "@platform/network": "workspace:*",
-    "@platform/storage": "workspace:*",
-    "@platform/hub": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/crypto": "workspace:*",
+    "@webkrnl/network": "workspace:*",
+    "@webkrnl/storage": "workspace:*",
+    "@webkrnl/hub": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
   },
   "license": "ISC"
 }

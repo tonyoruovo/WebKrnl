@@ -1,4 +1,4 @@
-# Examples: `@platform/core`
+# Examples: `@webkrnl/core`
 
 The kernel of the platform. These examples show how to define subsystems, start them, connect them with dependencies and packets, keep their state, and run work in processors.
 
@@ -9,7 +9,7 @@ The kernel of the platform. These examples show how to define subsystems, start 
 A settings subsystem needs storage before it can load the saved theme. The kernel starts `storage` first, then `settings`, and the application changes the theme through a command.
 
 ```ts file=main.ts
-import { Kernel, defineSubsystem } from '@platform/core';
+import { Kernel, defineSubsystem } from '@webkrnl/core';
 
 const storage = defineSubsystem({
   id: 'storage',
@@ -71,7 +71,7 @@ storage status: READY
 Storage has two backends as features. When IndexedDB is blocked, only that feature fails: the subsystem is `DEGRADED` and still works. A restart brings the feature back.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, defineUnit } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, defineUnit } from '@webkrnl/core';
 
 let indexedDbBlocked = true;
 
@@ -123,7 +123,7 @@ storage: READY, off: []
 Subsystems talk through packets. `request` sends a 1-to-1 packet and returns the reply. `send` without a target is a broadcast to every subscriber.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
 
 let authPort: PacketPort | undefined;
 
@@ -184,7 +184,7 @@ audit heard: auth:login {"user":"Ada"}
 A view is an external store: `getSnapshot` and `subscribe`. Listeners run one time for each task, after all changes of that task. `deriveView` computes a value from another view.
 
 ```ts file=main.ts
-import { createStore, deriveView } from '@platform/core';
+import { createStore, deriveView } from '@webkrnl/core';
 
 const cart = createStore({ items: [{ name: 'Tea', price: 4 }] });
 const total = deriveView(cart.view, (snapshot) =>
@@ -213,7 +213,7 @@ snapshots are frozen: true
 The kernel saves the persisted keys of each unit at teardown and loads them at the next start. This example uses a `Map` in place of `localStorage`. Only the `draft` key is persisted. The `typing` key stays private.
 
 ```ts file=main.ts
-import { Kernel, defineSubsystem, type PersistedState, type StatePersistence } from '@platform/core';
+import { Kernel, defineSubsystem, type PersistedState, type StatePersistence } from '@webkrnl/core';
 
 const disk = new Map<string, PersistedState<object>>();
 const persistence: StatePersistence = {
@@ -260,7 +260,7 @@ restored: Hello
 A processor is one module that runs in a shared worker, a dedicated worker, or on the main thread. This example uses the main thread (`virtual`), which is always available, and yields between items so the page stays responsive.
 
 ```ts file=main.ts
-import { Kernel, defineProcessor, defineSubsystem, type ProcessorDef } from '@platform/core';
+import { Kernel, defineProcessor, defineSubsystem, type ProcessorDef } from '@webkrnl/core';
 
 const thumbnailer = defineProcessor<{ sizes: number[] }, string[]>({
   async handle({ sizes }, scope) {
@@ -313,7 +313,7 @@ thumbnails: ["64x64","128x128","256x256"]
 An audit log starts before the storage it writes to. It buffers entries in a `LateBinding`, and `ctx.watch` binds the buffer when storage starts.
 
 ```ts file=main.ts
-import { Kernel, LateBinding, defineSubsystem } from '@platform/core';
+import { Kernel, LateBinding, defineSubsystem } from '@webkrnl/core';
 
 const written: string[] = [];
 const buffer = new LateBinding<string>({ capacity: 100 });
@@ -369,7 +369,7 @@ written after it resumed: ["user signed in"]
 `computeBackoff` gives the wait before each retry. Use a jitter strategy in production. This example uses `exponential`, which has no randomness.
 
 ```ts file=main.ts
-import { computeBackoff } from '@platform/core';
+import { computeBackoff } from '@webkrnl/core';
 
 let calls = 0;
 async function flakyUpload(): Promise<string> {
@@ -403,7 +403,7 @@ uploaded after 3 attempts
 A notification panel shows the last three messages, and a message that arrives two times shows one time only.
 
 ```ts file=main.ts
-import { createDeduplicator, createRingBuffer } from '@platform/core';
+import { createDeduplicator, createRingBuffer } from '@webkrnl/core';
 
 const recent = createRingBuffer<string>(3);
 const dedupe = createDeduplicator(1000);
@@ -437,7 +437,7 @@ dropped from the panel: 1
 Global packets travel as JSON in the versioned wire format. `encodeWire` checks an envelope before it leaves, and `decodeWire` checks what arrives.
 
 ```ts file=main.ts
-import { WireProtocolError, createEnvelope, decodeWire, encodeWire } from '@platform/core';
+import { WireProtocolError, createEnvelope, decodeWire, encodeWire } from '@webkrnl/core';
 
 let n = 0;
 const envelope = createEnvelope(
@@ -471,7 +471,7 @@ refused: Unsupported wire protocol version: 2.
 A transport carries envelopes between two realms, for example a page and a worker. Each side sets a handler, and a request resolves with the reply of the other side.
 
 ```ts file=main.ts
-import { createChannelTransportPair, createEnvelope } from '@platform/core';
+import { createChannelTransportPair, createEnvelope } from '@webkrnl/core';
 
 const [page, worker] = createChannelTransportPair();
 
@@ -501,7 +501,7 @@ reply: {"sum":5}
 Page scope ends when the path changes. The browser route source reports each completed navigation, from the Navigation API or the History API. A navigation that a newer one interrupts is not reported.
 
 ```ts file=main.ts
-import { createBrowserRouteSource } from '@platform/core';
+import { createBrowserRouteSource } from '@webkrnl/core';
 
 const routes = createBrowserRouteSource();
 console.log('start:', routes.current());

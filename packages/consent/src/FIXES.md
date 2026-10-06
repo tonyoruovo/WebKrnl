@@ -1,4 +1,4 @@
-# Fixes: `@platform/consent`
+# Fixes: `@webkrnl/consent`
 
 > Temporary record of fixes. Delete when the PR is merged.
 

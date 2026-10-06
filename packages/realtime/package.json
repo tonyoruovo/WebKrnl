@@ -1,5 +1,5 @@
 {
-  "name": "@platform/realtime",
+  "name": "@webkrnl/realtime",
   "version": "0.0.2",
   "description": "The Realtime subsystem: one WebSocket in a dedicated worker for many topics, with reconnects, heartbeats and presence.",
   "type": "module",
@@ -15,17 +15,17 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/auth": "workspace:*",
-    "@platform/core": "workspace:*",
-    "@platform/global-state": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*",
-    "@platform/storage": "workspace:*",
-    "@platform/network": "workspace:*",
-    "@platform/hub": "workspace:*"
+    "@webkrnl/auth": "workspace:*",
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*",
+    "@webkrnl/storage": "workspace:*",
+    "@webkrnl/network": "workspace:*",
+    "@webkrnl/hub": "workspace:*"
   },
   "license": "ISC"
 }

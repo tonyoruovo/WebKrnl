@@ -9,7 +9,7 @@ The IndexedDB backend is the first choice of the Storage coordinator. It gives r
 An offline mail client keeps its drafts in IndexedDB and lists the drafts of one account by prefix.
 
 ```ts file=main.ts
-import { IDBBackend, buildCanonicalKey } from '@platform/storage';
+import { IDBBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new IDBBackend({ dbName: 'mail' });
 await backend.initialize();
@@ -47,7 +47,7 @@ after clear: 0
 A transfer between two envelopes must apply fully or not at all. IndexedDB applies the buffered operations in one real transaction.
 
 ```ts file=main.ts
-import { IDBBackend, buildCanonicalKey } from '@platform/storage';
+import { IDBBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new IDBBackend({ dbName: 'budget' });
 await backend.initialize();

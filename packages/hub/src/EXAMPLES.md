@@ -1,4 +1,4 @@
-# Examples: `@platform/hub`
+# Examples: `@webkrnl/hub`
 
 Window scope: broadcasts that reach every tab of a site, across its subdomains. The package has the hub page for the apex, the client that each tab runs, and the `window` transport subsystem that connects the client to the kernel.
 
@@ -9,10 +9,10 @@ Window scope: broadcasts that reach every tab of a site, across its subdomains. 
 A single-origin app needs no hub page. Without `hubUrl`, the Window transport uses a `BroadcastChannel` on the origin of the app. A theme change in one tab reaches the other tab. This example runs two kernels in one page as two tabs.
 
 ```ts file=main.ts
-import { Kernel, defineSubsystem, type PacketPort } from '@platform/core';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel, defineSubsystem, type PacketPort } from '@webkrnl/core';
+import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 async function openTab(name: string) {
   let port: PacketPort | undefined;
@@ -68,10 +68,10 @@ tab B applies theme dark
 On `shop.example.com` and `blog.example.com`, the transport frames the hub page from the apex. It reports whether the browser shares the hub. Safari and iOS partition it, so the app gives a relay (the Global transport, from M8) to reach every subdomain there. This example needs several origins, so the doc page does not run it.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowRelay, type WindowTransportControl } from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel } from '@webkrnl/core';
+import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowRelay, type WindowTransportControl } from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 declare const globalRelay: WindowRelay | undefined; // from the Global transport, when configured
 
@@ -102,7 +102,7 @@ views.state.subscribe(() => {
 A build step renders the hub page and the `Content-Security-Policy` header to serve it with. The header allows only the inline script, by its hash, and only the site may frame the page.
 
 ```ts file=main.ts
-import { renderHubPage } from '@platform/hub';
+import { renderHubPage } from '@webkrnl/hub';
 
 const page = await renderHubPage({
   allowedOrigins: ['https://example.com', 'https://*.example.com'],
@@ -130,7 +130,7 @@ one inline script: 1
 The hub and the client accept messages only from the origins of the site. A wildcard covers the subdomains at any depth, but not look-alike domains.
 
 ```ts file=main.ts
-import { originAllowed } from '@platform/hub';
+import { originAllowed } from '@webkrnl/hub';
 
 const site = ['https://example.com', 'https://*.example.com'];
 for (const origin of [

@@ -30,7 +30,7 @@
  * @example
  * Checking a transition before asking for it
  * ```ts
- * import { canTransition } from '@platform/core';
+ * import { canTransition } from '@webkrnl/core';
  *
  * canTransition('FAILED', 'INITIALIZING'); // true: a restart
  * canTransition('DESTROYED', 'READY');     // false: destroyed is final

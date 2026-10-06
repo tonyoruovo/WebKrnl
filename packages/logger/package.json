@@ -1,5 +1,5 @@
 {
-  "name": "@platform/logger",
+  "name": "@webkrnl/logger",
   "version": "0.0.2",
   "description": "The Logger subsystem: sanitized, level-filtered logs and packet trails joined by traceId.",
   "type": "module",
@@ -13,12 +13,12 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
   },
   "license": "ISC"
 }

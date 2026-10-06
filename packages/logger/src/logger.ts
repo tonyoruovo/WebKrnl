@@ -50,7 +50,7 @@ import {
   type LogLevel,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { sanitize, type SanitizeOptions } from './sanitize';
 
@@ -69,7 +69,7 @@ export const LOG_COLLECTION = 'logger.entries';
 
 /**
  * @summary The part of a Storage collection that the Logger uses.
- * @description The Logger does not import `@platform/storage`. Any control
+ * @description The Logger does not import `@webkrnl/storage`. Any control
  * with this shape works.
  * @public
  */

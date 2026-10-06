@@ -34,8 +34,8 @@ import {
   fromPortable,
   type ProcessorModule,
   type ProcessorScope,
-} from '@platform/core';
-import { KeyStore, type CryptoConfig } from '@platform/crypto';
+} from '@webkrnl/core';
+import { KeyStore, type CryptoConfig } from '@webkrnl/crypto';
 
 import { CacheBackend } from './backends/cache';
 import { IDBBackend } from './backends/idb';
@@ -140,7 +140,7 @@ export interface CoordinatorConfig {
    */
   readonly backends?: readonly BackendKind[];
   /**
-   * @summary The key store of `@platform/crypto` to open, or `null` for no encryption.
+   * @summary The key store of `@webkrnl/crypto` to open, or `null` for no encryption.
    */
   readonly keys: CryptoConfig | null;
 }

@@ -1,11 +1,11 @@
-# @platform/storage
+# @webkrnl/storage
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Storage** subsystem (id `storage`, featurized, Tab scope, no required dependency). It keeps the data of an app in **collections**, and one **coordinator** writes for every tab of the origin:
 
 - **Backends**: IndexedDB, then OPFS, then the Cache API in a worker. On the main thread, also `localStorage`, `sessionStorage` and memory. The coordinator uses the first backend that works.
-- **Pipeline**: serialize, gzip, encrypt (AES-GCM) and an HMAC tag on a write. On a read, the reverse, then migration with write-back. Encryption uses the keys of [`@platform/crypto`](../crypto/README.md).
+- **Pipeline**: serialize, gzip, encrypt (AES-GCM) and an HMAC tag on a write. On a read, the reverse, then migration with write-back. Encryption uses the keys of [`@webkrnl/crypto`](../crypto/README.md).
 - **Validation**: each collection can have a schema (zod, or anything with `safeParse`). The caller's realm validates before a write and after a read, so the full schema always applies.
 - **Collections**: canonical keys (`<domain>:<platform>:<platformVersion>:<module>:<key>`), time to live, eviction weight, a maximum number of entries, query indexes, and filters that run where the data is.
 - **Batches**: writes and deletes on several collections in one backend transaction.
@@ -19,9 +19,9 @@ The coordinator runs in a **shared worker**, then on the main thread (failover).
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/crypto": "workspace:*",
-    "@platform/storage": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/crypto": "workspace:*",
+    "@webkrnl/storage": "workspace:*"
   }
 }
 ```
@@ -32,14 +32,14 @@ The package has no dependency on `zod`: a schema is any object with `safeParse`,
 
 | Import                     | Contents                                                                                                   |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `@platform/storage`        | `createStorage`, `Collection`, `Batch`, `createCoordinator`, `encode`/`decode`, `createStatePersistence`, the backends, canonical keys |
-| `@platform/storage/worker` | The worker entry. It serves the coordinator. You do not import it yourself.                                |
+| `@webkrnl/storage`        | `createStorage`, `Collection`, `Batch`, `createCoordinator`, `encode`/`decode`, `createStatePersistence`, the backends, canonical keys |
+| `@webkrnl/storage/worker` | The worker entry. It serves the coordinator. You do not import it yourself.                                |
 
 ## Usage
 
 ```ts
-import { createCrypto } from '@platform/crypto';
-import { createStatePersistence, createStorage, type StorageControl } from '@platform/storage';
+import { createCrypto } from '@webkrnl/crypto';
+import { createStatePersistence, createStorage, type StorageControl } from '@webkrnl/storage';
 import { z } from 'zod';
 
 const kernel = new Kernel([...centralized, createCrypto(), createStorage({ domain: 'shop' })], {
@@ -72,7 +72,7 @@ From another subsystem, declare `{ target: 'storage', kind: 'optional' }` in `re
 | `migrations`  | none             | `{ 2: (v1) => v2, ... }`. They must be self-contained functions.              |
 | `ttl`         | no expiry        | The time to live of each entry, in milliseconds.                              |
 | `weight`      | `1`              | A higher weight is evicted later.                                             |
-| `encrypt`     | `false`          | AES-GCM and an HMAC tag, with the keys of `@platform/crypto`.                 |
+| `encrypt`     | `false`          | AES-GCM and an HMAC tag, with the keys of `@webkrnl/crypto`.                 |
 | `compress`    | `false`          | gzip, for large text values.                                                  |
 | `maxEntries`  | no limit         | A write deletes the oldest entries above the limit.                          |
 | `serialize`, `deserialize` | JSON | Custom text form. They must be self-contained functions.               |
@@ -123,7 +123,7 @@ Indexes support equality only. In an encrypted collection, an index stores an HM
 | `hosts`           | `['shared', 'virtual']`         | The hosts of the coordinator, in order.                              |
 | `backends`        | depends on the host             | The backend chain.                                                   |
 | `database`        | `__platform_storage`            | The IndexedDB database, the OPFS folder and the cache.               |
-| `keys`            | `{ source: { kind: 'device' } }` | The key store of `@platform/crypto`, or `null` for no encryption. Use the source of `createCrypto`. |
+| `keys`            | `{ source: { kind: 'device' } }` | The key store of `@webkrnl/crypto`, or `null` for no encryption. Use the source of `createCrypto`. |
 | `quota`           | every 60 s, 0.8 and 0.95        | `{ intervalMs, warning, critical }`, or `false`.                     |
 
 ## Events

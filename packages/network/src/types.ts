@@ -17,7 +17,7 @@
  * @author MathAid
  */
 
-import type { Importance, View } from '@platform/core';
+import type { Importance, View } from '@webkrnl/core';
 
 /**
  * @summary The HTTP methods.
@@ -57,7 +57,7 @@ export type CacheStrategy = 'network-only' | 'network-first' | 'cache-first' | '
 export type CachePersistence =
   | {
       /**
-       * @summary Encrypts the stored response with the keys of `@platform/crypto`. The default is `true`.
+       * @summary Encrypts the stored response with the keys of `@webkrnl/crypto`. The default is `true`.
        */
       readonly encrypt?: boolean;
       /**

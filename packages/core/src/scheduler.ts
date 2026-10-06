@@ -16,7 +16,7 @@
  * @example
  * Running work as a separate task
  * ```ts
- * import { createScheduler } from '@platform/core';
+ * import { createScheduler } from '@webkrnl/core';
  *
  * const scheduler = createScheduler();
  * const result = await scheduler.postTask(() => expensive(), 'background');

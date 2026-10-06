@@ -27,7 +27,7 @@
  * @example
  * Waiting before a retry
  * ```ts
- * import { computeBackoff } from '@platform/core';
+ * import { computeBackoff } from '@webkrnl/core';
  *
  * const wait = computeBackoff({ base: 100, attempts: 3, strategy: 'exponential-jitter' });
  * await new Promise((r) => setTimeout(r, wait));

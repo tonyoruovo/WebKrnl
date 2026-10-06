@@ -5,17 +5,17 @@
  */
 import 'fake-indexeddb/auto';
 
-import { Kernel, type SubsystemDefinition } from '@platform/core';
+import { Kernel, type SubsystemDefinition } from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
-import { createNetwork } from '@platform/network';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { createStorage } from '@platform/storage';
+} from '@webkrnl/global-state';
+import { createNetwork } from '@webkrnl/network';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { createStorage } from '@webkrnl/storage';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { SYNC_ID, createSync, type SyncControl } from '../src';

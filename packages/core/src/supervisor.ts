@@ -19,7 +19,7 @@
  * @example
  * Running a processor outside the kernel
  * ```ts
- * import { ProcessorRunner } from '@platform/core';
+ * import { ProcessorRunner } from '@webkrnl/core';
  *
  * const runner = new ProcessorRunner(sumDef);
  * await runner.start();

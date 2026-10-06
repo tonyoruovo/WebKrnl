@@ -1,5 +1,5 @@
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestAuth, createTestPlatform } from '@platform/core/testing';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestAuth, createTestPlatform } from '@webkrnl/core/testing';
 import { describe, expect, it } from 'vitest';
 
 import { LOGGER_ID, createLogger, type LogEntry, type LoggerControl, type StoredLog } from '../src';

@@ -9,7 +9,7 @@ The memory backend keeps envelopes in a `Map`. Data is lost when the page reload
 A sign-in flow keeps a one-time code for a short time. An expired entry reads as `null`, and the read deletes it.
 
 ```ts file=main.ts
-import { MemoryBackend, buildCanonicalKey } from '@platform/storage';
+import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new MemoryBackend();
 await backend.initialize();
@@ -38,7 +38,7 @@ entries left: 0
 A cache of product pages must free space. With the `lfu` policy, the entries read least go first. The weight comes first: a higher weight is evicted later.
 
 ```ts file=main.ts
-import { MemoryBackend, buildCanonicalKey } from '@platform/storage';
+import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new MemoryBackend();
 await backend.initialize();
@@ -76,7 +76,7 @@ kept: home, checkout
 Writes with a `transactionId` wait in a buffer. `commit` applies them in one step. A partial `rollback` removes some of them first.
 
 ```ts file=main.ts
-import { MemoryBackend, buildCanonicalKey } from '@platform/storage';
+import { MemoryBackend, buildCanonicalKey } from '@webkrnl/storage';
 
 const backend = new MemoryBackend();
 await backend.initialize();

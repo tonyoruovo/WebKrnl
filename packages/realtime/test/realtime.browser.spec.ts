@@ -2,8 +2,8 @@
  * Realtime in real browsers: the socket processor runs in a dedicated worker
  * and talks to a real WebSocket server (scripts/test-ws-server.ts).
  */
-import type { SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import type { SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { afterEach, describe, expect, inject, it } from 'vitest';
 
 import { REALTIME_ID, createRealtime, type RealtimeControl } from '../src';

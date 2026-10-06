@@ -1,4 +1,4 @@
-# Examples: `@platform/design-system`
+# Examples: `@webkrnl/design-system`
 
 The Design System turns design tokens and appearance preferences into CSS custom properties (`--ds-*`) and attributes on the root element. These examples give it a small fake root and fake media queries, so they run in every sandbox. In a page, the root is `<html>` and the media queries are real.
 
@@ -9,8 +9,8 @@ The Design System turns design tokens and appearance preferences into CSS custom
 The device prefers dark colors, and the preference `colorScheme` is `system`, so the theme is dark. The user then picks light colors and a larger font. Only the properties that change are written again.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { DESIGN_SYSTEM_ID, createDesignSystem, type DesignSystemControl, type ThemeRoot } from '@platform/design-system';
+import { Kernel } from '@webkrnl/core';
+import { DESIGN_SYSTEM_ID, createDesignSystem, type DesignSystemControl, type ThemeRoot } from '@webkrnl/design-system';
 
 const properties = new Map<string, string>();
 const attributes = new Map<string, string>();
@@ -55,7 +55,7 @@ theme: {"colorScheme":"light","contrast":"normal","density":"comfortable","fontS
 A server renders the stylesheet and the small script into the `<head>`. The stylesheet has every mode, so the first paint already follows the device and the stored preferences. Check your brand colors with `contrastRatio` before you ship them.
 
 ```ts file=main.ts
-import { DEFAULT_TOKENS, contrastRatio, renderThemeCss, renderThemeScript, type TokenSet } from '@platform/design-system';
+import { DEFAULT_TOKENS, contrastRatio, renderThemeCss, renderThemeScript, type TokenSet } from '@webkrnl/design-system';
 
 const brand: TokenSet = {
   ...DEFAULT_TOKENS,

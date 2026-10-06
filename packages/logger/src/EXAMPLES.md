@@ -1,4 +1,4 @@
-# Examples: `@platform/logger`
+# Examples: `@webkrnl/logger`
 
 The Logger keeps log entries and packet trails. It filters entries by level, removes secrets from their context, joins entries and trails by `traceId`, and sends entries to a sink when one is bound.
 
@@ -9,8 +9,8 @@ The Logger keeps log entries and packet trails. It filters entries by level, rem
 A request fails and the code logs the request. The Logger removes the token from the context. The global level is `WARN`, but the team wants `DEBUG` entries from Sync during an investigation.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { LOGGER_ID, createLogger, type LoggerControl } from '@platform/logger';
+import { Kernel } from '@webkrnl/core';
+import { LOGGER_ID, createLogger, type LoggerControl } from '@webkrnl/logger';
 
 const kernel = new Kernel([createLogger({ sessionId: 'session-1', now: () => 0 })]);
 await kernel.start();
@@ -44,10 +44,10 @@ DEBUG sync Pull started null
 The Logger observes each packet that the Queue settles. A failed request becomes an `ERROR` entry with the `traceId` of the request, so `trace()` shows the full path of the request and the log entries for it.
 
 ```ts file=main.ts
-import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@platform/core';
-import { LOGGER_ID, createLogger, type LoggerControl } from '@platform/logger';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel, NO_CONTROL, defineSubsystem, type PacketPort } from '@webkrnl/core';
+import { LOGGER_ID, createLogger, type LoggerControl } from '@webkrnl/logger';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 let checkout: PacketPort | undefined;
 const app = defineSubsystem({
@@ -104,8 +104,8 @@ path: sent:checkout > enqueued:queue > dispatched:queue > delivered:payments > f
 The Logger starts before storage. It buffers entries until a sink is bound, then writes the buffer in order. An export gives a text bundle for a bug report.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { LOGGER_ID, createLogger, type LogEntry, type LoggerControl } from '@platform/logger';
+import { Kernel } from '@webkrnl/core';
+import { LOGGER_ID, createLogger, type LogEntry, type LoggerControl } from '@webkrnl/logger';
 
 const kernel = new Kernel([createLogger({ now: () => Date.UTC(2026, 9, 3, 9, 30) })]);
 await kernel.start();
@@ -136,7 +136,7 @@ stored entries: ["App started","Quota at 90%","User signed in"]
 `sanitize` is the function that the Logger runs on each context. Use it directly before you send data to an error tracker. Add patterns for the secrets of your app.
 
 ```ts file=main.ts
-import { DEFAULT_SENSITIVE_PATTERNS, sanitize } from '@platform/logger';
+import { DEFAULT_SENSITIVE_PATTERNS, sanitize } from '@webkrnl/logger';
 
 const report = sanitize(
   {
@@ -172,9 +172,9 @@ console.log(JSON.stringify(report, null, 2));
 A support page shows the errors from before the last reload. With Storage in the kernel, the Logger keeps its entries, and `history()` reads them from every session.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { LOGGER_ID, createLogger, type LoggerControl } from '@platform/logger';
-import { createStorage } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { LOGGER_ID, createLogger, type LoggerControl } from '@webkrnl/logger';
+import { createStorage } from '@webkrnl/storage';
 
 async function pageLoad(sessionId: string) {
   const kernel = new Kernel([

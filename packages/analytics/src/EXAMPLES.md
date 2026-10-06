@@ -1,4 +1,4 @@
-# Examples: `@platform/analytics`
+# Examples: `@webkrnl/analytics`
 
 Analytics collects metrics and events only with the `analytics` grant of Consent, and sends them in batches. These examples send the batches to a function instead of a server.
 
@@ -9,9 +9,9 @@ Analytics collects metrics and events only with the `analytics` grant of Consent
 Before the user decides, nothing is collected. After the grant, a page view, a load time and a purchase go out in one batch. When the user revokes the grant, what waits is deleted.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createConsent, type ConsentControl } from '@platform/consent';
-import { ANALYTICS_ID, createAnalytics, type AnalyticsControl } from '@platform/analytics';
+import { Kernel } from '@webkrnl/core';
+import { createConsent, type ConsentControl } from '@webkrnl/consent';
+import { ANALYTICS_ID, createAnalytics, type AnalyticsControl } from '@webkrnl/analytics';
 
 const kernel = new Kernel([
   createConsent(),
@@ -57,9 +57,9 @@ after the revoke: {"buffered":0,"collecting":false}
 The server is down for the first send. The batch stays in the outbox and goes again later with the same id, so a server that drops repeats by `Idempotency-Key` counts it once.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createConsent, type ConsentControl } from '@platform/consent';
-import { ANALYTICS_ID, createAnalytics, type AnalyticsControl } from '@platform/analytics';
+import { Kernel } from '@webkrnl/core';
+import { createConsent, type ConsentControl } from '@webkrnl/consent';
+import { ANALYTICS_ID, createAnalytics, type AnalyticsControl } from '@webkrnl/analytics';
 
 let up = false;
 const ids: string[] = [];

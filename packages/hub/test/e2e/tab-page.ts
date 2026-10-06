@@ -18,9 +18,9 @@ import {
   type PacketEnvelope,
   type PacketPort,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/core';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 import {
   WINDOW_TRANSPORT_ID,

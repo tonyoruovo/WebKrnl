@@ -24,7 +24,7 @@
  * @author MathAid
  */
 
-import { toPortable } from '@platform/core';
+import { toPortable } from '@webkrnl/core';
 
 import type { BatchOperation, ListResult, ReadResult, StorageRequest } from './coordinator';
 import type { IndexFunction, IndexValue } from './indexes';
@@ -154,7 +154,7 @@ export interface CollectionDefinition<T> {
    */
   readonly weight?: number;
   /**
-   * @summary Encrypts the entries with the keys of `@platform/crypto`, and adds an HMAC tag.
+   * @summary Encrypts the entries with the keys of `@webkrnl/crypto`, and adds an HMAC tag.
    */
   readonly encrypt?: boolean;
   /**

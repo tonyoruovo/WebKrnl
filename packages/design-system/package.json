@@ -1,5 +1,5 @@
 {
-  "name": "@platform/design-system",
+  "name": "@webkrnl/design-system",
   "version": "0.0.2",
   "description": "The Design System subsystem: design tokens and the theme, as CSS custom properties.",
   "type": "module",
@@ -13,16 +13,16 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/settings": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/settings": "workspace:*"
   },
   "devDependencies": {
-    "@platform/consent": "workspace:*",
-    "@platform/core": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*",
-    "@platform/settings": "workspace:*",
-    "@platform/translation": "workspace:*"
+    "@webkrnl/consent": "workspace:*",
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*",
+    "@webkrnl/settings": "workspace:*",
+    "@webkrnl/translation": "workspace:*"
   },
   "license": "ISC"
 }

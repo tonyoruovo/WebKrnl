@@ -33,7 +33,7 @@ import {
   type ControlInterface,
   type SubsystemDefinition,
   type UnitContext,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import type {
   AccessRequirement,

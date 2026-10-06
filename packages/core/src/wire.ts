@@ -18,7 +18,7 @@
  * @example
  * Sending a Global packet over a WebSocket
  * ```ts
- * import { encodeWire } from '@platform/core';
+ * import { encodeWire } from '@webkrnl/core';
  *
  * socket.send(encodeWire(envelope));
  * ```
@@ -26,7 +26,7 @@
  * @example
  * Receiving one, rejecting anything malformed
  * ```ts
- * import { WireProtocolError, decodeWire } from '@platform/core';
+ * import { WireProtocolError, decodeWire } from '@webkrnl/core';
  *
  * socket.addEventListener('message', ({ data }) => {
  *   try {

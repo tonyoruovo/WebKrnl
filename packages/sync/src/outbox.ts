@@ -71,7 +71,7 @@ export function byOrder(a: Change, b: Change): number {
 
 /**
  * @summary The part of a Storage collection that the outbox uses.
- * @description Sync does not import `@platform/storage`. Any object with this shape works.
+ * @description Sync does not import `@webkrnl/storage`. Any object with this shape works.
  * @public
  */
 export interface OutboxStore {

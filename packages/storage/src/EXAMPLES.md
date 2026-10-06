@@ -1,4 +1,4 @@
-# Examples: `@platform/storage`
+# Examples: `@webkrnl/storage`
 
 Storage keeps the data of an app in collections. One coordinator writes for every tab of the origin, over IndexedDB, OPFS, Cache, Web Storage or memory, and encrypts, compresses and migrates the entries. In an app, keep the default hosts, so the coordinator runs in a shared worker. These examples run it on the main thread (`hosts: ['virtual']`) with the memory backend, so they run in every sandbox.
 
@@ -9,8 +9,8 @@ Storage keeps the data of an app in collections. One coordinator writes for ever
 A settings page keeps the preferences of the user in a collection. The schema validates each value before a write and after a read. Here it is a small hand-written schema. A zod schema works the same way.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type SchemaLike, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type SchemaLike, type StorageControl } from '@webkrnl/storage';
 
 interface Prefs {
   theme: 'light' | 'dark';
@@ -54,11 +54,11 @@ refused: StorageValidationError
 
 <!-- example id="storage/encrypted-collection" runtime="any" -->
 
-A notes app keeps private notes. With `encrypt: true`, the coordinator encrypts each entry with the keys of `@platform/crypto` and adds an HMAC tag. The backend never sees the text.
+A notes app keeps private notes. With `encrypt: true`, the coordinator encrypts each entry with the keys of `@webkrnl/crypto` and adds an HMAC tag. The backend never sees the text.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, useMemoryStore, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, useMemoryStore, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
   createStorage({
@@ -99,8 +99,8 @@ read back: The door code is 4512.
 Version 2 of an app adds tags to drafts. Old drafts migrate when they are read, and the coordinator writes them back. `migrate()` migrates the rest at once.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
   createStorage({ domain: 'notes', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
@@ -136,8 +136,8 @@ migrated by migrate(): 1
 An orders page shows the open orders, 2 at a time. The `where` function runs in the coordinator, so only matching entries cross to the page.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 interface Order {
   total: number;
@@ -177,8 +177,8 @@ all orders: 4
 A search box remembers the last 3 searches. With `maxEntries`, each write removes the oldest entries above the limit.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
   createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
@@ -205,8 +205,8 @@ kept: teapot, cups, saucers
 At checkout, the cart empties and an order appears. A batch applies both in one backend transaction, so a failure never leaves only one of them.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
   createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
@@ -238,8 +238,8 @@ order: {"items":["tea","cups"]}
 A cart badge updates when the cart changes, in this tab or in another tab. `subscribe` gets each change. `remote` tells if another tab made it.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 const kernel = new Kernel([
   createStorage({ domain: 'shop', hosts: ['virtual'], backends: ['memory'], keys: null, quota: false }),
@@ -271,7 +271,7 @@ change: clear (all) remote: false
 The kernel loads persisted state before any subsystem runs, so it needs an adapter that works without the coordinator. `createStatePersistence` uses IndexedDB, then `localStorage`, then memory. This example turns off the first two, so it gives the same output everywhere.
 
 ```ts file=main.ts
-import { createStatePersistence } from '@platform/storage';
+import { createStatePersistence } from '@webkrnl/storage';
 
 const persistence = createStatePersistence({ indexedDB: null, localStorage: null });
 await persistence.save('prefs', { version: 1, data: { theme: 'dark' } });
@@ -294,7 +294,7 @@ unknown unit: true
 Every stored key is canonical: `<domain>:<platform>:<platformVersion>:<module>:<key>`. Storage builds them for you. The functions help when you inspect a backend or write a tool.
 
 ```ts file=main.ts
-import { buildCanonicalKey, buildModulePrefix, parseCanonicalKey } from '@platform/storage';
+import { buildCanonicalKey, buildModulePrefix, parseCanonicalKey } from '@webkrnl/storage';
 
 const key = buildCanonicalKey({
   domain: 'shop',
@@ -321,8 +321,8 @@ parsed module: cart
 An orders page shows the open orders, and a gift view shows the orders with the tag `gift`. Indexes find them without reading every order. An index function returns one value, or an array for several.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 interface Order {
   status: 'open' | 'paid';
@@ -364,9 +364,9 @@ open now: o3
 Storage must use the keys of Crypto, so that `crypto.forget()` also erases the encrypted data of Storage. Give both the same key source. Storage compares the key ids, and on a mismatch it refuses encrypted writes.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { createCrypto, toBase64Url, type KeySource } from '@platform/crypto';
-import { STORAGE_ID, createStorage, type StorageControl } from '@platform/storage';
+import { Kernel } from '@webkrnl/core';
+import { createCrypto, toBase64Url, type KeySource } from '@webkrnl/crypto';
+import { STORAGE_ID, createStorage, type StorageControl } from '@webkrnl/storage';
 
 // In an app, this material comes from your server. Each key is 32 random bytes.
 const source: KeySource = {

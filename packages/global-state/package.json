@@ -1,5 +1,5 @@
 {
-  "name": "@platform/global-state",
+  "name": "@webkrnl/global-state",
   "version": "0.0.2",
   "description": "The Global State subsystem: derived platform status, admission, pending work, environment and tab identity.",
   "type": "module",
@@ -13,10 +13,10 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "license": "ISC"
 }

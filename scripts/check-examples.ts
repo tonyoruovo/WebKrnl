@@ -11,7 +11,7 @@
  *   packages/<name>/src/**\/EXAMPLES.md
  *     --> parse: headings, markers, code blocks, output blocks   (format errors)
  *     --> write each example to .examples/<id>/
- *     --> tsc on all examples, with @platform/* mapped to the sources
+ *     --> tsc on all examples, with @webkrnl/* mapped to the sources
  *     --> rolldown bundle of each main.ts
  *     --> run: runtime "any" in Node and in Chrome, "browser" in Chrome, "none" not run
  *     --> compare the console output with the output block
@@ -135,7 +135,7 @@ function parse(file: string): Example[] {
   return examples;
 }
 
-/** @summary The `@platform/*` import paths, mapped to the package sources. */
+/** @summary The `@webkrnl/*` import paths, mapped to the package sources. */
 function aliases(): Record<string, string> {
   const map: Record<string, string> = {};
   for (const name of readdirSync(join(root, 'packages'))) {

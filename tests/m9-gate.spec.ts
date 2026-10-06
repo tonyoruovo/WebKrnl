@@ -11,38 +11,38 @@ import {
   createAnalytics,
   type AnalyticsBatch,
   type AnalyticsControl,
-} from '@platform/analytics';
-import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers } from '@platform/auth';
-import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
-import { Kernel, type SubsystemDefinition } from '@platform/core';
-import { createCrypto } from '@platform/crypto';
+} from '@webkrnl/analytics';
+import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers } from '@webkrnl/auth';
+import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
+import { Kernel, type SubsystemDefinition } from '@webkrnl/core';
+import { createCrypto } from '@webkrnl/crypto';
 import {
   APPEARANCE_SETTINGS,
   DESIGN_SYSTEM_ID,
   createDesignSystem,
   type DesignSystemControl,
-} from '@platform/design-system';
+} from '@webkrnl/design-system';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
-import { createWindowTransport } from '@platform/hub';
-import { createLogger } from '@platform/logger';
-import { createNetwork } from '@platform/network';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { createRealtime, type SocketLike } from '@platform/realtime';
+} from '@webkrnl/global-state';
+import { createWindowTransport } from '@webkrnl/hub';
+import { createLogger } from '@webkrnl/logger';
+import { createNetwork } from '@webkrnl/network';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { createRealtime, type SocketLike } from '@webkrnl/realtime';
 import {
   SETTINGS_ID,
   createSettings,
   type SettingValue,
   type SettingsControl,
-} from '@platform/settings';
-import { createStorage } from '@platform/storage';
-import { createSync } from '@platform/sync';
-import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@platform/translation';
+} from '@webkrnl/settings';
+import { createStorage } from '@webkrnl/storage';
+import { createSync } from '@webkrnl/sync';
+import { TRANSLATION_ID, createTranslation, type TranslationControl } from '@webkrnl/translation';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const kernels: Kernel[] = [];

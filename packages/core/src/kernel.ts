@@ -23,7 +23,7 @@
  * @example
  * Booting, using and stopping the platform
  * ```ts
- * import { Kernel } from '@platform/core';
+ * import { Kernel } from '@webkrnl/core';
  *
  * const kernel = new Kernel([storage, auth]);
  * await kernel.start();
@@ -409,7 +409,7 @@ export function directRouter(kernel: Kernel): PacketRouter {
  *
  * An application creates exactly one kernel, usually through the platform
  * orchestrator (M10) or a framework adapter. Tests use
- * `createTestPlatform` from `@platform/core/testing`, which wraps one.
+ * `createTestPlatform` from `@webkrnl/core/testing`, which wraps one.
  *
  * @example
  * Example 1: Boot and stop

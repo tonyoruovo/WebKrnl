@@ -21,7 +21,7 @@
  * @example
  * In a test of your server
  * ```ts
- * import { runConformance } from '@platform/realtime/conformance';
+ * import { runConformance } from '@webkrnl/realtime/conformance';
  *
  * const results = await runConformance({ url: 'wss://localhost:8443/socket', http: 'https://localhost:8443/global', token });
  * for (const r of results) console.log(r.passed ? 'pass' : 'FAIL', r.rule, r.detail);
@@ -30,7 +30,7 @@
  * @author MathAid
  */
 
-import { WIRE_PROTOCOL_VERSION } from '@platform/core';
+import { WIRE_PROTOCOL_VERSION } from '@webkrnl/core';
 
 import type { Frame, SocketLike } from './types';
 

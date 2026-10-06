@@ -21,7 +21,7 @@
  * @example
  * Checking whether a broadcast reaches another tab
  * ```ts
- * import { reaches } from '@platform/core';
+ * import { reaches } from '@webkrnl/core';
  *
  * reaches('tab', 'same-site');    // false: a tab broadcast stays in its tab
  * reaches('window', 'same-site'); // true
@@ -30,7 +30,7 @@
  * @example
  * Enforcing the send rule in a router or transport
  * ```ts
- * import { assertSendAllowed } from '@platform/core';
+ * import { assertSendAllowed } from '@webkrnl/core';
  *
  * assertSendAllowed({ sender: 'ui', senderScope: 'page', packetScope: 'page', target: null }); // ok
  * ```

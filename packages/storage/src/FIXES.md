@@ -1,4 +1,4 @@
-# Fixes: `@platform/storage`
+# Fixes: `@webkrnl/storage`
 
 > Temporary record of fixes. Delete when the PR is merged.
 

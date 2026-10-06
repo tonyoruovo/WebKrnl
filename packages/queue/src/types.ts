@@ -3,7 +3,7 @@
  * @summary The Queue's public types: options, records, state, control interface and errors.
  * @description
  * Declarations shared by `queue.ts` and its users. The Queue does not import
- * `@platform/global-state` or `@platform/notification`: it describes the
+ * `@webkrnl/global-state` or `@webkrnl/notification`: it describes the
  * parts of them it uses ({@linkcode AdmissionControl}, {@linkcode FanOut}),
  * so the three packages stay independent.
  *
@@ -16,7 +16,7 @@
  * @example
  * Typing a Queue's control interface
  * ```ts
- * import type { QueueControl } from '@platform/queue';
+ * import type { QueueControl } from '@webkrnl/queue';
  *
  * const queue = kernel.unit<QueueControl>('queue').control!;
  * queue.views.state.getSnapshot(); // { depth, inFlight, completed, ... }
@@ -25,7 +25,7 @@
  * @example
  * Telling rejections apart
  * ```ts
- * import { QueueRejectedError } from '@platform/queue';
+ * import { QueueRejectedError } from '@webkrnl/queue';
  *
  * catch (error) {
  *   if (error instanceof QueueRejectedError && error.reason === 'admission') showBusyNotice();
@@ -44,7 +44,7 @@ import type {
   PacketEnvelope,
   Scheduler,
   View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 /**
  * @summary The id the Queue registers under.
@@ -58,7 +58,7 @@ export const QUEUE_ID = 'queue';
  *
  * @description
  * Admission (`canAccept`) and pending-work tracking (`beginWork`, `endWork`).
- * `@platform/global-state`'s control interface satisfies it; the Queue reads
+ * `@webkrnl/global-state`'s control interface satisfies it; the Queue reads
  * it through its optional dependency on `global-state`.
  *
  * @example
@@ -130,7 +130,7 @@ export interface AdmissionControl {
 
 /**
  * @summary How a broadcast reached this tab: `remote: true` for one from another tab.
- * @description The same shape as `@platform/notification`'s `FanOutOptions`.
+ * @description The same shape as `@webkrnl/notification`'s `FanOutOptions`.
  * @public
  */
 export interface FanOutOptions {
@@ -143,7 +143,7 @@ export interface FanOutOptions {
 
 /**
  * @summary Hands a broadcast to the Notification Center.
- * @description `@platform/notification`'s `fanOut` matches it. Without one,
+ * @description `@webkrnl/notification`'s `fanOut` matches it. Without one,
  * the Queue uses the kernel's direct broadcast.
  * @public
  */
@@ -597,7 +597,7 @@ export const DEAD_LETTER_COLLECTION = 'queue.dead-letters';
 
 /**
  * @summary The part of a Storage collection that the Queue uses.
- * @description The Queue does not import `@platform/storage`. Any control
+ * @description The Queue does not import `@webkrnl/storage`. Any control
  * with this shape works.
  * @template T The type of the values.
  * @public

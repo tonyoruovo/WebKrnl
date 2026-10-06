@@ -1,5 +1,5 @@
-import { NO_CONTROL, type SubsystemDefinition } from '@platform/core';
-import { createTestPlatform } from '@platform/core/testing';
+import { NO_CONTROL, type SubsystemDefinition } from '@webkrnl/core';
+import { createTestPlatform } from '@webkrnl/core/testing';
 import { describe, expect, it } from 'vitest';
 
 import {

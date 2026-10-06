@@ -1,4 +1,4 @@
-# Examples: `@platform/consent`
+# Examples: `@webkrnl/consent`
 
 Consent records what the user agreed to, for each category, under a policy version. It answers `isGranted`, fails closed, keeps `necessary` granted, and shares the decisions with the other tabs of the site.
 
@@ -9,8 +9,8 @@ Consent records what the user agreed to, for each category, under a policy versi
 The banner shows while a category has no decision. The user accepts functional cookies and refuses analytics and marketing. One `set` call records the three decisions.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
+import { Kernel } from '@webkrnl/core';
+import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
 
 const kernel = new Kernel([createConsent()]);
 await kernel.start();
@@ -41,16 +41,16 @@ analytics allowed? false
 An analytics subsystem listens to `consent:changed`. It starts to collect when the user grants analytics, and stops and deletes its buffer when the user revokes it.
 
 ```ts file=main.ts
-import { Kernel, defineSubsystem } from '@platform/core';
+import { Kernel, defineSubsystem } from '@webkrnl/core';
 import {
   CONSENT_CHANGED,
   CONSENT_ID,
   createConsent,
   type ConsentChange,
   type ConsentControl,
-} from '@platform/consent';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/consent';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 const analytics = defineSubsystem({
   id: 'analytics',
@@ -122,8 +122,8 @@ events after revoke: 0
 Decisions persist across visits. When the legal team publishes version 2 of the policy, the old decisions stop counting and the banner asks again.
 
 ```ts file=main.ts
-import { Kernel, type PersistedState, type StatePersistence } from '@platform/core';
-import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
+import { Kernel, type PersistedState, type StatePersistence } from '@webkrnl/core';
+import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
 
 const disk = new Map<string, PersistedState<object>>();
 const persistence: StatePersistence = {
@@ -161,11 +161,11 @@ policy v2: analytics=false, ask about [functional, analytics, marketing]
 Consent is Window-scoped. A decision in one tab reaches the other tabs, and a tab that opens later gets the decisions of the open tabs. This example runs two kernels in one page as two tabs of a single-origin app.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
-import { CONSENT_ID, createConsent, type ConsentControl } from '@platform/consent';
-import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@platform/hub';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { Kernel } from '@webkrnl/core';
+import { CONSENT_ID, createConsent, type ConsentControl } from '@webkrnl/consent';
+import { WINDOW_TRANSPORT_ID, createWindowTransport, type WindowTransportControl } from '@webkrnl/hub';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 
 const kernels: Kernel[] = [];
 async function openTab(): Promise<ConsentControl> {

@@ -38,7 +38,7 @@ import {
   type ProcessorDef,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { createCompileProcessor, type CompileRequest, type CompileResult } from './compile';
 import {

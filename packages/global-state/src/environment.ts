@@ -11,7 +11,7 @@
  * @example
  * The browser environment
  * ```ts
- * import { createBrowserEnvironment } from '@platform/global-state';
+ * import { createBrowserEnvironment } from '@webkrnl/global-state';
  *
  * const environment = createBrowserEnvironment();
  * environment.subscribe(() => console.log(environment.online(), environment.visible()));
@@ -20,7 +20,7 @@
  * @example
  * Simulating going offline in a test
  * ```ts
- * import { createStaticEnvironment } from '@platform/global-state';
+ * import { createStaticEnvironment } from '@webkrnl/global-state';
  *
  * const environment = createStaticEnvironment();
  * environment.set({ online: false });

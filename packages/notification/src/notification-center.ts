@@ -23,9 +23,9 @@
  * @example
  * Wiring it to the Queue and the kernel
  * ```ts
- * import { Kernel } from '@platform/core';
- * import { createNotificationCenter } from '@platform/notification';
- * import { createQueue } from '@platform/queue';
+ * import { Kernel } from '@webkrnl/core';
+ * import { createNotificationCenter } from '@webkrnl/notification';
+ * import { createQueue } from '@webkrnl/queue';
  *
  * const notification = createNotificationCenter({
  *   events: [{ eventId: 'auth:login', publishers: ['auth'] }],
@@ -61,7 +61,7 @@ import {
   type ScopeRelay,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { CircuitBreakers } from './circuit-breaker';
 

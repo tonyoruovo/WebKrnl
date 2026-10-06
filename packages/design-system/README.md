@@ -1,6 +1,6 @@
-# @platform/design-system
+# @webkrnl/design-system
 
-> **Pre-alpha (`0.0.2`).** Not published to npm yet. `@platform` is a placeholder scope until the alpha (M10).
+> **Pre-alpha (`0.0.2`).** Not published to npm yet.
 
 The **Design System** subsystem (id `design-system`, featurized, Page scope, no required dependency). It gives the page its **design tokens** and its **theme**, as CSS custom properties (`--ds-*`) and attributes on `<html>`. It has no components and no framework dependency: components of any framework read the custom properties.
 
@@ -17,9 +17,9 @@ Design: [ARCHITECTURE §21.4](../../docs/ARCHITECTURE.md#214-design-system) and 
 ```json
 {
   "peerDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/settings": "workspace:*",
-    "@platform/design-system": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/settings": "workspace:*",
+    "@webkrnl/design-system": "workspace:*"
   }
 }
 ```
@@ -28,14 +28,14 @@ Design: [ARCHITECTURE §21.4](../../docs/ARCHITECTURE.md#214-design-system) and 
 
 | Import | Contents |
 |---|---|
-| `@platform/design-system` | `createDesignSystem`, `DEFAULT_TOKENS`, `token`, `cssVar`, `checkTokens`, `contrastRatio`, `APPEARANCE_SETTINGS`, `APPEARANCE_KEYS`, `DEFAULT_APPEARANCE`, `resolveTheme`, `themeValues`, `renderThemeCss`, `renderThemeScript`, types |
+| `@webkrnl/design-system` | `createDesignSystem`, `DEFAULT_TOKENS`, `token`, `cssVar`, `checkTokens`, `contrastRatio`, `APPEARANCE_SETTINGS`, `APPEARANCE_KEYS`, `DEFAULT_APPEARANCE`, `resolveTheme`, `themeValues`, `renderThemeCss`, `renderThemeScript`, types |
 
 ## Usage
 
 In the `<head>` (rendered at build time or by the server):
 
 ```ts
-import { DEFAULT_TOKENS, renderThemeCss, renderThemeScript } from '@platform/design-system';
+import { DEFAULT_TOKENS, renderThemeCss, renderThemeScript } from '@webkrnl/design-system';
 
 const head = `<style>${renderThemeCss(DEFAULT_TOKENS)}</style>${renderThemeScript(DEFAULT_TOKENS, { nonce })}`;
 ```
@@ -43,7 +43,7 @@ const head = `<style>${renderThemeCss(DEFAULT_TOKENS)}</style>${renderThemeScrip
 In the app:
 
 ```ts
-import { APPEARANCE_SETTINGS, createDesignSystem, type DesignSystemControl } from '@platform/design-system';
+import { APPEARANCE_SETTINGS, createDesignSystem, type DesignSystemControl } from '@webkrnl/design-system';
 
 const kernel = new Kernel(
   [...centralized, createConsent(), createSettings({ definitions: APPEARANCE_SETTINGS }), createTranslation(options), createDesignSystem()],

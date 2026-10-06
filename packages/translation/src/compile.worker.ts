@@ -1,6 +1,6 @@
 /**
  * @fileoverview
- * @summary The worker entry of the processor `compile` (`@platform/translation/worker`).
+ * @summary The worker entry of the processor `compile` (`@webkrnl/translation/worker`).
  * @description
  * Translation starts this file as a dedicated worker. It serves the processor
  * that parses catalogs (docs/ARCHITECTURE.md §21.2). An app does not import it.
@@ -14,7 +14,7 @@
  * @author MathAid
  */
 
-import { serveProcessor } from '@platform/core/worker';
+import { serveProcessor } from '@webkrnl/core/worker';
 
 import { createCompileProcessor } from './compile';
 

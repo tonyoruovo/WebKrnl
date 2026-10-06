@@ -2,11 +2,11 @@
  * Settings in one tab (docs/ARCHITECTURE.md §21.1): values, checks,
  * persistence, the server handlers with rollback, and the sign-out wipe.
  */
-import { createConsent, type ConsentControl } from '@platform/consent';
-import { Kernel, type Scheduler, type SubsystemDefinition } from '@platform/core';
-import { createMemoryPersistence, createTestAuth } from '@platform/core/testing';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+import { createConsent, type ConsentControl } from '@webkrnl/consent';
+import { Kernel, type Scheduler, type SubsystemDefinition } from '@webkrnl/core';
+import { createMemoryPersistence, createTestAuth } from '@webkrnl/core/testing';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {

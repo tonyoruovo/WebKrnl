@@ -18,7 +18,7 @@
  * @example
  * Resolving this tab's id
  * ```ts
- * import { resolveTabIdentity } from '@platform/global-state';
+ * import { resolveTabIdentity } from '@webkrnl/global-state';
  *
  * const identity = await resolveTabIdentity();
  * console.log(identity.id); // 'tab_...'

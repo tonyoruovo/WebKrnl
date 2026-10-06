@@ -1,5 +1,5 @@
 {
-  "name": "@platform/consent",
+  "name": "@webkrnl/consent",
   "version": "0.0.2",
   "description": "The Consent subsystem: per-category grants, policy versions, and the gate telemetry checks.",
   "type": "module",
@@ -13,13 +13,13 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/core": "workspace:*",
-    "@platform/hub": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*"
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/hub": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
   },
   "license": "ISC"
 }

@@ -36,7 +36,7 @@ import {
   toBase64Url,
   verifyHmacText,
   type KeyStore,
-} from '@platform/crypto';
+} from '@webkrnl/crypto';
 
 import type { IndexFunction } from './indexes';
 import type { BackendKind, StorageEnvelope } from './types';

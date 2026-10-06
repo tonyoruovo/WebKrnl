@@ -17,7 +17,7 @@
  * @author MathAid
  */
 
-import { serveProcessor } from '@platform/core/worker';
+import { serveProcessor } from '@webkrnl/core/worker';
 
 import { createCryptoProcessor } from './processor';
 

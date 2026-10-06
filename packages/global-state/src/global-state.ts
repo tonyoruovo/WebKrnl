@@ -19,8 +19,8 @@
  * @example
  * Registering it with the kernel
  * ```ts
- * import { Kernel } from '@platform/core';
- * import { createGlobalState } from '@platform/global-state';
+ * import { Kernel } from '@webkrnl/core';
+ * import { createGlobalState } from '@webkrnl/global-state';
  *
  * const kernel = new Kernel([createGlobalState(), ...otherSubsystems]);
  * await kernel.start();
@@ -44,7 +44,7 @@ import {
   type Importance,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import { createBrowserEnvironment, type EnvironmentSource } from './environment';
 import {

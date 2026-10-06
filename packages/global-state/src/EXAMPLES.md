@@ -1,4 +1,4 @@
-# Examples: `@platform/global-state`
+# Examples: `@webkrnl/global-state`
 
 Global State finds the status of the platform from the lifecycle of each unit and from the work in progress. It answers admission questions, follows the online and visible states, and gives each tab an id.
 
@@ -9,13 +9,13 @@ Global State finds the status of the platform from the lifecycle of each unit an
 An app shows a spinner while the platform is `BUSY`, and holds `LOW` work, such as analytics, until the platform is `IDLE` again.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
+import { Kernel } from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
+} from '@webkrnl/global-state';
 
 const kernel = new Kernel([
   createGlobalState({
@@ -56,13 +56,13 @@ uploads done: IDLE
 The `online` and `visible` states are part of the state view. This example uses a static environment, so it can go offline on demand. In an app, `createBrowserEnvironment` follows the real browser events.
 
 ```ts file=main.ts
-import { Kernel } from '@platform/core';
+import { Kernel } from '@webkrnl/core';
 import {
   GLOBAL_STATE_ID,
   createGlobalState,
   createStaticEnvironment,
   type GlobalStateControl,
-} from '@platform/global-state';
+} from '@webkrnl/global-state';
 
 const environment = createStaticEnvironment({ online: true });
 const kernel = new Kernel([createGlobalState({ environment, tabIdentity: false })]);
@@ -95,7 +95,7 @@ hide banner
 A draft editor keys each draft by tab, so two tabs do not overwrite each other. The id survives a reload. A duplicated tab copies the stored id, so it asks the open tabs and gets a new id when the old one is taken.
 
 ```ts file=main.ts
-import { resolveTabIdentity, type TabIdStorage } from '@platform/global-state';
+import { resolveTabIdentity, type TabIdStorage } from '@webkrnl/global-state';
 
 // sessionStorage of the first tab. A duplicated tab starts with a copy of it.
 const values = new Map<string, string>();
@@ -136,7 +136,7 @@ duplicated tab: tab_2
 An editor warns the user when the same app is open in another tab, so that two tabs do not edit the same document. Here three counters in one page act as three tabs: they share the Web Locks and the `BroadcastChannel` of the page, as tabs of one origin do.
 
 ```ts file=main.ts
-import { createTabCounter } from '@platform/global-state';
+import { createTabCounter } from '@webkrnl/global-state';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const id = `${Date.now()}`;

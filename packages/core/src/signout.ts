@@ -37,7 +37,7 @@ import type { View } from './view';
  */
 export type SignOutReason = 'sign-out' | 'user-changed';
 
-/** The part of Auth that the signal reads. The core does not import `@platform/auth`. */
+/** The part of Auth that the signal reads. The core does not import `@webkrnl/auth`. */
 interface AuthStateSource extends ControlInterface {
   readonly views: {
     readonly state: View<{

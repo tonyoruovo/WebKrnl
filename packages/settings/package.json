@@ -1,5 +1,5 @@
 {
-  "name": "@platform/settings",
+  "name": "@webkrnl/settings",
   "version": "0.0.2",
   "description": "The Settings subsystem: the preferences of the user and of the device, shared by every tab of the site.",
   "type": "module",
@@ -13,14 +13,14 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
-    "@platform/core": "workspace:*"
+    "@webkrnl/core": "workspace:*"
   },
   "devDependencies": {
-    "@platform/consent": "workspace:*",
-    "@platform/core": "workspace:*",
-    "@platform/hub": "workspace:*",
-    "@platform/notification": "workspace:*",
-    "@platform/queue": "workspace:*"
+    "@webkrnl/consent": "workspace:*",
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/hub": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
   },
   "license": "ISC"
 }

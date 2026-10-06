@@ -19,7 +19,7 @@
  * @example
  * Following the browser's path
  * ```ts
- * import { createBrowserRouteSource } from '@platform/core';
+ * import { createBrowserRouteSource } from '@webkrnl/core';
  *
  * const route = createBrowserRouteSource();
  * const stop = route.subscribe((path) => console.log('page changed to', path));
@@ -28,7 +28,7 @@
  * @example
  * Feeding a router's navigations instead (vue-router)
  * ```ts
- * import type { RouteSource } from '@platform/core';
+ * import type { RouteSource } from '@webkrnl/core';
  *
  * function vueRouterSource(router: Router): RouteSource {
  *   return {

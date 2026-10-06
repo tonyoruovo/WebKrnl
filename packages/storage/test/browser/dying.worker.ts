@@ -2,8 +2,8 @@
  * A coordinator that dies (`self.close()`) when it receives a write of the
  * key "die", before it writes anything. The gate test of M6 uses it.
  */
-import { fromPortable } from '@platform/core';
-import { serveProcessor } from '@platform/core/worker';
+import { fromPortable } from '@webkrnl/core';
+import { serveProcessor } from '@webkrnl/core/worker';
 
 import { createCoordinator, type StorageRequest } from '../../src/coordinator';
 

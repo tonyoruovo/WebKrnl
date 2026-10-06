@@ -5,10 +5,10 @@ import {
   type Scheduler,
   type StatePersistence,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createMemoryPersistence, createTestPlatform } from '@platform/core/testing';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
+} from '@webkrnl/core';
+import { createMemoryPersistence, createTestPlatform } from '@webkrnl/core/testing';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {

@@ -1,7 +1,7 @@
 /**
  * @fileoverview
- * @module @platform/global-state
- * @summary The public API of `@platform/global-state`.
+ * @module @webkrnl/global-state
+ * @summary The public API of `@webkrnl/global-state`.
  * @description
  * Re-exports the Global State subsystem ({@linkcode createGlobalState}), its
  * status derivation and admission rules (`status.ts`), its environment
@@ -9,7 +9,7 @@
  * count (`tab-count.ts`).
  *
  * ```text
- *   @platform/global-state
+ *   @webkrnl/global-state
  *   +-- createGlobalState        the subsystem (id 'global-state', centralized, tab scope)
  *   +-- derivePlatformStatus     INITIALIZING | IDLE | BUSY | DEGRADED (| STOPPED)
  *   +-- canAccept                admission by importance
@@ -21,8 +21,8 @@
  * @example
  * Booting the platform with Global State
  * ```ts
- * import { Kernel } from '@platform/core';
- * import { createGlobalState, type GlobalStateControl } from '@platform/global-state';
+ * import { Kernel } from '@webkrnl/core';
+ * import { createGlobalState, type GlobalStateControl } from '@webkrnl/global-state';
  *
  * const kernel = new Kernel([createGlobalState(), ...subsystems]);
  * await kernel.start();
@@ -32,8 +32,8 @@
  * @example
  * Testing a subsystem under a busy platform
  * ```ts
- * import { createStaticEnvironment, createGlobalState } from '@platform/global-state';
- * import { createTestPlatform } from '@platform/core/testing';
+ * import { createStaticEnvironment, createGlobalState } from '@webkrnl/global-state';
+ * import { createTestPlatform } from '@webkrnl/core/testing';
  *
  * const platform = createTestPlatform([
  *   createGlobalState({ busyThreshold: 0, environment: createStaticEnvironment(), tabIdentity: false }),

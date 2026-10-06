@@ -1,10 +1,10 @@
 /**
  * @fileoverview
- * @summary Test stand-ins for `@platform/hub`: a cookie jar, a relay, and a link.
+ * @summary Test stand-ins for `@webkrnl/hub`: a cookie jar, a relay, and a link.
  * @author MathAid
  */
 
-import { createStore, type PacketEnvelope } from '@platform/core';
+import { createStore, type PacketEnvelope } from '@webkrnl/core';
 
 import type { CookieJar, HubLink, WindowRelay } from '../src';
 

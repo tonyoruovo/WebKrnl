@@ -1,4 +1,4 @@
-# Examples: `@platform/auth`
+# Examples: `@webkrnl/auth`
 
 Auth keeps the session of the user. The app gives handlers that talk to its server, so any login (password, MFA, OAuth) works. These examples use fake handlers and a fake `fetch`, and keep the session in memory (`persist: false`), so they run in every sandbox.
 
@@ -9,8 +9,8 @@ Auth keeps the session of the user. The app gives handlers that talk to its serv
 An admin console signs the user in, then shows a menu by role and a button by permission. The state that every unit can read has the user, never a token.
 
 ```ts file=main.ts
-import { AUTH_ID, createAuth, type AuthControl, type AuthSession } from '@platform/auth';
-import { Kernel } from '@platform/core';
+import { AUTH_ID, createAuth, type AuthControl, type AuthSession } from '@webkrnl/auth';
+import { Kernel } from '@webkrnl/core';
 
 interface Credentials {
   email: string;
@@ -69,9 +69,9 @@ after logout: UNAUTHENTICATED
 With Network in the kernel, Auth adds the token to requests for your API only, never to other origins. When the API answers `401`, Auth refreshes the token one time and the Network sends the request again.
 
 ```ts file=main.ts
-import { AUTH_ID, createAuth, type AuthControl } from '@platform/auth';
-import { Kernel } from '@platform/core';
-import { NETWORK_ID, createNetwork, type NetworkControl } from '@platform/network';
+import { AUTH_ID, createAuth, type AuthControl } from '@webkrnl/auth';
+import { Kernel } from '@webkrnl/core';
+import { NETWORK_ID, createNetwork, type NetworkControl } from '@webkrnl/network';
 
 let valid = 'token-1';
 const sent: string[] = [];
@@ -128,8 +128,8 @@ api.shop.example Bearer token-2
 A support agent refunds an order. The refund needs a permission that the agent gets only after a second check, for a few minutes. The elevation expires by itself.
 
 ```ts file=main.ts
-import { AUTH_ID, createAuth, type AuthControl } from '@platform/auth';
-import { Kernel } from '@platform/core';
+import { AUTH_ID, createAuth, type AuthControl } from '@webkrnl/auth';
+import { Kernel } from '@webkrnl/core';
 
 const kernel = new Kernel([
   createAuth<null>({
@@ -179,8 +179,8 @@ can refund later: false
 A user signs in on `shop.example.com`, then opens `account.example.com`. Storage is per origin, so the second site cannot read the first one's session, and tokens never travel between them. Instead, the server keeps an `HttpOnly` session cookie on `example.com`, and the `restore` handler asks the server for a session for this origin.
 
 ```ts file=main.ts
-import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@platform/auth';
-import { Kernel } from '@platform/core';
+import { AUTH_ID, createAuth, type AuthControl, type AuthHandlers, type AuthSession } from '@webkrnl/auth';
+import { Kernel } from '@webkrnl/core';
 
 // A fake server. In a browser, the cookie is HttpOnly on the apex domain: no script can read it.
 const server = { cookie: false, issued: 0 };

@@ -39,7 +39,7 @@ import {
   type ScopeRelay,
   type SubsystemDefinition,
   type View,
-} from '@platform/core';
+} from '@webkrnl/core';
 
 import {
   createWindowClient,

@@ -4,8 +4,8 @@ import {
   createEnvelope,
   type PacketEnvelope,
   type SubsystemDefinition,
-} from '@platform/core';
-import { createTestClock, createTestPlatform } from '@platform/core/testing';
+} from '@webkrnl/core';
+import { createTestClock, createTestPlatform } from '@webkrnl/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 
 import {

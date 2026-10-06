@@ -2,14 +2,14 @@
  * The Analytics subsystem (docs/ARCHITECTURE.md §21.3): consent first,
  * session sampling, batches, the outbox, the beacon and the sign-out wipe.
  */
-import { createConsent, type ConsentControl } from '@platform/consent';
-import { Kernel, type Scheduler, type SubsystemDefinition } from '@platform/core';
-import { createTestAuth } from '@platform/core/testing';
-import { createGlobalState, createStaticEnvironment } from '@platform/global-state';
-import { createNetwork } from '@platform/network';
-import { createNotificationCenter } from '@platform/notification';
-import { createQueue } from '@platform/queue';
-import { SETTINGS_ID, createSettings, type SettingsControl } from '@platform/settings';
+import { createConsent, type ConsentControl } from '@webkrnl/consent';
+import { Kernel, type Scheduler, type SubsystemDefinition } from '@webkrnl/core';
+import { createTestAuth } from '@webkrnl/core/testing';
+import { createGlobalState, createStaticEnvironment } from '@webkrnl/global-state';
+import { createNetwork } from '@webkrnl/network';
+import { createNotificationCenter } from '@webkrnl/notification';
+import { createQueue } from '@webkrnl/queue';
+import { SETTINGS_ID, createSettings, type SettingsControl } from '@webkrnl/settings';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
