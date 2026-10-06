@@ -10,7 +10,7 @@
     "./worker": "./src/compile.worker.ts"
   },
   "files": [
-    "src"
+    "dist"
   ],
   "sideEffects": false,
   "peerDependencies": {
@@ -25,5 +25,19 @@
     "@webkrnl/settings": "workspace:*",
     "@webkrnl/storage": "workspace:*"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./worker": {
+        "types": "./dist/compile.worker.d.ts",
+        "import": "./dist/compile.worker.js"
+      }
+    }
+  }
 }

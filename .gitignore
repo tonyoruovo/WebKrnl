@@ -33,3 +33,6 @@ generated/
 bin/
 .examples/
 .vitest-attachments/
+
+# The documentation site (pnpm docs)
+docs-site/

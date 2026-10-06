@@ -162,7 +162,7 @@ const describeError = (error: unknown): string =>
  * @summary The live instance of one unit definition.
  *
  * @description
- * Owns the unit's {@linkcode Lifecycle}, {@linkcode StateCell}, processor
+ * Owns the unit's `Lifecycle`, {@linkcode StateCell}, processor
  * runners, feature runtimes, disposers and context, and implements every
  * lifecycle operation: `start` (or restart), `fail`, `halt`, `busy`,
  * `suspend`, `resume`, `refresh` and `destroy`. None of them throw: failures

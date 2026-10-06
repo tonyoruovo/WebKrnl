@@ -12,12 +12,31 @@
     "./fixtures/*": "./fixtures/*"
   },
   "files": [
-    "src",
+    "dist",
     "fixtures"
   ],
   "sideEffects": false,
   "peerDependencies": {
     "zod": "^4.0.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./testing": {
+        "types": "./dist/testing/index.d.ts",
+        "import": "./dist/testing/index.js"
+      },
+      "./worker": {
+        "types": "./dist/worker.d.ts",
+        "import": "./dist/worker.js"
+      },
+      "./fixtures/*": "./fixtures/*"
+    }
+  }
 }

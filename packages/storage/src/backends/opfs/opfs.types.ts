@@ -172,7 +172,7 @@ export type WALOpKind = 'write' | 'delete' | 'clear';
  * @remarks
  * `payloadB64` is the payload bytes encoded as base64 so the entire WAL can
  * be serialized to JSON without binary escaping issues. Decoded back to
- * `Uint8Array` during {@link OPFSBackend._applyWALOps}.
+ * `Uint8Array` during `OPFSBackend._applyWALOps`.
  */
 export interface WALWriteOp extends ITransactionOp {
   /**
@@ -323,9 +323,9 @@ export interface WALFile {
  *
  * @remarks
  * Implementations differ by execution context:
- * - {@link SyncFileIOAdapter} - uses `FileSystemSyncAccessHandle` (Worker only).
+ * - `SyncFileIOAdapter` - uses `FileSystemSyncAccessHandle` (Worker only).
  *   Synchronous kernel-level reads and writes; lowest latency.
- * - {@link AsyncFileIOAdapter} - uses `FileSystemWritableFileStream` (any context).
+ * - `AsyncFileIOAdapter` - uses `FileSystemWritableFileStream` (any context).
  *   Fully async; slightly higher overhead per operation.
  *
  * Both implementations expose the same async interface to the backend so

@@ -1,6 +1,6 @@
 # WebKrnl
 
-> **Status: pre-alpha (`0.0.2`).** The architecture is agreed. The kernel and its worker runtime (`@webkrnl/core`, M1 and M2), the three centralized subsystems (`@webkrnl/global-state`, `@webkrnl/queue`, `@webkrnl/notification`, M3), the pilot subsystems (`@webkrnl/logger`, `@webkrnl/consent`, M4), Window scope across subdomains (`@webkrnl/hub`, M5), the data foundation (`@webkrnl/crypto`, `@webkrnl/storage`, M6), and connectivity (`@webkrnl/network`, `@webkrnl/auth`, `@webkrnl/sync`, `@webkrnl/realtime`, M7), Global scope (the Global transport of `@webkrnl/realtime` and the [wire protocol](docs/WIRE-PROTOCOL.md), M8), and the product subsystems (`@webkrnl/settings`, `@webkrnl/translation`, `@webkrnl/analytics`, `@webkrnl/design-system`, M9) are built. Every subsystem of the catalogue is on the kernel; the orchestrator, the Vue adapter and the scaffolder come in M10. Nothing here is ready for production use, and every API shown below may change.
+> **Status: pre-alpha (`0.0.2`).** The architecture is agreed. The kernel and its worker runtime (`@webkrnl/core`, M1 and M2), the three centralized subsystems (`@webkrnl/global-state`, `@webkrnl/queue`, `@webkrnl/notification`, M3), the pilot subsystems (`@webkrnl/logger`, `@webkrnl/consent`, M4), Window scope across subdomains (`@webkrnl/hub`, M5), the data foundation (`@webkrnl/crypto`, `@webkrnl/storage`, M6), and connectivity (`@webkrnl/network`, `@webkrnl/auth`, `@webkrnl/sync`, `@webkrnl/realtime`, M7), Global scope (the Global transport of `@webkrnl/realtime` and the [wire protocol](docs/WIRE-PROTOCOL.md), M8), and the product subsystems (`@webkrnl/settings`, `@webkrnl/translation`, `@webkrnl/analytics`, `@webkrnl/design-system`, M9) are built. M10 added the orchestrator (`@webkrnl/platform`), the Vue adapter (`@webkrnl/vue`) and the scaffolder (`npm init @webkrnl`, `@webkrnl/create`). Every milestone is built; the alpha tests in real React, Vue, Svelte and Astro projects come next. Nothing here is ready for production use, and every API shown below may change.
 >
 > **WebKrnl** is the name of the monorepo. Every package is in the npm scope `@webkrnl` (chosen on 2026-10-06; until then the placeholder was `@platform`).
 
@@ -137,7 +137,23 @@ Browser tests run on every installation listed in [`playwright.config.ts`](playw
 pnpm check:browsers
 ```
 
-Run a subset with `BROWSERS=chrome,edge pnpm test:browser`. If Windows reserved the port of the browser test server (`listen EACCES ... 63315`), move it with `BROWSER_PORT` (for example `BROWSER_PORT=55315`).
+Run a subset with `BROWSERS=chrome,edge pnpm test:browser`, and the multi-origin tests and the scaffolder gate with `BROWSERS=chrome,edge pnpm test:e2e`. If Windows reserved the port of the browser test server (`listen EACCES ... 63315`), move it with `BROWSER_PORT` (for example `BROWSER_PORT=55315`).
+
+Build, release checks and the documentation site:
+
+```bash
+pnpm build           # dist/ in every package: ES modules and declarations
+pnpm release:check   # one version, publishConfig in sync, npm pack has dist/ and no tests
+pnpm docs:site       # TypeDoc into docs-site/
+```
+
+Try an app against this checkout:
+
+```bash
+node packages/create/src/cli.ts ../try-webkrnl --template vue --local .
+```
+
+Changes are in [`CHANGELOG.md`](CHANGELOG.md).
 
 > **CI is deferred.** A GitHub Actions workflow exists in `.github/workflows/ci.yml` but is not enabled yet. Until then, run `pnpm check` locally.
 

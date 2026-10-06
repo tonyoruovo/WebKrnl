@@ -14,7 +14,7 @@
  *   READY/BUSY --> DEGRADED --> READY          any --> DESTROYING --> DESTROYED
  *   ```
  *
- * The kernel drives each unit's {@linkcode Lifecycle}; applications only read
+ * The kernel drives each unit's `Lifecycle`; applications only read
  * it, through `kernel.unit(id).lifecycle` or `kernel.statuses`.
  *
  * @example
@@ -241,7 +241,7 @@ export class IllegalTransitionError extends Error {
  * ```
  *
  * @public
- * @see {@linkcode Lifecycle}
+ * @see `Lifecycle`
  */
 export interface LifecycleSnapshot {
   /**

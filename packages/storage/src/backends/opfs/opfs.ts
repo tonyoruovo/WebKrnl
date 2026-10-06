@@ -231,7 +231,7 @@ import {
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system | MDN: OPFS}
  * @see {@link IStorageBackend} for the full interface contract.
  * @see {@link OPFSTransaction} for the transaction implementation.
- * @see {@link opfs.helpers} for filesystem utility functions.
+ * @see `opfs.helpers` for filesystem utility functions.
  */
 export class OPFSBackend implements IStorageBackend<string> {
   /**
@@ -338,7 +338,7 @@ export class OPFSBackend implements IStorageBackend<string> {
    * Boot sequence:
    * 1. `navigator.storage.getDirectory()` -> OPFS origin root
    * 2. `getDirectoryHandle(rootDirName, { create: true })` -> backend root dir
-   * 3. {@link _replayWALIfPresent} - reads WAL, replays ops if non-empty
+   * 3. `_replayWALIfPresent` - reads WAL, replays ops if non-empty
    * 4. {@link readManifest} -> populate `_manifest`
    * 5. Set `_initialized = true`
    *

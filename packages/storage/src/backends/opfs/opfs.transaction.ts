@@ -174,7 +174,7 @@ export class OPFSTransaction implements IOPFSTransaction {
 
   /**
    * @summary Makes a `OPFSTransaction`.
-   * @param _onCommit   - Provided by {@link OPFSBackend._commitTransaction}.
+   * @param _onCommit   - Provided by `OPFSBackend._commitTransaction`.
    *   Receives the full op buffer and owns all filesystem work: WAL write,
    *   op application, manifest rewrite, WAL clear.
    * @param _onRollback - Provided by {@link OPFSBackend}. Removes this
@@ -230,7 +230,7 @@ export class OPFSTransaction implements IOPFSTransaction {
    * @summary Commit all buffered ops to OPFS.
    * @description
    * Delegates entirely to `_onCommit`, which is implemented by
-   * {@link OPFSBackend._commitTransaction}. See that method's documentation
+   * `OPFSBackend._commitTransaction`. See that method's documentation
    * for the exact commit sequence and crash-recovery guarantees.
    *
    * After this resolves, the transaction is settled and cannot be reused.

@@ -11,7 +11,7 @@
     "./conformance": "./src/conformance.ts"
   },
   "files": [
-    "src"
+    "dist"
   ],
   "sideEffects": false,
   "peerDependencies": {
@@ -27,5 +27,23 @@
     "@webkrnl/network": "workspace:*",
     "@webkrnl/hub": "workspace:*"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./worker": {
+        "types": "./dist/socket.worker.d.ts",
+        "import": "./dist/socket.worker.js"
+      },
+      "./conformance": {
+        "types": "./dist/conformance.d.ts",
+        "import": "./dist/conformance.js"
+      }
+    }
+  }
 }

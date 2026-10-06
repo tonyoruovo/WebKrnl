@@ -18,10 +18,13 @@
     "check:browsers": "node scripts/check-browsers.ts",
     "test:watch": "vitest",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:docs && pnpm check:examples && pnpm test",
-    "docs": "typedoc",
+    "docs:site": "typedoc",
     "check:docs": "node scripts/check-docs.ts",
     "check:examples": "node scripts/check-examples.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:docs"
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:docs",
+    "build": "node scripts/build.ts",
+    "release:check": "node scripts/release.ts check",
+    "release:version": "node scripts/release.ts version"
   },
   "keywords": [
     "web",
@@ -70,6 +73,7 @@
     "playwright": "^1.63.0",
     "prettier": "^3.9.5",
     "rolldown": "1.2.11",
+    "typedoc": "^0.28.20",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.64.0",
     "vitest": "4.1.11",

@@ -7,13 +7,13 @@
  * This module provides two concrete implementations of {@link IFileIOAdapter}
  * and their corresponding factories:
  *
- * - {@link SyncFileIOAdapter} / {@link SyncIOAdapterFactory}
+ * - `SyncFileIOAdapter` / {@link SyncIOAdapterFactory}
  *   Wraps `FileSystemSyncAccessHandle`. Available **only in Worker contexts**
  *   (SharedWorker, DedicatedWorker, ServiceWorker). Synchronous at the OS
  *   level - no promise scheduling on every byte transfer. This is the
  *   preferred IO path when the backend runs in a SharedWorker.
  *
- * - {@link AsyncFileIOAdapter} / {@link AsyncIOAdapterFactory}
+ * - `AsyncFileIOAdapter` / {@link AsyncIOAdapterFactory}
  *   Wraps `FileSystemWritableFileStream`. Available in all contexts including
  *   the main UI thread. Fully async. Used as the fallback when sync handles
  *   are unavailable.
@@ -44,7 +44,7 @@
  *
  * ### Exclusive lock (sync adapter)
  * A `FileSystemSyncAccessHandle` holds an **exclusive lock** on the file
- * for its entire lifetime. {@link SyncFileIOAdapter.close} must always be
+ * for its entire lifetime. `SyncFileIOAdapter.close` must always be
  * called after use. The backend achieves this by calling `close()` in a
  * `finally` block in every helper that opens an adapter.
  *
@@ -204,7 +204,7 @@ class AsyncFileIOAdapter implements IFileIOAdapter {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Creates {@link SyncFileIOAdapter} instances.
+ * Creates `SyncFileIOAdapter` instances.
  *
  * @remarks
  * Only instantiate this inside a Worker context. On the main thread,
@@ -275,7 +275,7 @@ export class SyncIOAdapterFactory implements IIOAdapterFactory {
 }
 
 /**
- * Creates {@link AsyncFileIOAdapter} instances.
+ * Creates `AsyncFileIOAdapter` instances.
  *
  * @remarks
  * Safe to use in any context - main thread, SharedWorker, DedicatedWorker.

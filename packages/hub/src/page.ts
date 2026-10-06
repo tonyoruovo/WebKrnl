@@ -119,10 +119,16 @@ export interface HubPage {
 
 /**
  * @summary The configuration the hub script receives.
- * @internal
+ * @public
  */
-interface HubConfig {
+export interface HubConfig {
+  /**
+   * @summary The origins that may connect, with `*` for one subdomain level.
+   */
   readonly allowedOrigins: readonly string[];
+  /**
+   * @summary The name of the `BroadcastChannel` of the hub.
+   */
   readonly channel: string;
 }
 

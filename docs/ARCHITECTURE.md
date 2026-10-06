@@ -1076,9 +1076,9 @@ This section is the design of milestone M10. The monorepo is named **WebKrnl**, 
 ### 22.5 Build and release
 
 - **Build.** `pnpm build` makes `dist/` in each package: ES modules (rolldown) and declarations (`tsc --emitDeclarationOnly`). Worker URLs (`./x.worker.ts`) are rewritten to `./x.worker.js`. In the workspace, packages still export their TypeScript sources; `publishConfig` points `exports` at `dist/` for the registry.
-- **Fixed versions.** `pnpm release:check` checks that every package has the same version, that `pnpm pack` contains `dist/` and no test files, and that every internal dependency names that version. `pnpm release:version <x.y.z>` sets it everywhere. Publishing waits for the alpha (§4.1 of the plan): the version stays `0.0.2`.
+- **Fixed versions.** `pnpm release:check` checks that every package has the same version, that `pnpm pack` contains `dist/` and no test files, and that every internal dependency names that version. `pnpm release:version <x.y.z>` sets it everywhere. Publish with pnpm (`pnpm -r publish`): it applies `publishConfig` and replaces `workspace:*` with the version; npm does neither. Publishing waits for the alpha (§4.1 of the plan): the version stays `0.0.2`.
 - **Changelog.** `CHANGELOG.md` at the root, one section for each version, with the milestones of `0.0.2` under "Unreleased".
-- **Documentation site.** `pnpm docs` runs TypeDoc over every package (`entryPointStrategy: packages`) into `docs-site/` (not committed). The TSDoc blocks (`check:docs`) are its content.
+- **Documentation site.** `pnpm docs:site` (`pnpm docs` is a command of pnpm itself) runs TypeDoc over every package (`entryPointStrategy: packages`) into `docs-site/` (not committed). The TSDoc blocks (`check:docs`) are its content.
 
 ### 22.6 The gate
 

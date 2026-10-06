@@ -192,7 +192,7 @@ _Goal: broadcasts across tabs and subdomains._
 - `@webkrnl/create`: the scaffolder, with a Vue template and a plain TypeScript template, and generated tests (§22.4)
 - Build to `dist/`, fixed-version checks, changelog, documentation site (TypeDoc) (§22.5)
 
-**Gate:** a freshly scaffolded Vue app boots, goes offline, recovers, and passes its generated tests. A plain-TypeScript app does the same without the adapter, which proves the core is framework-agnostic.
+**Gate:** a freshly scaffolded Vue app boots, goes offline, recovers, and passes its generated tests. A plain-TypeScript app does the same without the adapter, which proves the core is framework-agnostic. _Done 2026-10-06: `packages/create/test/gate.e2e.spec.ts` scaffolds both templates against this checkout, installs them, runs their generated tests, builds them with Vite, and in real browsers (Chrome and WebKit) the page reaches `IDLE`, keeps a note in the Sync outbox while offline, and sends it once when online (ARCHITECTURE §22.6)._
 
 ---
 

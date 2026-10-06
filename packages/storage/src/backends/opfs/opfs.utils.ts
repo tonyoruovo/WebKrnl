@@ -123,7 +123,7 @@ export const WAL_FILENAME = '_wal.json';
  *
  * A non-null return during {@link OPFSBackend.initialize} indicates the
  * previous session crashed mid-commit. The returned ops are replayed by
- * {@link OPFSBackend._replayWALIfPresent}.
+ * `OPFSBackend._replayWALIfPresent`.
  *
  * @param dir     - The OPFS root directory handle.
  * @param factory - IO adapter factory.
@@ -360,7 +360,7 @@ export function bytesToBase64(bytes: Uint8Array): string {
  * Decode a base64 string produced by {@link bytesToBase64} back to bytes.
  *
  * @remarks
- * Called during WAL application ({@link OPFSBackend._applyWALOps}) to
+ * Called during WAL application (`OPFSBackend._applyWALOps`) to
  * convert the stored `payloadB64` string back to the `Uint8Array` that
  * gets written to the data file.
  *

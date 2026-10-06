@@ -12,9 +12,22 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "src",
+    "dist",
     "templates"
   ],
   "sideEffects": false,
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    },
+    "bin": {
+      "create-webkrnl": "./dist/cli.js"
+    }
+  }
 }

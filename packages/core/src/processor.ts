@@ -356,7 +356,7 @@ export interface ProcessorDef<In = unknown, Out = unknown> {
   readonly config?: unknown;
   /**
    * @summary The heartbeat for worker hosts.
-   * @description By default, shared hosts use {@linkcode DEFAULT_SHARED_HEARTBEAT}
+   * @description By default, shared hosts use `DEFAULT_SHARED_HEARTBEAT`
    * and dedicated hosts have no heartbeat. Use `false` to turn a heartbeat off.
    */
   readonly heartbeat?: {

@@ -12,6 +12,7 @@ export default tseslint.config(
       '.examples/**',
       '.claude/**',
       'packages/create/templates/**',
+      'docs-site/**',
     ],
   },
   // Base configuration for JS and TS files

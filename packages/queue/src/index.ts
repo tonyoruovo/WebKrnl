@@ -53,6 +53,7 @@ export {
   type CollectionSource,
   type DeadLetter,
   type FanOut,
+  type FanOutOptions,
   type QueueControl,
   type QueueData,
   type QueueOptions,
