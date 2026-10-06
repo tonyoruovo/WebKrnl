@@ -185,10 +185,12 @@ _Goal: broadcasts across tabs and subdomains._
 
 ### M10 — Platform, template, release
 
-- `platform`: an orchestrator that boots a chosen set of subsystems
-- `@webkrnl/create`: the scaffolder (workspace, config, worker entries, test harness), with a Vue template first
-- `@webkrnl/vue`: `useView`, the Vue plugin, the `vue-router` route source (§14.1)
-- Documentation site (typedoc), changelog, fixed-version release
+- The project name **WebKrnl** and the scope `@webkrnl/*` in every package and doc; project-wide Prettier formatting (§22)
+- Page scope ends on a route change: the kernel takes a route source (§22.1)
+- `@webkrnl/platform`: an orchestrator that boots a chosen set of subsystems (§22.2)
+- `@webkrnl/vue`: `useView`, the Vue plugin, `useT`, the `vue-router` route source (§14.1, §22.3)
+- `@webkrnl/create`: the scaffolder, with a Vue template and a plain TypeScript template, and generated tests (§22.4)
+- Build to `dist/`, fixed-version checks, changelog, documentation site (TypeDoc) (§22.5)
 
 **Gate:** a freshly scaffolded Vue app boots, goes offline, recovers, and passes its generated tests. A plain-TypeScript app does the same without the adapter, which proves the core is framework-agnostic.
 

@@ -1027,3 +1027,60 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 1. Every subsystem of the catalogue (§13) is a package, and `src/managers/` is deleted. The code that it still has (the old Global State, Queue, Notification Center, bus and packets, already ported in M1 to M3) goes with it.
 2. A Node test boots the whole catalogue in one kernel, and a browser test boots it in two tabs: a setting changed in one tab changes the locale of Translation and the theme of the design system in the other, and Analytics sends nothing until the `analytics` grant.
+
+## 22. Platform, adapter, scaffolder and release (M10)
+
+This section is the design of milestone M10. The monorepo is named **WebKrnl**, and every package is `@webkrnl/*` (decided 2026-10-06). The whole project is formatted with Prettier, Markdown included (decided 2026-10-06).
+
+```text
+  npm init @webkrnl my-app --template vue
+    --> a Vite app: src/platform.ts (createPlatform), src/main.ts, generated tests
+  createPlatform({ ...options })                       @webkrnl/platform
+    --> the centralized subsystems, then the chosen featurized ones, a Storage-backed persistence
+    --> platform.start() / platform.unit('settings') / platform.stop()
+  app.use(createWebKrnl(platform, { router }))          @webkrnl/vue
+    --> useView(view), usePlatform(), useUnit(id), useT(), the vue-router route source
+```
+
+### 22.1 Page scope and route changes (kernel)
+
+- The kernel takes a route source: `new Kernel(units, { routes })` (§11.2.1). Without one, it uses `createBrowserRouteSource()` in a browser and nothing elsewhere.
+- **When the path changes**, every running Page-scope root unit restarts as a new page: the kernel stops it (its disposers run), sets its state back to the initial value (persisted keys are restored again), and starts it. A unit that has `pageChange(path)` in its definition keeps running and gets the call instead, when a restart costs more than it gives (the Design System: its theme does not depend on the path).
+- The lifecycle snapshot of a restarted unit has the reason `route`.
+- Page-scope broadcasts that are still in the Queue at the change go to the units of the new page. Packets have no page id; this is accepted for now.
+
+### 22.2 The orchestrator: `@webkrnl/platform`
+
+- `createPlatform(options)` returns a **Platform**: `kernel`, `start()`, `stop()`, `unit(id)` (typed for the ids of the catalogue), and `ready` (a promise that resolves after `start`).
+- It always has the centralized subsystems (Global State, Queue, Notification Center) and the Logger. Each other subsystem is an option: `true` or its options turns it on, `false` turns it off. The default is on for Window transport (single origin unless `hub.hubUrl`), Crypto, Storage, Consent, Settings, Network, Sync, Translation and the Design System; Auth, Realtime and Analytics are on only with their required options (handlers, a URL, an endpoint or `send`).
+- It wires what the packages leave to the app: the kernel persistence (`createStatePersistence({ database: '<appName>-state' })`), `APPEARANCE_SETTINGS` in Settings when the Design System is on, the Queue router, `onError` (to the Logger), and the route source.
+- `units` adds the units of the app. Ids that clash with the catalogue are an error.
+- `@webkrnl/platform` is the only package with hard `dependencies` on the subsystems (§14).
+
+### 22.3 The Vue adapter: `@webkrnl/vue`
+
+- `useView(view)` returns a `Readonly<ShallowRef<T>>` that follows the view, and unsubscribes when the effect scope ends.
+- `createWebKrnl(platform, { router? })` is a Vue plugin. `app.use` provides the platform, starts it if it does not run, and, with a router, gives the kernel the vue-router route source. `usePlatform()` and `useUnit<C>(id)` read it in components.
+- `useT()` returns `t`, bound to the `revision` and `locale` of Translation, so a template renders again when catalogs or the locale change. Vue escapes text, so the adapter calls `t` with escaping off only through `useT({ escape: false })`; the default follows the Translation option.
+- `createVueRouterRouteSource(router)` follows `router.afterEach` (§11.2.1).
+- `vue` and `vue-router` are peer dependencies of the adapter only. The adapter adds no behaviour that the core lacks (§14.1).
+
+### 22.4 The scaffolder: `@webkrnl/create`
+
+- `npm init @webkrnl <dir> [--template vue|vanilla] [--local <path>]` writes a Vite app. Templates: **vue** (Vue 3, `vue-router`, the adapter) and **vanilla** (TypeScript only, which proves that the core needs no framework).
+- Each app has `src/platform.ts` (one `createPlatform` call with the common options and comments), `src/main.ts`, a page that shows the platform status, online state, pending work, a setting, a translated message and the theme, a `public/i18n` catalog, `vite.config.ts`, `tsconfig.json`, and **generated tests**: a Node test that boots the platform, goes offline, queues a change, goes online, and checks that the change reached a fake server.
+- `--local <path>` links the packages of a local checkout of this monorepo (`link:`), for the gate and for development before the first release. Without it, the app depends on `@webkrnl/*` from the registry, at the version of the scaffolder.
+- The scaffolder has no dependencies. It copies template files and replaces `{{name}}` and `{{version}}`.
+
+### 22.5 Build and release
+
+- **Build.** `pnpm build` makes `dist/` in each package: ES modules (rolldown) and declarations (`tsc --emitDeclarationOnly`). Worker URLs (`./x.worker.ts`) are rewritten to `./x.worker.js`. In the workspace, packages still export their TypeScript sources; `publishConfig` points `exports` at `dist/` for the registry.
+- **Fixed versions.** `pnpm release:check` checks that every package has the same version, that `pnpm pack` contains `dist/` and no test files, and that every internal dependency names that version. `pnpm release:version <x.y.z>` sets it everywhere. Publishing waits for the alpha (§4.1 of the plan): the version stays `0.0.2`.
+- **Changelog.** `CHANGELOG.md` at the root, one section for each version, with the milestones of `0.0.2` under "Unreleased".
+- **Documentation site.** `pnpm docs` runs TypeDoc over every package (`entryPointStrategy: packages`) into `docs-site/` (not committed). The TSDoc blocks (`check:docs`) are its content.
+
+### 22.6 The gate
+
+1. `create` scaffolds the **vue** app and the **vanilla** app into temporary folders with `--local`, and installs them.
+2. Each app's generated tests pass.
+3. Each app is built with Vite and opened in real browsers (Playwright). The page reaches `IDLE`; the test sets the context offline, makes a change that waits in the Sync outbox, sets it online again, and the page shows that nothing waits.
