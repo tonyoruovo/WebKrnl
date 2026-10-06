@@ -357,6 +357,15 @@ export function createQueue(options: QueueOptions = {}): Queue {
     return undefined;
   }
 
+  // Waiters of router.idle(): resolved when nothing waits or runs.
+  const idleWaiters = new Set<() => void>();
+  const isIdle = () => active === 0 && TIERS.every((tier) => tiers.get(tier)!.length === 0);
+  function checkIdle(): void {
+    if (idleWaiters.size === 0 || !isIdle()) return;
+    for (const resolve of [...idleWaiters]) resolve();
+    idleWaiters.clear();
+  }
+
   function pump(): void {
     while (context && !suspended && !stopped && active < maxActive) {
       const item = next();
@@ -369,6 +378,7 @@ export function createQueue(options: QueueOptions = {}): Queue {
       else void scheduler.postTask(run, TASK_PRIORITY[item.envelope.importance]);
     }
     counters();
+    checkIdle();
   }
 
   async function dispatch(item: Item): Promise<void> {
@@ -634,7 +644,13 @@ export function createQueue(options: QueueOptions = {}): Queue {
     subsystem,
     router(kernel) {
       lastKernel = kernel;
-      return { route: (envelope, expectReply) => route(kernel, envelope, expectReply) };
+      return {
+        route: (envelope, expectReply) => route(kernel, envelope, expectReply),
+        idle: () =>
+          isIdle() || stopped || suspended || !context
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => idleWaiters.add(resolve)),
+      };
     },
   };
 }

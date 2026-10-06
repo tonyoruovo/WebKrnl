@@ -460,6 +460,60 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/platform:
+    dependencies:
+      '@webkrnl/analytics':
+        specifier: workspace:*
+        version: link:../analytics
+      '@webkrnl/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@webkrnl/consent':
+        specifier: workspace:*
+        version: link:../consent
+      '@webkrnl/core':
+        specifier: workspace:*
+        version: link:../core
+      '@webkrnl/crypto':
+        specifier: workspace:*
+        version: link:../crypto
+      '@webkrnl/design-system':
+        specifier: workspace:*
+        version: link:../design-system
+      '@webkrnl/global-state':
+        specifier: workspace:*
+        version: link:../global-state
+      '@webkrnl/hub':
+        specifier: workspace:*
+        version: link:../hub
+      '@webkrnl/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@webkrnl/network':
+        specifier: workspace:*
+        version: link:../network
+      '@webkrnl/notification':
+        specifier: workspace:*
+        version: link:../notification
+      '@webkrnl/queue':
+        specifier: workspace:*
+        version: link:../queue
+      '@webkrnl/realtime':
+        specifier: workspace:*
+        version: link:../realtime
+      '@webkrnl/settings':
+        specifier: workspace:*
+        version: link:../settings
+      '@webkrnl/storage':
+        specifier: workspace:*
+        version: link:../storage
+      '@webkrnl/sync':
+        specifier: workspace:*
+        version: link:../sync
+      '@webkrnl/translation':
+        specifier: workspace:*
+        version: link:../translation
+
   packages/queue:
     devDependencies:
       '@webkrnl/core':

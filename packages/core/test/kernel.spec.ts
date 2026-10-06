@@ -196,7 +196,8 @@ describe('Kernel — dependencies', () => {
 
     expect(() => watch!('auth')).toThrow('not a declared dependency');
     await platform.stop();
-    expect(seen).toHaveLength(4); // stopped following on teardown
+    // Featurized subsystems stop before centralized ones: the watcher sees storage leave.
+    expect(seen).toEqual(['off', 'on', 'off', 'on', 'off']);
   });
 
   it('reports listener errors and recovered errors without failing the unit', async () => {

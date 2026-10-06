@@ -114,6 +114,14 @@ export interface PacketRouter {
    * @returns {Promise<unknown>} The reply for a request; anything for the rest.
    */
   route(envelope: PacketEnvelope, expectReply: boolean): Promise<unknown>;
+  /**
+   * @summary Resolves when the router delivers nothing now (packets that wait for a retry do not count).
+   * @description The kernel waits for it at stop, after the featurized
+   * subsystems and before the centralized ones, so a packet that is being
+   * delivered does not meet a stopped Notification Center.
+   * @returns {Promise<void>} Resolves when nothing is being delivered.
+   */
+  idle?(): Promise<void>;
 }
 
 /**
@@ -627,7 +635,7 @@ export class Kernel {
   }
 
   /**
-   * @summary Destroys every subsystem, centralized ones included, in reverse boot order.
+   * @summary Destroys every subsystem: the featurized ones, then the centralized ones, each group in reverse boot order.
    * @returns {Promise<void>} Resolves once every subsystem is `DESTROYED`.
    */
   async stop(): Promise<void> {
@@ -636,7 +644,21 @@ export class Kernel {
     await this.#pageChanges;
     await this.settled();
     this.#stopping = true;
-    for (const runtime of [...this.#order].reverse()) if (!runtime.parent) await runtime.destroy();
+    // The mirror of start: featurized subsystems first, then (after the Queue has
+    // delivered what they sent) the centralized ones, each group in reverse order.
+    const roots = [...this.#order].reverse().filter((runtime) => !runtime.parent);
+    for (const runtime of roots)
+      if (runtime.subsystem.kind !== 'centralized') await runtime.destroy();
+    // A delivery that never ends (a request without a reply) must not hold the stop.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([
+      this.#router.idle?.(),
+      new Promise<void>((resolve) => (timer = setTimeout(resolve, 2_000))),
+    ]);
+    clearTimeout(timer);
+    await this.settled();
+    for (const runtime of roots)
+      if (runtime.subsystem.kind === 'centralized') await runtime.destroy();
   }
 
   /**
