@@ -1,0 +1,20 @@
+{
+  "name": "@webkrnl/create",
+  "version": "0.0.2",
+  "description": "The scaffolder of WebKrnl: npm init @webkrnl writes a Vue or plain TypeScript app.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "create-webkrnl": "./src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "templates"
+  ],
+  "sideEffects": false,
+  "license": "ISC"
+}

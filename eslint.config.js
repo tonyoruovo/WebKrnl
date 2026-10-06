@@ -5,7 +5,14 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['**/dist/**', '**/node_modules/**', 'pnpm-lock.yaml', '.examples/**', '.claude/**'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      'pnpm-lock.yaml',
+      '.examples/**',
+      '.claude/**',
+      'packages/create/templates/**',
+    ],
   },
   // Base configuration for JS and TS files
   eslint.configs.recommended,
