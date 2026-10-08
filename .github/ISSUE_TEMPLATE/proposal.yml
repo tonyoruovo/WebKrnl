@@ -1,0 +1,48 @@
+name: Proposal (new subsystem, feature, or design change)
+description: A new subsystem, a new feature of an existing one, or a change to an agreed design. Docs before code — this issue is the proposal.
+labels: ['proposal']
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences. What does this add or change, and for whom?
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - A new subsystem
+        - A feature of an existing subsystem
+        - A change to an agreed design (an amendment)
+        - A browser API wrapped behind a control interface
+    validations:
+      required: true
+  - type: input
+    id: subsystem
+    attributes:
+      label: Subsystem (existing or proposed name)
+      placeholder: 'e.g. consent, or a new name'
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Design
+      description: Scope, state shape, control interface (commands/views), dependencies (required vs optional/late-bound), and which `docs/ARCHITECTURE.md` section this amends or adds.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else was weighed, and why this shape won.
+  - type: textarea
+    id: gate
+    attributes:
+      label: Gate
+      description: The test or condition that proves this is done, matching the Gate style in docs/PLAN.md.
+    validations:
+      required: true

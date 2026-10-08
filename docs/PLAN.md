@@ -194,6 +194,37 @@ _Goal: broadcasts across tabs and subdomains._
 
 **Gate:** a freshly scaffolded Vue app boots, goes offline, recovers, and passes its generated tests. A plain-TypeScript app does the same without the adapter, which proves the core is framework-agnostic. _Done 2026-10-06: `packages/create/test/gate.e2e.spec.ts` scaffolds both templates against this checkout, installs them, runs their generated tests, builds them with Vite, and in real browsers (Chrome and WebKit) the page reaches `IDLE`, keeps a note in the Sync outbox while offline, and sends it once when online (ARCHITECTURE §22.6)._
 
+### M11 — Core reorganization and cleanup
+
+- Delete `src/` (the root `libs`, `constants`, `enums`, `types`, `modules`, and the root `index.ts`) and its tests (`tests/duration.spec.ts`, `tests/utils-lib.spec.ts`, `tests/utils.test.ts`, `tests/FIXES.md`). Nothing under `packages/*` imports from it.
+- Remove `@js-temporal/polyfill`, `lodash` (and `@types/lodash`) and `uuid` from the root `package.json`. None has a reader outside the deleted `src/`.
+- Rewrite `packages/core/src/wire.ts`'s validation without `zod` (hand-written checks, the style `settings.ts` and `consent.ts` already use). Add a note to `docs/WIRE-PROTOCOL.md` showing the same schema in Zod, Yup, `@arrirpc/schema` and Joi, for a server team that wants a validation library of its own. `zod` then leaves `packages/core`'s dependencies; it stays only where a package still chooses it for its own tests.
+- Reorganize `@webkrnl/core`'s flat `src/*.ts` into logical submodules by ARCHITECTURE section and import coupling (not one folder per file), each with its own `index.ts` and `EXAMPLES.md`, the same pattern `@webkrnl/storage/src/backends/*` already uses.
+- Close the standing `FIXES.md` files once their fixes ship with this milestone.
+
+**Gate:** `pnpm check` passes with the reorganized `core`; every other package's `from '@webkrnl/core'` imports are unchanged (the public barrel keeps the same exported names); `check:docs` and `check:examples` pass with one `EXAMPLES.md` per new submodule folder.
+
+### M12 — Browser-API coverage
+
+Candidates for wrapping more non-UI browser APIs behind a subsystem's control interface, as the project already does for `fetch`, `SubtleCrypto`, `BroadcastChannel`, IndexedDB, and `MessageChannel`. Each item needs its own ARCHITECTURE amendment, agreed before code, same as every milestone.
+
+- **Critical** (closes a real gap in an already-shipped subsystem):
+  - Permission API → Consent. Real browser permission state (camera, geolocation, notifications) is invisible to the one subsystem whose job is tracking what the user has permitted; an app can show "granted" while the browser has silently blocked the feature.
+  - Reporting API → Logger. CSP violations, deprecation warnings and intervention reports are invisible to the one subsystem whose job is catching exactly this class of signal.
+- **Upcoming** (a natural widening of a subsystem's documented shape, not a new one):
+  - JS Self-Profiling API → Analytics. Matches Analytics' existing shape: sampled, consent-gated, batched.
+  - WebTransport → Realtime, as a second pluggable protocol alongside the socket (§19.4 already calls the protocol pluggable).
+  - Battery Status and Device Memory → Global State, as two more environment signals of the same shape as `online` and `visible`.
+- **Nice-to-have** (small, optional, no subsystem is waiting on it):
+  - Cookie Store API → the hub's window/partition cookie (`cookie.ts`), replacing the plain `document.cookie` read; a marginal gain, since nothing currently polls it.
+  - Prioritized Task Scheduling API → `core`'s internal `scheduler.ts`, as a possible standards-based replacement; an internal swap, not a new capability for any consumer.
+  - A `files` feature wrapping the File System Access API. Speculative; no existing subsystem calls for it, and it is distinct from OPFS (user-gesture-gated, real filesystem paths).
+- **Held back** (bigger than a slot in this list; needs its own decision or proposal before it is scheduled anywhere):
+  - Background Synchronization API for Sync. The real browser primitive for "retry my outbox when back online even if the tab is closed," but it needs a Service Worker, which nothing in the project has introduced. Adopting it is a bigger decision than the one API suggests.
+  - WebAuthn, Credential Management and FedCM for Auth. Each is proposal-sized on its own.
+
+**Gate:** each Critical and Upcoming item has an agreed ARCHITECTURE amendment before any code. Nice-to-have items may be picked up opportunistically without blocking the milestone. Held-back items stay open questions (§6) until decided.
+
 ---
 
 ## 4. Order of work
@@ -201,7 +232,7 @@ _Goal: broadcasts across tabs and subdomains._
 ```text
 Intent ─► M0 ─► M1 ─► M2 ─► M3 ─► M4 ─┬─► M5 ───────────────┐
                                       └─► M6 ─► M7 ─► M8 ─┐   │
-                                                          ├───┴─► M9 ─► M10
+                                                          ├───┴─► M9 ─► M10 ─► M11 ─► M12
 ```
 
 M5 (hub) and M6/M7 can run in parallel after the pilot. M8 needs Realtime (M7) and Storage (M6).
@@ -214,7 +245,7 @@ The monorepo is named **WebKrnl**, and every package is in the npm scope `@webkr
 
 ### 4.2 Alpha validation
 
-After M10, the packages are installed into real applications built with **React, Vue, Svelte and Astro**. Each app exercises boot, offline and recovery, cross-tab and cross-subdomain broadcasts, and the framework bindings (the Vue adapter, and the plain `View` contract elsewhere). Findings are fixed before the first release.
+After M12, the packages are installed into real applications built with **React, Vue, Svelte and Astro**. Each app exercises boot, offline and recovery, cross-tab and cross-subdomain broadcasts, and the framework bindings (the Vue adapter, and the plain `View` contract elsewhere). Findings are fixed before the first release.
 
 ---
 

@@ -1,0 +1,23 @@
+name: Chore (cleanup, refactor, tooling)
+description: Work with no new behavior for an app — dead code, a dependency, a refactor, docs, CI.
+labels: ['chore']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: What should change, and where.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What this fixes or removes, and the evidence (e.g. "no reader outside the deleted folder").
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk
+      description: What could break, and how the check for it works (e.g. "the public barrel keeps the same exported names").
