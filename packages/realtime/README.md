@@ -14,7 +14,7 @@ The **Realtime** subsystem (id `realtime`, featurized, Tab scope, no required de
 - **Pluggable protocol**: JSON frames by default; `protocol: { encode, decode }` for another server (portable functions).
 - **The Global transport** (option `global`): Global broadcasts reach the other devices and sessions of the user through your server, and the Window relay carries Window broadcasts where the browser partitions the hub. See [The Global transport](#the-global-transport).
 
-Design: [ARCHITECTURE §19.4](../../docs/ARCHITECTURE.md#194-realtime) and the amended [Realtime proposal](../../proposals/realtime_PROPOSAL.md). The Global transport: [ARCHITECTURE §20](../../docs/ARCHITECTURE.md#20-global-scope-m8) and the [wire protocol](../../docs/WIRE-PROTOCOL.md).
+Design: [ARCHITECTURE §19.4](../../docs/ARCHITECTURE.md#194-realtime) and the amended [Realtime proposal](../../docs/proposals/realtime_PROPOSAL.md). The Global transport: [ARCHITECTURE §20](../../docs/ARCHITECTURE.md#20-global-scope-m8) and the [wire protocol](../../docs/WIRE-PROTOCOL.md).
 
 ## Installation
 

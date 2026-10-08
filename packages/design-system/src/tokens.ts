@@ -2,7 +2,7 @@
  * @fileoverview
  * @summary Design tokens: named CSS values, with modes for dark, more contrast and density.
  * @description
- * Implements the Token Registry of `proposals/design-system_PROPOSAL.md`. A
+ * Implements the Token Registry of `docs/proposals/design-system_PROPOSAL.md`. A
  * token has a dotted name (`color.surface`) and a CSS value. On the page it is
  * the custom property `--ds-color-surface`. Modes replace base values for one
  * condition.

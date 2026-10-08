@@ -1,5 +1,5 @@
 /**
- * The Design System (proposals/design-system_PROPOSAL.md, ARCHITECTURE §21.4):
+ * The Design System (docs/proposals/design-system_PROPOSAL.md, ARCHITECTURE §21.4):
  * tokens, the theme rules, the stylesheet export, and the subsystem with a
  * fake root, fake media queries, Settings and Translation.
  */

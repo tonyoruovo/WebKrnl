@@ -99,7 +99,7 @@
 
 # Subsystems
 
-> **Amended 2026-10-01** (A1–A10) **and 2026-10-02** (A11) with amendments A1–A11 from [`docs/ARCHITECTURE.md` §15](../docs/ARCHITECTURE.md#15-amendments-to-proposalsreadmemd). Each amended rule is tagged with its amendment number. This document still takes precedence over every other definition.
+> **Amended 2026-10-01** (A1–A10) **and 2026-10-02** (A11) with amendments A1–A11 from [`docs/ARCHITECTURE.md` §15](../ARCHITECTURE.md#15-amendments-to-proposalsreadmemd). Each amended rule is tagged with its amendment number. This document still takes precedence over every other definition.
 
 A subsystem is a program in a frontend application (such a browser) that has a `state`, `features`, `packets` and a `control-interface`. Some subsystems are state heavy such as the global state, others are processor, scheduler or destructor heavy.
 

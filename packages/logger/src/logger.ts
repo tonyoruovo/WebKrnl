@@ -3,7 +3,7 @@
  * @summary The Logger: sanitized, level-filtered log entries and packet trails, joined by `traceId`.
  * @description
  * Implements the Logger of docs/ARCHITECTURE.md §13 (amended proposal:
- * `proposals/logger_PROPOSAL.md`). It has no required dependency, so it runs
+ * `docs/proposals/logger_PROPOSAL.md`). It has no required dependency, so it runs
  * from the start of boot, and it follows the Queue, the Notification Center
  * and its sink as they come and go (late binding, §7.2).
  *

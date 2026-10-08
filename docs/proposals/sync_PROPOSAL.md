@@ -1,4 +1,4 @@
-> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.3](../docs/ARCHITECTURE.md#193-sync).
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.3](../ARCHITECTURE.md#193-sync).
 >
 > - Sync is a featurized, Tab-scoped subsystem on the main thread. Network is required. Storage is late-bound.
 > - Entities are declared with `entity(definition)`: a `push` handler, and optionally `pull`, `apply`, `merge` and a conflict strategy.

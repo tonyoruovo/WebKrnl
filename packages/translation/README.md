@@ -14,7 +14,7 @@ The **Translation** subsystem (id `translation`, featurized, Tab scope, no requi
 - **Safe parameters**: parameter values are HTML-escaped by default.
 - **Formatting**: numbers, money, dates, relative times, lists and sorting, for the active locale.
 
-Design: [ARCHITECTURE §21.2](../../docs/ARCHITECTURE.md#212-translation) and the [Translation proposal](../../proposals/translation_PROPOSAL.md).
+Design: [ARCHITECTURE §21.2](../../docs/ARCHITECTURE.md#212-translation) and the [Translation proposal](../../docs/proposals/translation_PROPOSAL.md).
 
 ## Installation
 

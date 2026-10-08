@@ -108,14 +108,13 @@ In-app WebViews are not supported. Packages can be imported in server-side rende
 ## Repository layout
 
 ```text
-docs/        architecture and plan (start here)
-proposals/   the original design proposals; proposals/README.md is the authoritative model
-src/         existing code, to be moved into packages/ milestone by milestone
-tests/       existing tests
-packages/    (from M0) one folder per package
+docs/            architecture, plan and reports (start here)
+docs/proposals/  the original design proposals; docs/proposals/README.md is the authoritative model
+tests/           tests that span more than one package (the M9/M10 gates)
+packages/        one folder per package
 ```
 
-Precedence when documents disagree: [`proposals/README.md`](proposals/README.md) > [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) > the per-subsystem proposals.
+Precedence when documents disagree: [`docs/proposals/README.md`](docs/proposals/README.md) > [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) > the per-subsystem proposals.
 
 ## Development
 

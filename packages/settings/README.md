@@ -12,7 +12,7 @@ The **Settings** subsystem (id `settings`, featurized, Window scope, requires Co
 - **Analytics opt-out**: `enableAnalytics` and `disableAnalytics` change the `analytics` grant of Consent. Opting out never stops essential work.
 - **`optimisticUpdate(apply, commit, rollback)`**: the primitive that Settings uses for saves, exported for the app.
 
-Design: [ARCHITECTURE §21.1](../../docs/ARCHITECTURE.md#211-settings) and the [Settings proposal](../../proposals/settings_PROPOSAL.md).
+Design: [ARCHITECTURE §21.1](../../docs/ARCHITECTURE.md#211-settings) and the [Settings proposal](../../docs/proposals/settings_PROPOSAL.md).
 
 ## Installation
 

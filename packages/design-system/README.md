@@ -10,7 +10,7 @@ The **Design System** subsystem (id `design-system`, featurized, Page scope, no 
 - **Every tab follows**: with Settings, the preferences are kept and shared by every tab of the site.
 - **No flash of the wrong theme**: `renderThemeCss` and `renderThemeScript` go in the `<head>`, so the first paint is right before the platform starts.
 
-Design: [ARCHITECTURE §21.4](../../docs/ARCHITECTURE.md#214-design-system) and the [Design System proposal](../../proposals/design-system_PROPOSAL.md).
+Design: [ARCHITECTURE §21.4](../../docs/ARCHITECTURE.md#214-design-system) and the [Design System proposal](../../docs/proposals/design-system_PROPOSAL.md).
 
 ## Installation
 

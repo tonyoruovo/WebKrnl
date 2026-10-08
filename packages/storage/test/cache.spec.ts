@@ -157,7 +157,7 @@ describe('CacheBackend', () => {
       await backend.write(KEY_A, env());
       await backend.write(KEY_B, env());
       await backend.clear();
-      // proposals/cache_PROPOSAL.md: clear() -> prefix scan -> delete* -> _index sweep
+      // docs/proposals/cache_PROPOSAL.md: clear() -> prefix scan -> delete* -> _index sweep
       expect(await backend.read(KEY_A)).toBeNull();
       expect(await backend.read(KEY_B)).toBeNull();
       expect(await backend.count()).toBe(0);

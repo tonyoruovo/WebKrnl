@@ -11,7 +11,7 @@ The **Global State** subsystem: the platform's view of itself. It is a centraliz
 - **identifies the tab**, with an id that survives reloads and is unique for duplicated tabs;
 - **counts the tabs** of this origin that have the platform open and shown (`tabs`).
 
-Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3), the tab count in [§21.5](../../docs/ARCHITECTURE.md#215-the-tab-count-global-state), and the amended [Global State proposal](../../proposals/global_PROPOSAL.md).
+Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3), the tab count in [§21.5](../../docs/ARCHITECTURE.md#215-the-tab-count-global-state), and the amended [Global State proposal](../../docs/proposals/global_PROPOSAL.md).
 
 ## Installation
 

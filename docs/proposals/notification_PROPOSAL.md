@@ -1,4 +1,4 @@
-> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../docs/ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
+> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
 >
 > - The Notification Center owns **routing only**: the event registry, subscriptions, access control and history.
 > - Its event queue, retry and dead-letter logic below are **removed**. Packets arrive from the Queue, which owns scheduling and retries (amendment A10).

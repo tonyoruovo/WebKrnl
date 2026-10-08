@@ -1,4 +1,4 @@
-> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.2](../docs/ARCHITECTURE.md#192-auth).
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.2](../ARCHITECTURE.md#192-auth).
 >
 > - Auth is a featurized, Window-scoped subsystem. Network is optional. Storage and Crypto are late-bound.
 > - The app gives handlers (`login`, `refresh`, `logout`, `elevate`) instead of endpoints, so MFA, OAuth and passkeys stay in the app.

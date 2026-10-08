@@ -2,7 +2,7 @@
  * @fileoverview
  * @summary The Design System subsystem: tokens and the theme, written as CSS custom properties on the page.
  * @description
- * Implements `proposals/design-system_PROPOSAL.md` and docs/ARCHITECTURE.md
+ * Implements `docs/proposals/design-system_PROPOSAL.md` and docs/ARCHITECTURE.md
  * §21.4. It has no components and no framework dependency: components of any
  * framework read the custom properties.
  *

@@ -13,7 +13,7 @@ The **Sync** subsystem (id `sync`, featurized, Tab scope). It gets the changes o
 - **Pull**: `pull(cursor)` gives changes from the server, and `apply` writes them. A waiting local change wins.
 - **Pending work**: Global State shows what waits, one entry for each entity type ("3 changes to todos waiting").
 
-Network is required; Storage is late-bound. Design: [ARCHITECTURE §19.3](../../docs/ARCHITECTURE.md#193-sync) and the amended [Sync proposal](../../proposals/sync_PROPOSAL.md).
+Network is required; Storage is late-bound. Design: [ARCHITECTURE §19.3](../../docs/ARCHITECTURE.md#193-sync) and the amended [Sync proposal](../../docs/proposals/sync_PROPOSAL.md).
 
 ## Installation
 

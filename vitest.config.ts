@@ -1,11 +1,7 @@
-import { fileURLToPath } from 'node:url';
-
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 import { contextOptionsFor, selectInstallations } from './playwright.config.ts';
-
-const alias = { '@': fileURLToPath(new URL('./src', import.meta.url)) };
 
 /** Tests named `*.browser.spec.ts` need real browser APIs (workers, channels, iframes). */
 const BROWSER_TESTS = ['tests/**/*.browser.spec.ts', 'packages/*/test/**/*.browser.spec.ts'];
@@ -30,7 +26,6 @@ const instances = selectInstallations().map((installation) => ({
 }));
 
 export default defineConfig({
-  resolve: { alias },
   test: {
     coverage: {
       provider: 'v8',
@@ -47,7 +42,6 @@ export default defineConfig({
     },
     projects: [
       {
-        resolve: { alias },
         test: {
           name: 'node',
           include: ['tests/**/*.{spec,test}.ts', 'packages/*/test/**/*.{spec,test}.ts'],
@@ -55,7 +49,6 @@ export default defineConfig({
         },
       },
       {
-        resolve: { alias },
         test: {
           name: 'e2e',
           include: E2E_TESTS,
@@ -65,7 +58,6 @@ export default defineConfig({
         },
       },
       {
-        resolve: { alias },
         test: {
           name: 'browser',
           include: BROWSER_TESTS,

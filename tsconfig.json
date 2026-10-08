@@ -7,9 +7,6 @@
     "lib": ["ES2022", "DOM", "ESNext.Intl", "ESNext.Error"],
 
     "rootDir": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
 
     "outDir": "./dist",
     "declaration": true,
@@ -33,6 +30,6 @@
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src/**/*", "tests/**/*", "packages/*/src/**/*", "packages/*/test/**/*"],
+  "include": ["tests/**/*", "packages/*/src/**/*", "packages/*/test/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -9,7 +9,7 @@ The **Notification Center**: the platform's broadcast router. It is a centralize
 - a **circuit breaker** per subscriber, so one that keeps failing stops slowing every broadcast down;
 - **history**: the last broadcasts, each with its deliveries and one full fingerprint trail.
 
-It has no queue and no retries: the Queue (`@webkrnl/queue`) schedules every packet and hands broadcasts to `fanOut`. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Notification proposal](../../proposals/notification_PROPOSAL.md).
+It has no queue and no retries: the Queue (`@webkrnl/queue`) schedules every packet and hands broadcasts to `fanOut`. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Notification proposal](../../docs/proposals/notification_PROPOSAL.md).
 
 ## Installation
 

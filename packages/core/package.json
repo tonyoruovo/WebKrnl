@@ -16,9 +16,6 @@
     "fixtures"
   ],
   "sideEffects": false,
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  },
   "license": "ISC",
   "publishConfig": {
     "main": "./dist/index.js",

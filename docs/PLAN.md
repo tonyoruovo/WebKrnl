@@ -7,7 +7,7 @@
 
 ## 1. Principles
 
-1. **Intent before code.** Each milestone starts by updating the documents it touches: `proposals/README.md` amendments, the subsystem's proposal, and `ARCHITECTURE.md`. Code follows the documents. A difference between code and documents is a bug in one of them.
+1. **Intent before code.** Each milestone starts by updating the documents it touches: `docs/proposals/README.md` amendments, the subsystem's proposal, and `ARCHITECTURE.md`. Code follows the documents. A difference between code and documents is a bug in one of them.
 2. **Kernel first.** No subsystem is built or ported until the `Unit` contract exists and one pilot subsystem has proved it.
 3. **Port, don't rewrite.** The existing classes in `src/managers/` are tested domain logic. They become the processors and features of the new subsystems. The kernel adds identity, lifecycle, packets, and scopes around them.
 4. **Every milestone ends green:** type-check, lint, unit tests, and (from M2 on) browser tests all pass, and the documents match the code.
@@ -69,7 +69,7 @@ _Goal: a trustworthy baseline to build on._
 - Convert the repo to a pnpm workspace with an empty `packages/` tree. Existing code stays in `src/` until it is ported.
 - Add browser tests (Vitest browser mode with Playwright) next to Node tests. Workers, `BroadcastChannel`, and iframes need a real browser. The matrix covers Chromium, Firefox, and WebKit on desktop, and mobile WebKit and Chromium-on-Android profiles (§1.1). Emulated mobile profiles are a first step. Real-device runs are added before 1.0.
 - Encode the minimum browser versions (Q6) in a browserslist config and the test matrix.
-- Merge amendments A1–A10 (§15) into `proposals/README.md`, after review.
+- Merge amendments A1–A10 (§15) into `docs/proposals/README.md`, after review.
 
 **Gate:** all existing tests pass, `tsc` is clean, `pnpm check` passes locally (CI deferred), and amendments A1–A10 are merged into the README.
 

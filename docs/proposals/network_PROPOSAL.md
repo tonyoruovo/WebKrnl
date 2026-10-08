@@ -1,4 +1,4 @@
-> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.1](../docs/ARCHITECTURE.md#191-network).
+> **Amendments (M7, 2026-10-04).** These override the text below wherever they conflict. See [ARCHITECTURE §19.1](../ARCHITECTURE.md#191-network).
 >
 > - Network is a featurized, Tab-scoped subsystem with no required dependency. Global State is optional. It runs on the main thread only.
 > - Retries use the backoff of `@webkrnl/core` and honour `Retry-After`. Only idempotent methods, or requests with an `idempotencyKey`, retry.

@@ -12,7 +12,7 @@ The **Analytics** subsystem (id `analytics`, featurized, Tab scope, requires Con
 - **When the page hides**: the last batches go with `navigator.sendBeacon`.
 - **The data saver**: with `dataSaver` or a `bandwidthMode` that is not `FULL` (Settings), batches go out only when full or when the page hides.
 
-It runs on the main thread. The proposal asked for a worker, but the beacon in `pagehide` must build its payload at once, and the work is small. Design: [ARCHITECTURE §21.3](../../docs/ARCHITECTURE.md#213-analytics) and the [Analytics proposal](../../proposals/analytics_PROPOSAL.md).
+It runs on the main thread. The proposal asked for a worker, but the beacon in `pagehide` must build its payload at once, and the work is small. Design: [ARCHITECTURE §21.3](../../docs/ARCHITECTURE.md#213-analytics) and the [Analytics proposal](../../docs/proposals/analytics_PROPOSAL.md).
 
 ## Installation
 

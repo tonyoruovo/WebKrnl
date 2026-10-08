@@ -11,7 +11,7 @@ The **Consent** subsystem (id `consent`, featurized, Window scope). It records w
 - **Broadcast**: every change is announced as `consent:changed`.
 - **Shared by every tab of the site** (Window scope, with `@webkrnl/hub`'s Window transport): a decision in one tab reaches the others, and a new tab asks the open ones for theirs (`consent:sync`, answered with `consent:state`). Per category, the newer decision wins.
 
-Retention rules and data-subject requests (export, erase) need Storage and arrive with it in M6. Design: [ARCHITECTURE §13](../../docs/ARCHITECTURE.md#13-subsystem-catalogue) and the amended [Consent proposal](../../proposals/consent_PROPOSAL.md).
+Retention rules and data-subject requests (export, erase) need Storage and arrive with it in M6. Design: [ARCHITECTURE §13](../../docs/ARCHITECTURE.md#13-subsystem-catalogue) and the amended [Consent proposal](../../docs/proposals/consent_PROPOSAL.md).
 
 ## Installation
 

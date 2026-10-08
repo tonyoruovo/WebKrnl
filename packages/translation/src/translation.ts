@@ -3,7 +3,7 @@
  * @summary The Translation subsystem: localized messages and locale-aware formatting, offline.
  * @description
  * Implements docs/ARCHITECTURE.md §21.2 (amended proposal:
- * `proposals/translation_PROPOSAL.md`). `t()` is synchronous, because
+ * `docs/proposals/translation_PROPOSAL.md`). `t()` is synchronous, because
  * templates call it while they render. Catalogs load before, in the
  * background, and `views.state` tells the UI when to render again.
  *

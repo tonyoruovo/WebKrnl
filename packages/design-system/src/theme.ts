@@ -3,7 +3,7 @@
  * @summary The theme: appearance preferences, resolved with the device, turned into token values and a stylesheet.
  * @description
  * Implements the Theme Resolver and the Stylesheet Export of
- * `proposals/design-system_PROPOSAL.md`. The preferences can say `system`;
+ * `docs/proposals/design-system_PROPOSAL.md`. The preferences can say `system`;
  * the media queries of the device resolve them. The resolved theme picks the
  * modes of the token set, scales the font sizes, and stops motion.
  *

@@ -1,4 +1,4 @@
-> **Amendments (M6, 2026-10-03).** These override the text below wherever they conflict. See [ARCHITECTURE §18.2](../docs/ARCHITECTURE.md#182-storage) and [§8.7](../docs/ARCHITECTURE.md#87-processor-configuration-m6).
+> **Amendments (M6, 2026-10-03).** These override the text below wherever they conflict. See [ARCHITECTURE §18.2](../ARCHITECTURE.md#182-storage) and [§8.7](../ARCHITECTURE.md#87-processor-configuration-m6).
 >
 > - Storage is a featurized, Tab-scoped subsystem. It encrypts with the key store of `@webkrnl/crypto`, so it shares the keys of the Crypto subsystem. Its lifecycle is the kernel lifecycle, not `idle | booting | running | winding_down`.
 > - The coordinator is the processor `coordinator` on the hosts shared, then virtual. The backends run inside it. They are not kernel features.

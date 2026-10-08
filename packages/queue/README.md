@@ -11,7 +11,7 @@ The **Queue**: the platform's packet router. It is a centralized subsystem (id `
 - **dead letters**: packets that run out of retries or expire are kept and can be replayed. When Storage runs, they are also kept in the collection `queue.dead-letters`, so they survive a reload;
 - **trails**: every settled packet is recorded with its full fingerprint trail.
 
-The kernel owns delivery, and the Notification Center (`@webkrnl/notification`) owns broadcast fan-out. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Queue proposal](../../proposals/queue_PROPOSAL.md).
+The kernel owns delivery, and the Notification Center (`@webkrnl/notification`) owns broadcast fan-out. Design: [ARCHITECTURE §10.1](../../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and the amended [Queue proposal](../../docs/proposals/queue_PROPOSAL.md).
 
 ## Installation
 

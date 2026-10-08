@@ -3,7 +3,7 @@
  * @summary The Consent subsystem: per-category grants, policy versions, and the gate telemetry checks.
  * @description
  * Implements the Consent subsystem of docs/ARCHITECTURE.md §13 (amended
- * proposal: `proposals/consent_PROPOSAL.md`). It records what the user agreed
+ * proposal: `docs/proposals/consent_PROPOSAL.md`). It records what the user agreed
  * to, per category, under a policy version, and answers `isGranted`. It
  * **fails closed**: a category without a current grant is off.
  *

@@ -9,7 +9,7 @@ The **Logger** subsystem (id `logger`, featurized, Tab scope). It keeps:
 
 and joins both by **`traceId`**, so one call shows everything that happened for one user action. It has no required dependency: it runs from the start of boot and follows the Queue and the Notification Center as they come and go. When Storage runs, entries of level `INFO` and higher are also kept in the collection `logger.entries`, and `history()` reads them, also from earlier sessions. You can bind your own **sink** too; until one is bound, entries are buffered.
 
-Design: [ARCHITECTURE §7.2 and §13](../../docs/ARCHITECTURE.md#72-late-binding-for-centralized-subsystems) and the amended [Logger proposal](../../proposals/logger_PROPOSAL.md).
+Design: [ARCHITECTURE §7.2 and §13](../../docs/ARCHITECTURE.md#72-late-binding-for-centralized-subsystems) and the amended [Logger proposal](../../docs/proposals/logger_PROPOSAL.md).
 
 ## Installation
 

@@ -13,7 +13,7 @@ The **Auth** subsystem (id `auth`, featurized, **Window** scope). It keeps the s
 - **Permissions**: roles, permissions, levels, and elevations that expire.
 - **Lockout**: after repeated failed logins, `login` fails at once for a while.
 
-Network is optional; Storage and Crypto are late-bound. Design: [ARCHITECTURE §19.2](../../docs/ARCHITECTURE.md#192-auth) and the amended [Auth proposal](../../proposals/auth_PROPOSAL.md).
+Network is optional; Storage and Crypto are late-bound. Design: [ARCHITECTURE §19.2](../../docs/ARCHITECTURE.md#192-auth) and the amended [Auth proposal](../../docs/proposals/auth_PROPOSAL.md).
 
 ## Installation
 

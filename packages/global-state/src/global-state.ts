@@ -3,7 +3,7 @@
  * @summary The Global State subsystem: derived platform status, admission, pending work, environment and tab identity.
  * @description
  * Implements Global State as described in docs/ARCHITECTURE.md §10.1 and the
- * amended `proposals/global_PROPOSAL.md`. It is a centralized, tab-scoped
+ * amended `docs/proposals/global_PROPOSAL.md`. It is a centralized, tab-scoped
  * subsystem with the id `global-state`.
  *
  * ```text

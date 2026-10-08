@@ -1,4 +1,4 @@
-> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../docs/ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
+> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
 >
 > - Packets use the envelope/callback split of `@webkrnl/core` (`PacketEnvelope`, string `eventId`, callbacks kept by correlation id). The `BasePacket` below, with `eventId: symbol` and inline callbacks, is replaced.
 > - The platform status is **derived** from every unit's lifecycle (`ctx.statuses`) and from pending work. It is never set by hand: `INITIALIZING`, `IDLE`, `BUSY`, `DEGRADED` (and `STOPPED` after shutdown).

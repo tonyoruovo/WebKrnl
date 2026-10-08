@@ -12,7 +12,7 @@ The **Storage** subsystem (id `storage`, featurized, Tab scope, no required depe
 - **Events**: changes reach every tab (`BroadcastChannel`). A quota monitor warns and evicts. Corrupt entries are reported.
 - **Safety**: a key check confirms that Storage and Crypto use the same keys. A Web Lock keeps one order of writes when more than one coordinator runs.
 
-The coordinator runs in a **shared worker**, then on the main thread (failover). Functions of a collection (migrations, serializers, filters) cross to the worker as **portable functions**. Design: [ARCHITECTURE §18.2](../../docs/ARCHITECTURE.md#182-storage) and the amended [Storage proposal](../../proposals/storage_PROPOSAL.md).
+The coordinator runs in a **shared worker**, then on the main thread (failover). Functions of a collection (migrations, serializers, filters) cross to the worker as **portable functions**. Design: [ARCHITECTURE §18.2](../../docs/ARCHITECTURE.md#182-storage) and the amended [Storage proposal](../../docs/proposals/storage_PROPOSAL.md).
 
 ## Installation
 

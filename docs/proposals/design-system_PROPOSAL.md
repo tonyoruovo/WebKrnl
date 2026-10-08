@@ -1,4 +1,4 @@
-> **Agreed (M9, 2026-10-06).** The user decided the scope (tokens and theme only, Page scope, no components) on 2026-10-05, and agreed this proposal on 2026-10-06. See [ARCHITECTURE §21.4](../docs/ARCHITECTURE.md#214-design-system).
+> **Agreed (M9, 2026-10-06).** The user decided the scope (tokens and theme only, Page scope, no components) on 2026-10-05, and agreed this proposal on 2026-10-06. See [ARCHITECTURE §21.4](../ARCHITECTURE.md#214-design-system).
 
 # Design System
 

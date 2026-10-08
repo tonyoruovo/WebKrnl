@@ -14,7 +14,7 @@ The **Network** subsystem (id `network`, featurized, Tab scope, no required depe
 - **Interceptors**: other subsystems add request and response interceptors. Auth adds its token this way.
 - **Pending work**: each request shows in Global State while it runs, unless it is `background`.
 
-It runs on the main thread: a response body is a stream that callers need in their own realm. Design: [ARCHITECTURE §19.1](../../docs/ARCHITECTURE.md#191-network) and the amended [Network proposal](../../proposals/network_PROPOSAL.md).
+It runs on the main thread: a response body is a stream that callers need in their own realm. Design: [ARCHITECTURE §19.1](../../docs/ARCHITECTURE.md#191-network) and the amended [Network proposal](../../docs/proposals/network_PROPOSAL.md).
 
 ## Installation
 

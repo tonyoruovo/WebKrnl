@@ -1,4 +1,4 @@
-> **Amendments (M6, 2026-10-03).** These override the text below wherever they conflict. See [ARCHITECTURE §18.1](../docs/ARCHITECTURE.md#181-crypto).
+> **Amendments (M6, 2026-10-03).** These override the text below wherever they conflict. See [ARCHITECTURE §18.1](../ARCHITECTURE.md#181-crypto).
 >
 > - Crypto is a featurized, Tab-scoped subsystem with no required dependency. Its work runs in the processor `crypto` on the hosts shared, dedicated, then virtual.
 > - Keys are non-extractable `CryptoKey` objects that persist in IndexedDB (`__platform_crypto`), so every host and every session uses the same keys.

@@ -1,7 +1,7 @@
 # Architecture
 
 > **Status:** Agreed — 2026-10-01
-> **Precedence:** [`proposals/README.md`](../proposals/README.md) > this document > the per-subsystem proposals in [`proposals/`](../proposals).
+> **Precedence:** [`proposals/README.md`](proposals/README.md) > this document > the per-subsystem proposals in [`proposals/`](proposals).
 > Where this document changes `proposals/README.md`, the change is listed in [§15 Amendments](#15-amendments-to-proposalsreadmemd). Amendments A1–A10 were merged into the README on 2026-10-01.
 
 ---
@@ -1011,7 +1011,7 @@ This section is the design of milestone M9. It amends the proposals `settings`, 
 
 ### 21.4 Design System
 
-`@webkrnl/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`proposals/design-system_PROPOSAL.md`) was agreed on 2026-10-06.
+`@webkrnl/design-system` gives the subsystem `design-system` (featurized, **Page** scope, no required dependency; Settings and Translation are optional). It has tokens and a theme, and no components. The proposal (`docs/proposals/design-system_PROPOSAL.md`) was agreed on 2026-10-06.
 
 - **Tokens** are CSS custom properties, set on `document.documentElement` (or another root): color, space, size, radius, type, shadow, motion and z-index.
 - **The theme** comes from the appearance settings (color scheme, contrast, density, font scale, reduced motion) and the user agent (`prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-motion`). The direction comes from Translation (`dir` and `lang` on the root).

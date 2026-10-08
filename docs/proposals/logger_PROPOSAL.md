@@ -1,4 +1,4 @@
-> **Amendments (M4, 2026-10-02).** These override the text below wherever they conflict. See [ARCHITECTURE §7.2](../docs/ARCHITECTURE.md#72-late-binding-for-centralized-subsystems) and [§17](../docs/ARCHITECTURE.md#17-pilot-retrospective-m4).
+> **Amendments (M4, 2026-10-02).** These override the text below wherever they conflict. See [ARCHITECTURE §7.2](../ARCHITECTURE.md#72-late-binding-for-centralized-subsystems) and [§17](../ARCHITECTURE.md#17-pilot-retrospective-m4).
 >
 > - The Logger is a featurized, Tab-scoped subsystem with **no required dependency**. It follows the Queue and the Notification Center with `ctx.watch` and receives every settled packet and every broadcast through their `observe` commands.
 > - Trails are joined by `traceId` (`commands.trace`); a trail from another tab or a server is added with `recordTrail`.

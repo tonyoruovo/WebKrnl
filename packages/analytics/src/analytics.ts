@@ -3,7 +3,7 @@
  * @summary The Analytics subsystem: metrics and events, only with consent, sent in batches.
  * @description
  * Implements docs/ARCHITECTURE.md §21.3 (amended proposal:
- * `proposals/analytics_PROPOSAL.md`). Analytics is the sink of the platform:
+ * `docs/proposals/analytics_PROPOSAL.md`). Analytics is the sink of the platform:
  * other units report to it, and no unit depends on it. Telemetry never slows
  * the app: it is sampled, batched, and gated on consent.
  *

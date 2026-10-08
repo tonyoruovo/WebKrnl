@@ -1,4 +1,4 @@
-> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../docs/ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../docs/ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
+> **Amendments (M3, 2026-10-01).** These override the text below wherever they conflict. See [ARCHITECTURE §10.1](../ARCHITECTURE.md#101-how-the-three-centralized-subsystems-fit-together-m3) and [§16](../ARCHITECTURE.md#16-corrections-to-the-per-subsystem-proposals).
 >
 > - The Queue is the kernel's **packet router**: every packet, 1-to-1 and 1-to-N, enters through it.
 > - The Notification Center does **not** poll the Queue. The Queue pushes broadcasts to it through `fanOut`.

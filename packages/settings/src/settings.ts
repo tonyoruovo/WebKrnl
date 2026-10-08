@@ -3,7 +3,7 @@
  * @summary The Settings subsystem: the preferences of the user and of the device, shared by every tab of the site.
  * @description
  * Implements docs/ARCHITECTURE.md §21.1 (amended proposal:
- * `proposals/settings_PROPOSAL.md`). A setting is a definition (a default, a
+ * `docs/proposals/settings_PROPOSAL.md`). A setting is a definition (a default, a
  * check, a kind) and, after a change, a record (the value and the time of the
  * change). The records are persisted state, so they survive a reload.
  *

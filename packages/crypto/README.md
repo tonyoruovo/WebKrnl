@@ -9,7 +9,7 @@ The **Crypto** subsystem (id `crypto`, featurized, Tab scope, no required depend
 - **Signatures**: ECDSA P-256, with a public key that you can send to a server.
 - **Digests**: SHA-256, SHA-384 and SHA-512.
 
-The keys are **non-extractable** `CryptoKey` objects: the platform can use them but cannot read their bytes. They **persist in IndexedDB**, so every tab, every worker and every session of the origin uses the same keys. The work runs in a **shared worker**, then a dedicated worker, then the main thread (failover). Design: [ARCHITECTURE §18.1](../../docs/ARCHITECTURE.md#181-crypto) and the amended [Crypto proposal](../../proposals/crypto_PROPOSAL.md).
+The keys are **non-extractable** `CryptoKey` objects: the platform can use them but cannot read their bytes. They **persist in IndexedDB**, so every tab, every worker and every session of the origin uses the same keys. The work runs in a **shared worker**, then a dedicated worker, then the main thread (failover). Design: [ARCHITECTURE §18.1](../../docs/ARCHITECTURE.md#181-crypto) and the amended [Crypto proposal](../../docs/proposals/crypto_PROPOSAL.md).
 
 ## Installation
 
