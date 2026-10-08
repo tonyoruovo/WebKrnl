@@ -46,6 +46,203 @@ Every message is a **wire envelope**, JSON, version 1. `encodeWire` and `decodeW
 
 **Fixtures.** `@webkrnl/core/fixtures/wire/valid/*.json` and `…/invalid/*.json`. Each file has a `description`, the `envelope`, and for an invalid one the `reason` (the field that fails). Your server must accept every valid fixture and refuse every invalid one.
 
+### 1.1 The same schema, in a validation library
+
+`@webkrnl/core`'s own `WireEnvelopeSchema` (`encodeWire`, `decodeWire`) is hand-written, with no dependency. A server written in TypeScript can check the same envelope with a library instead. Each of these refuses the same fixtures `@webkrnl/core/fixtures/wire/invalid/*.json` do, including the broadcast-with-elevation-token rule, which no structural schema expresses on its own: it is a rule across two fields (`metadata.target` and `metadata.authToken`), checked after the rest.
+
+**Zod:**
+
+```ts
+import { z } from 'zod';
+
+const nonEmpty = z.string().min(1);
+const FingerprintSchema = z.object({
+  actionName: nonEmpty,
+  valueType: z.string(),
+  timestamp: z.number().nonnegative(),
+  subsystemId: nonEmpty,
+  componentId: z.string().nullable(),
+  counter: z.number().int().nonnegative().nullable(),
+  level: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']),
+  message: z.string().nullable(),
+});
+const WireEnvelopeSchema = z
+  .object({
+    v: z.literal(1),
+    eventId: nonEmpty,
+    actionName: nonEmpty,
+    importance: z.enum(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']),
+    payload: z.unknown(),
+    metadata: z.object({
+      messageId: nonEmpty,
+      source: nonEmpty,
+      target: nonEmpty.nullable(),
+      scope: z.enum(['tab', 'page', 'window', 'global']),
+      timestamp: z.number().nonnegative(),
+      ttl: z.number().int().positive().optional(),
+      traceId: nonEmpty,
+      spanId: nonEmpty,
+      authToken: nonEmpty.optional(),
+    }),
+    fingerprints: z.object({
+      entries: z.array(FingerprintSchema),
+      dropped: z.number().int().nonnegative(),
+    }),
+  })
+  .refine((envelope) => envelope.metadata.target !== null || !envelope.metadata.authToken, {
+    message: 'An elevation token must never be attached to a broadcast.',
+    path: ['metadata', 'authToken'],
+  });
+
+const result = WireEnvelopeSchema.safeParse(JSON.parse(body));
+if (!result.success) return reply.status(400).send(result.error.issues);
+```
+
+**Yup:**
+
+```ts
+import * as yup from 'yup';
+
+const nonEmpty = yup.string().required();
+const fingerprintSchema = yup.object({
+  actionName: nonEmpty,
+  valueType: yup.string().required(),
+  timestamp: yup.number().min(0).required(),
+  subsystemId: nonEmpty,
+  componentId: yup.string().nullable().defined(),
+  counter: yup.number().integer().min(0).nullable().defined(),
+  level: yup.string().oneOf(['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']).required(),
+  message: yup.string().nullable().defined(),
+});
+const wireEnvelopeSchema = yup
+  .object({
+    v: yup.number().oneOf([1]).required(),
+    eventId: nonEmpty,
+    actionName: nonEmpty,
+    importance: yup.string().oneOf(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']).required(),
+    payload: yup.mixed(),
+    metadata: yup
+      .object({
+        messageId: nonEmpty,
+        source: nonEmpty,
+        target: nonEmpty.nullable().defined(),
+        scope: yup.string().oneOf(['tab', 'page', 'window', 'global']).required(),
+        timestamp: yup.number().min(0).required(),
+        ttl: yup.number().integer().positive(),
+        traceId: nonEmpty,
+        spanId: nonEmpty,
+        authToken: nonEmpty,
+      })
+      .required(),
+    fingerprints: yup
+      .object({
+        entries: yup.array(fingerprintSchema).required(),
+        dropped: yup.number().integer().min(0).required(),
+      })
+      .required(),
+  })
+  .test(
+    'broadcast-no-token',
+    'An elevation token must never be attached to a broadcast.',
+    (value) => value.metadata.target !== null || !value.metadata.authToken,
+  );
+
+try {
+  const envelope = await wireEnvelopeSchema.validate(JSON.parse(body));
+} catch (error) {
+  return reply.status(400).send((error as yup.ValidationError).errors);
+}
+```
+
+**`@arrirpc/schema`:** the `a` namespace builds a structural schema (`a.object`, `a.string`, `a.enumerator`, `a.nullable`, `a.optional`, `a.int32`). It has no built-in cross-field rule, so the broadcast check runs as a plain function after `a.validate` passes:
+
+```ts
+import { a } from '@arrirpc/schema';
+
+const Fingerprint = a.object({
+  actionName: a.string(),
+  valueType: a.string(),
+  timestamp: a.int32(),
+  subsystemId: a.string(),
+  componentId: a.nullable(a.string()),
+  counter: a.nullable(a.int32()),
+  level: a.enumerator(['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']),
+  message: a.nullable(a.string()),
+});
+const WireEnvelope = a.object({
+  v: a.enumerator(['1']), // arri enumerates strings; compare Number(envelope.v) === 1 yourself
+  eventId: a.string(),
+  actionName: a.string(),
+  importance: a.enumerator(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']),
+  payload: a.any(),
+  metadata: a.object({
+    messageId: a.string(),
+    source: a.string(),
+    target: a.nullable(a.string()),
+    scope: a.enumerator(['tab', 'page', 'window', 'global']),
+    timestamp: a.int32(),
+    ttl: a.optional(a.int32()),
+    traceId: a.string(),
+    spanId: a.string(),
+    authToken: a.optional(a.string()),
+  }),
+  fingerprints: a.object({ entries: a.array(Fingerprint), dropped: a.int32() }),
+});
+
+const envelope = JSON.parse(body) as a.infer<typeof WireEnvelope>;
+const valid =
+  a.validate(WireEnvelope, envelope) &&
+  (envelope.metadata.target !== null || !envelope.metadata.authToken);
+if (!valid) return reply.status(400).send('Invalid wire envelope.');
+```
+
+**Joi:**
+
+```ts
+import Joi from 'joi';
+
+const fingerprintSchema = Joi.object({
+  actionName: Joi.string().min(1).required(),
+  valueType: Joi.string().required(),
+  timestamp: Joi.number().min(0).required(),
+  subsystemId: Joi.string().min(1).required(),
+  componentId: Joi.string().allow(null).required(),
+  counter: Joi.number().integer().min(0).allow(null).required(),
+  level: Joi.string().valid('DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL').required(),
+  message: Joi.string().allow(null).required(),
+});
+const wireEnvelopeSchema = Joi.object({
+  v: Joi.number().valid(1).required(),
+  eventId: Joi.string().min(1).required(),
+  actionName: Joi.string().min(1).required(),
+  importance: Joi.string().valid('CRITICAL', 'HIGH', 'MEDIUM', 'LOW').required(),
+  payload: Joi.any(),
+  metadata: Joi.object({
+    messageId: Joi.string().min(1).required(),
+    source: Joi.string().min(1).required(),
+    target: Joi.string().min(1).allow(null).required(),
+    scope: Joi.string().valid('tab', 'page', 'window', 'global').required(),
+    timestamp: Joi.number().min(0).required(),
+    ttl: Joi.number().integer().positive(),
+    traceId: Joi.string().min(1).required(),
+    spanId: Joi.string().min(1).required(),
+    authToken: Joi.string().min(1),
+  }).required(),
+  fingerprints: Joi.object({
+    entries: Joi.array().items(fingerprintSchema).required(),
+    dropped: Joi.number().integer().min(0).required(),
+  }).required(),
+}).custom((envelope, helpers) => {
+  if (envelope.metadata.target === null && envelope.metadata.authToken) {
+    return helpers.error('any.invalid');
+  }
+  return envelope;
+}, 'An elevation token must never be attached to a broadcast.');
+
+const { value, error } = wireEnvelopeSchema.validate(JSON.parse(body));
+if (error) return reply.status(400).send(error.details);
+```
+
 ## 2. The socket
 
 The socket uses the frames of Realtime: one JSON object for each frame.
