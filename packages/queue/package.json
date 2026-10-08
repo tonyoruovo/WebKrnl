@@ -1,0 +1,34 @@
+{
+  "name": "@webkrnl/queue",
+  "version": "0.0.2",
+  "description": "The Queue subsystem: the kernel's packet router, with admission, priorities, ordering, retries and dead letters.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@webkrnl/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/global-state": "workspace:*",
+    "@webkrnl/notification": "workspace:*"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "messages": {
+    "title": "{name}",
+    "status": "Platform: {status}",
+    "online": "{online, select, true {Online} other {Offline}}",
+    "tabs": "{n, plural, one {# tab open} other {# tabs open}}",
+    "pending": "{n, plural, =0 {Nothing waits} one {# change waits} other {# changes wait}}",
+    "saved": "{n, plural, =0 {No notes on the server} one {# note on the server} other {# notes on the server}}",
+    "addNote": "Add a note",
+    "theme": "Dark theme",
+    "language": "Français"
+  }
+}

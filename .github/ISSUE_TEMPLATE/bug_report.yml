@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in a built package, example, or test behaves wrong.
+labels: ['bug']
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which `@webkrnl/*` package, or "monorepo" for tooling (scripts, build, CI).
+      options:
+        - '@webkrnl/core'
+        - '@webkrnl/global-state'
+        - '@webkrnl/queue'
+        - '@webkrnl/notification'
+        - '@webkrnl/logger'
+        - '@webkrnl/consent'
+        - '@webkrnl/crypto'
+        - '@webkrnl/storage'
+        - '@webkrnl/hub'
+        - '@webkrnl/network'
+        - '@webkrnl/auth'
+        - '@webkrnl/sync'
+        - '@webkrnl/realtime'
+        - '@webkrnl/settings'
+        - '@webkrnl/translation'
+        - '@webkrnl/analytics'
+        - '@webkrnl/design-system'
+        - '@webkrnl/platform'
+        - '@webkrnl/vue'
+        - '@webkrnl/create'
+        - monorepo tooling (scripts, build, CI)
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened instead. Include the error message or failing assertion.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The commands run and, for a browser bug, the browser (`BROWSERS=` value) and whether it reproduces outside the full subset.
+      placeholder: |
+        1. pnpm exec vitest run --project node packages/...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Related design section
+      description: The ARCHITECTURE.md or PLAN.md section this touches, if any.

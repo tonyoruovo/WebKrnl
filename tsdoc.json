@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+  "extends": ["typedoc/tsdoc.json"],
+  "noStandardTags": false,
+  "tagDefinitions": [
+    { "tagName": "@description", "syntaxKind": "block" },
+    { "tagName": "@fileoverview", "syntaxKind": "block" },
+    { "tagName": "@constant", "syntaxKind": "block" }
+  ]
+}

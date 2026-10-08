@@ -1,0 +1,37 @@
+{
+  "name": "@webkrnl/crypto",
+  "version": "0.0.2",
+  "description": "The Crypto subsystem: non-extractable keys that persist in IndexedDB, encryption, HMAC, signatures and digests, in a shared worker.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/crypto.worker.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@webkrnl/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@webkrnl/core": "workspace:*"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./worker": {
+        "types": "./dist/crypto.worker.d.ts",
+        "import": "./dist/crypto.worker.js"
+      }
+    }
+  }
+}

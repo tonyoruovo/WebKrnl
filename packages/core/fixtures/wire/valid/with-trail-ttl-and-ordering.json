@@ -1,0 +1,50 @@
+{
+  "description": "An envelope with a time to live, an ordering key, a parent span and a fingerprint trail.",
+  "envelope": {
+    "v": 1,
+    "eventId": "note:saved",
+    "actionName": "note:saved",
+    "importance": "MEDIUM",
+    "payload": {
+      "id": "n1",
+      "title": "Shopping list"
+    },
+    "metadata": {
+      "messageId": "6f1c2a9e-4b7d-4d2a-9a51-0c3f8e2b7d10",
+      "source": "notes",
+      "target": null,
+      "scope": "global",
+      "timestamp": 1767225600000,
+      "traceId": "0b8f3c1d-2e4a-4f6b-8c9d-1a2b3c4d5e6f",
+      "spanId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "ttl": 30000,
+      "orderingKey": "notes:n1",
+      "parentSpanId": "9f8e7d6c-5b4a-4392-8a1b-0c9d8e7f6a5b"
+    },
+    "fingerprints": {
+      "entries": [
+        {
+          "actionName": "sent",
+          "valueType": "object",
+          "timestamp": 1767225600000,
+          "subsystemId": "notes",
+          "componentId": null,
+          "counter": null,
+          "level": "INFO",
+          "message": null
+        },
+        {
+          "actionName": "enqueued",
+          "valueType": "object",
+          "timestamp": 1767225600001,
+          "subsystemId": "queue",
+          "componentId": null,
+          "counter": 1,
+          "level": "DEBUG",
+          "message": "tier MEDIUM"
+        }
+      ],
+      "dropped": 0
+    }
+  }
+}

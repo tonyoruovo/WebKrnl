@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project design
+    url: https://github.com/tonyoruovo/web-subsystem/blob/staging/docs/ARCHITECTURE.md
+    about: Read the design before filing a proposal, so it links to the right section.

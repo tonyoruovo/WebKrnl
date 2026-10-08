@@ -1,0 +1,34 @@
+{
+  "name": "@webkrnl/logger",
+  "version": "0.0.2",
+  "description": "The Logger subsystem: sanitized, level-filtered logs and packet trails joined by traceId.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@webkrnl/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  }
+}

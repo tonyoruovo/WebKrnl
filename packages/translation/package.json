@@ -1,0 +1,43 @@
+{
+  "name": "@webkrnl/translation",
+  "version": "0.0.2",
+  "description": "The Translation subsystem: ICU messages, the locale chain, offline catalogs and locale-aware formatting.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/compile.worker.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@webkrnl/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@webkrnl/consent": "workspace:*",
+    "@webkrnl/core": "workspace:*",
+    "@webkrnl/network": "workspace:*",
+    "@webkrnl/notification": "workspace:*",
+    "@webkrnl/queue": "workspace:*",
+    "@webkrnl/settings": "workspace:*",
+    "@webkrnl/storage": "workspace:*"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./worker": {
+        "types": "./dist/compile.worker.d.ts",
+        "import": "./dist/compile.worker.js"
+      }
+    }
+  }
+}

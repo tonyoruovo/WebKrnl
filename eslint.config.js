@@ -5,7 +5,15 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['**/dist/**', '**/node_modules/**', 'pnpm-lock.yaml'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      'pnpm-lock.yaml',
+      '.examples/**',
+      '.claude/**',
+      'packages/create/templates/**',
+      'docs-site/**',
+    ],
   },
   // Base configuration for JS and TS files
   eslint.configs.recommended,
@@ -21,10 +29,13 @@ export default tseslint.config(
       semi: ['error', 'always'],
       'no-trailing-spaces': 'error',
       'eol-last': ['error', 'always'],
-      indent: ['error', 2, { SwitchCase: 1 }],
+      // Prettier owns indentation; ESLint's indent rule disagrees with it on ternaries.
 
       // Strict TypeScript code quality rules
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/consistent-type-imports': [

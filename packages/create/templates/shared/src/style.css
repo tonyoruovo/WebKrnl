@@ -1,0 +1,45 @@
+/* Every value comes from a design token of @webkrnl/design-system (--ds-*). */
+body {
+  margin: 0;
+  background: var(--ds-color-surface);
+  color: var(--ds-color-text);
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-md);
+  line-height: var(--ds-line-height-normal);
+}
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--ds-space-6) var(--ds-space-4);
+}
+.panel {
+  display: grid;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-4);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-color-surface-raised);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+  margin-block-start: var(--ds-space-4);
+}
+button {
+  padding: var(--ds-space-2) var(--ds-space-4);
+  border: 0;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-color-primary);
+  color: var(--ds-color-on-primary);
+  font: inherit;
+  cursor: pointer;
+  transition: opacity var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+}
+button:focus-visible {
+  outline: 2px solid var(--ds-color-focus);
+  outline-offset: 2px;
+}
+.offline {
+  color: var(--ds-color-danger);
+}

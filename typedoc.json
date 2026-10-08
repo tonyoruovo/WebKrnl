@@ -1,0 +1,30 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "WebKrnl",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/*"],
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"],
+    "tsconfig": "../../tsconfig.json",
+    "readme": "README.md",
+    "excludePrivate": true,
+    "excludeInternal": true
+  },
+  "readme": "README.md",
+  "out": "docs-site",
+  "includeVersion": true,
+  "skipErrorChecking": true,
+  "highlightLanguages": [
+    "bash",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "shell",
+    "text",
+    "ts",
+    "typescript",
+    "vue",
+    "tsx"
+  ]
+}
