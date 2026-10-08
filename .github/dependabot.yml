@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # The pnpm workspace: one root lockfile covers every package in packages/*.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    groups:
+      # Playwright's browser build and the test runner move together; a
+      # mismatched pair is the kind of failure docs/PLAN.md already tracks
+      # as a risk (browser-test-subset).
+      test-tooling:
+        patterns:
+          - 'playwright'
+          - 'vitest'
+          - '@vitest/*'
+      typescript-tooling:
+        patterns:
+          - 'typescript'
+          - '@typescript/*'
+          - 'typescript-eslint'
+          - '@typescript-eslint/*'
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+      vue:
+        patterns:
+          - 'vue'
+          - 'vue-router'
+          - '@vitejs/plugin-vue'
+          - 'vue-tsc'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'

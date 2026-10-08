@@ -1,0 +1,7 @@
+# Code owners (docs/ARCHITECTURE.md, docs/PLAN.md).
+# One maintainer today; every path routes review to them. Add a team or a
+# second person here once this repo has more than one maintainer — split by
+# package (e.g. `/packages/storage/ @teammate`) rather than replacing this
+# line, so nothing is left unowned.
+
+* @tonyoruovo
