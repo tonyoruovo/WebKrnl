@@ -42,11 +42,12 @@
  * @author MathAid
  */
 
+import { createStore, type View } from '../view';
+
 import { WorkerBudget } from './budget';
 import { HostFailureError, createHost, type FailoverTrigger, type Host } from './host';
 import { validateProcessorDef, type HostKind, type ProcessorDef } from './processor';
 import { createScheduler, type Scheduler } from './scheduler';
-import { createStore, type View } from './view';
 
 /**
  * @summary A processor's current host and the failovers so far.

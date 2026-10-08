@@ -33,8 +33,8 @@
  * @author MathAid
  */
 
-import type { PacketEnvelope } from './packet';
-import type { Scope } from './scope';
+import type { PacketEnvelope } from '../packet';
+import type { Scope } from '../scope';
 
 /**
  * @summary Carries broadcasts of one scope beyond this tab.

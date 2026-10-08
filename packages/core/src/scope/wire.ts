@@ -41,11 +41,12 @@
  * ```
  *
  * @throws {WireProtocolError} From {@linkcode encodeWire} and {@linkcode decodeWire} for anything that is not a valid version-1 envelope.
- * @see [docs/WIRE-PROTOCOL.md §1](../../../docs/WIRE-PROTOCOL.md#1-the-envelope) for the same schema in Zod, Yup, `@arrirpc/schema` and Joi, for a server written in TypeScript.
+ * @see [docs/WIRE-PROTOCOL.md §1](../../../../docs/WIRE-PROTOCOL.md#1-the-envelope) for the same schema in Zod, Yup, `@arrirpc/schema` and Joi, for a server written in TypeScript.
  * @author MathAid
  */
 
-import type { PacketEnvelope } from './packet';
+import type { PacketEnvelope } from '../packet';
+
 import { SCOPES } from './scope';
 
 /**
@@ -260,7 +261,7 @@ const envelopeCheck = object({
  * Use it on a server, or in a conformance test, to validate envelopes without
  * this package's encode and decode helpers. It is a plain object with one
  * method, `safeParse`, not a dependency on a validation library — see
- * [docs/WIRE-PROTOCOL.md §1](../../../docs/WIRE-PROTOCOL.md#1-the-envelope)
+ * [docs/WIRE-PROTOCOL.md §1](../../../../docs/WIRE-PROTOCOL.md#1-the-envelope)
  * for the same schema written with Zod, Yup, `@arrirpc/schema` or Joi, if
  * your server would rather keep one of those.
  *

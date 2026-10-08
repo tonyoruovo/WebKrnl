@@ -34,6 +34,6 @@
  */
 
 export * from './global';
-export * from './processor';
+export * from './socket';
 export * from './realtime';
 export * from './types';

@@ -46,6 +46,8 @@
  * @author MathAid
  */
 
+import { RpcEndpoint, RpcTimeoutError, type PortLike } from '../transport';
+
 import {
   DEFAULT_HEARTBEAT,
   createSliceScope,
@@ -54,7 +56,6 @@ import {
   type ProcessorDef,
   type ProcessorModule,
 } from './processor';
-import { RpcEndpoint, RpcTimeoutError, type PortLike } from './rpc';
 import type { Scheduler } from './scheduler';
 
 /**

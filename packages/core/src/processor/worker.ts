@@ -40,8 +40,9 @@
  * @author MathAid
  */
 
+import { RpcEndpoint, type PortLike } from '../transport';
+
 import { createSliceScope, type HostKind, type ProcessorModule } from './processor';
-import { RpcEndpoint, type PortLike } from './rpc';
 import { createScheduler } from './scheduler';
 
 /**

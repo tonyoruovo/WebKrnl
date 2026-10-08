@@ -32,7 +32,7 @@ import {
   type ProcessorScope,
 } from '@webkrnl/core';
 
-import type { Frame, RealtimeProtocol, RealtimeStatus, SocketFactory, SocketLike } from './types';
+import type { Frame, RealtimeProtocol, RealtimeStatus, SocketFactory, SocketLike } from '../types';
 
 /**
  * @summary The configuration of the socket processor. The unit gives it to `setup`.

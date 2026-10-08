@@ -28,7 +28,7 @@
  * Check every package
  * ```ts
  * // pnpm check:docs
- * // packages/core/src/unit.ts:220 UnitContext.id: no @summary
+ * // packages/core/src/unit/unit.ts:220 UnitContext.id: no @summary
  * // 1 public member(s) with a missing or incomplete TSDoc block.
  * ```
  *

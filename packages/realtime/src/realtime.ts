@@ -45,7 +45,7 @@ import {
   type SocketConfig,
   type SocketNote,
   type SocketRequest,
-} from './processor';
+} from './socket';
 import type {
   ConnectionChanged,
   Presence,
@@ -125,7 +125,8 @@ export function createRealtime(
     hosts: options.hosts ?? ['dedicated', 'virtual'],
     config,
     load: async () => createSocketProcessor(options.socket ? { socket: options.socket } : {}),
-    dedicated: () => new Worker(new URL('./socket.worker.ts', import.meta.url), { type: 'module' }),
+    dedicated: () =>
+      new Worker(new URL('./socket/socket.worker.ts', import.meta.url), { type: 'module' }),
   };
   const listeners = new Map<string, Set<(data: unknown) => void>>();
   const broadcastTopics = new Map<string, number>();

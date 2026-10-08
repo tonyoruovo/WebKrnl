@@ -8,18 +8,19 @@
  * dependencies between subsystems, moves packets between them, and runs their
  * processors on the main thread or in workers. It ships no subsystem itself.
  *
+ * `src/` is organized into one folder per ARCHITECTURE section that needs
+ * more than one file, plus the files with no section of their own at root
+ * (ARCHITECTURE §22.1 of docs/PLAN.md, M11):
+ *
  * ```text
- *   Kernel
- *   +-- UnitRuntime        one per subsystem and per feature
- *   |   +-- Lifecycle      status machine              (lifecycle.ts)
- *   |   +-- StateCell      owned, serializable state   (state.ts, view.ts)
- *   |   +-- ProcessorRunner hosts and failover         (supervisor.ts, host.ts)
- *   |   +-- PacketPort     send and request            (unit.ts, packet.ts)
- *   +-- DependencyGraph    boot order and waiting      (dependency.ts)
- *   +-- PacketRouter       direct, or the Queue (M3)   (kernel.ts, transport.ts)
- *   RingBuffer             bounded logs and histories  (ring.ts)
- *   ScopeRelay             Window and Global broadcasts beyond the tab (relay.ts)
- *   toPortable/fromPortable functions across worker and storage boundaries (portable.ts)
+ *   unit/        §3   Kernel, UnitRuntime, Unit, Lifecycle              (lifecycle.ts stays at root, §4)
+ *   state/       §5   StateCell, the sign-out wipe (§5.1)               view.ts stays at root, §6.1 (the most-imported file)
+ *   processor/   §8   ProcessorRunner, hosts, failover, scheduler,      dependency.ts stays at root, §7
+ *                      the worker budget, portable functions
+ *   packet/      §9   The envelope, fingerprints, traces, correlation
+ *   transport/   §10  In-realm/MessageChannel transports, RPC, relays
+ *   scope/       §11  Scope boundaries, the route source (§11.2.1),     backoff.ts and ring.ts stay at root (shared
+ *                      the Global wire protocol (§11.4)                  utilities, no section of their own)
  *   ```
  *
  * Two more entry points exist: `@webkrnl/core/testing` (an in-memory test
@@ -89,25 +90,13 @@
  */
 
 export * from './backoff';
-export * from './budget';
-export * from './correlation';
 export * from './dependency';
-export * from './host';
-export * from './kernel';
 export * from './lifecycle';
 export * from './packet';
-export * from './portable';
 export * from './processor';
-export * from './relay';
 export * from './ring';
-export * from './route';
-export * from './rpc';
-export * from './scheduler';
 export * from './scope';
-export * from './signout';
 export * from './state';
-export * from './supervisor';
 export * from './transport';
 export * from './unit';
 export * from './view';
-export * from './wire';

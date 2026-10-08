@@ -46,19 +46,20 @@
  * @author MathAid
  */
 
-import {
-  Kernel,
-  directRouter,
-  type KernelOptions,
-  type StatePersistence,
-  type UnitHandle,
-} from '../kernel';
 import type { UnitStatus } from '../lifecycle';
 import type { PacketEnvelope } from '../packet';
 import type { PersistedState } from '../state';
-import type { ControlInterface, SubsystemDefinition } from '../unit';
+import {
+  Kernel,
+  directRouter,
+  type ControlInterface,
+  type KernelOptions,
+  type StatePersistence,
+  type SubsystemDefinition,
+  type UnitHandle,
+} from '../unit';
 
-export { createMemoryRouteSource, type MemoryRouteSource } from '../route';
+export { createMemoryRouteSource, type MemoryRouteSource } from '../scope';
 
 /**
  * @summary A clock tests can move forward.

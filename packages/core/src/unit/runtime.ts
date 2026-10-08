@@ -35,10 +35,11 @@
  * @author MathAid
  */
 
-import { Lifecycle, RUNNING_STATUSES, type LifecycleSnapshot, type UnitStatus } from './lifecycle';
-import { validateProcessorDef } from './processor';
-import { createStateCell, type PersistedState, type StateCell } from './state';
-import { ProcessorRunner, type ProcessorRunnerOptions } from './supervisor';
+import { Lifecycle, RUNNING_STATUSES, type LifecycleSnapshot, type UnitStatus } from '../lifecycle';
+import { ProcessorRunner, validateProcessorDef, type ProcessorRunnerOptions } from '../processor';
+import { createStateCell, type PersistedState, type StateCell } from '../state';
+import type { Schedule, View } from '../view';
+
 import type {
   ControlInterface,
   Disposer,
@@ -47,7 +48,6 @@ import type {
   UnitContext,
   UnitDefinition,
 } from './unit';
-import type { Schedule, View } from './view';
 
 /**
  * @summary Loads and saves units' persisted state (ARCHITECTURE §5).

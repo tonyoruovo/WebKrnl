@@ -46,8 +46,8 @@
  * @author MathAid
  */
 
-import { DependencyGraph, isRequired, type DependencyNode } from './dependency';
-import type { LifecycleSnapshot } from './lifecycle';
+import { DependencyGraph, isRequired, type DependencyNode } from '../dependency';
+import type { LifecycleSnapshot } from '../lifecycle';
 import {
   Packet,
   appendFingerprint,
@@ -57,13 +57,18 @@ import {
   type IdFactory,
   type OutgoingPacket,
   type PacketEnvelope,
-} from './packet';
-import { createBrowserRouteSource, type RouteSource } from './route';
+} from '../packet';
+import type { ProcessorRunnerOptions } from '../processor';
+import {
+  assertSendAllowed,
+  createBrowserRouteSource,
+  type RouteSource,
+  type Scope,
+} from '../scope';
+import { createStore, type Schedule, type View } from '../view';
+
 import { UnitRuntime, type RuntimeHost, type StatePersistence } from './runtime';
-import { assertSendAllowed, type Scope } from './scope';
-import type { ProcessorRunnerOptions } from './supervisor';
 import type { ControlInterface, PacketPort, SubsystemDefinition, UnitDefinition } from './unit';
-import { createStore, type Schedule, type View } from './view';
 
 export type { StatePersistence } from './runtime';
 

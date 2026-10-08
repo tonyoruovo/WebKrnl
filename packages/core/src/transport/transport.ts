@@ -46,7 +46,8 @@
  * @author MathAid
  */
 
-import type { PacketEnvelope } from './packet';
+import type { PacketEnvelope } from '../packet';
+
 import { RpcClosedError, RpcEndpoint, type PortLike } from './rpc';
 
 /**

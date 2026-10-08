@@ -23,7 +23,7 @@ import type { Duplex } from 'node:stream';
 
 import type { TestProject } from 'vitest/node';
 
-import { decodeWire } from '../packages/core/src/wire';
+import { decodeWire } from '../packages/core/src/scope/wire';
 
 declare module 'vitest' {
   export interface ProvidedContext {

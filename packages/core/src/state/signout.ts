@@ -28,8 +28,8 @@
  * @author MathAid
  */
 
-import type { ControlInterface, UnitContext } from './unit';
-import type { View } from './view';
+import type { ControlInterface, UnitContext } from '../unit';
+import type { View } from '../view';
 
 /**
  * @summary Why a unit must wipe the data of the user.

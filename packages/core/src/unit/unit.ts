@@ -56,14 +56,13 @@
  * @author MathAid
  */
 
-import type { Dependency } from './dependency';
-import type { LifecycleSnapshot } from './lifecycle';
-import type { OutgoingPacket, Packet } from './packet';
-import type { ProcessorDef } from './processor';
-import type { Scope } from './scope';
-import type { StateCell, StateDefinition } from './state';
-import type { ProcessorHandle } from './supervisor';
-import type { View } from './view';
+import type { Dependency } from '../dependency';
+import type { LifecycleSnapshot } from '../lifecycle';
+import type { OutgoingPacket, Packet } from '../packet';
+import type { ProcessorDef, ProcessorHandle } from '../processor';
+import type { Scope } from '../scope';
+import type { StateCell, StateDefinition } from '../state';
+import type { View } from '../view';
 
 /**
  * @summary The "off" switch returned by an initializer (ARCHITECTURE §3.2).

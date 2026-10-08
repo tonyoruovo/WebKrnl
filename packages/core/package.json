@@ -8,7 +8,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./testing": "./src/testing/index.ts",
-    "./worker": "./src/worker.ts",
+    "./worker": "./src/processor/worker.ts",
     "./fixtures/*": "./fixtures/*"
   },
   "files": [
@@ -30,8 +30,8 @@
         "import": "./dist/testing/index.js"
       },
       "./worker": {
-        "types": "./dist/worker.d.ts",
-        "import": "./dist/worker.js"
+        "types": "./dist/processor/worker.d.ts",
+        "import": "./dist/processor/worker.js"
       },
       "./fixtures/*": "./fixtures/*"
     }

@@ -3,7 +3,7 @@
  * `serveProcessor` on the other end, plus switches for each failure mode.
  */
 import type { ProcessorModule } from '../../src';
-import { serveProcessor, type WorkerScopeLike } from '../../src/worker';
+import { serveProcessor, type WorkerScopeLike } from '../../src/processor/worker';
 
 export interface FakeWorkerBehaviour {
   /** Serve this module on the worker side. Omit to never answer (handshake timeout). */

@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./worker": "./src/socket.worker.ts",
+    "./worker": "./src/socket/socket.worker.ts",
     "./conformance": "./src/conformance.ts"
   },
   "files": [
@@ -37,8 +37,8 @@
         "import": "./dist/index.js"
       },
       "./worker": {
-        "types": "./dist/socket.worker.d.ts",
-        "import": "./dist/socket.worker.js"
+        "types": "./dist/socket/socket.worker.d.ts",
+        "import": "./dist/socket/socket.worker.js"
       },
       "./conformance": {
         "types": "./dist/conformance.d.ts",

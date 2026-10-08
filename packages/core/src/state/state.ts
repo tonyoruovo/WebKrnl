@@ -46,7 +46,7 @@
  * @author MathAid
  */
 
-import { createStore, deriveView, type Schedule, type View } from './view';
+import { createStore, deriveView, type Schedule, type View } from '../view';
 
 /**
  * @summary How one state key may leave its unit.

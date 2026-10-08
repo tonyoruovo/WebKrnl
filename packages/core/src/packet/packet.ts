@@ -46,7 +46,7 @@
  * @author MathAid
  */
 
-import type { Scope } from './scope';
+import type { Scope } from '../scope';
 
 /**
  * @summary Scheduling priority of a packet.
