@@ -1,7 +1,13 @@
 {
   "name": "webkrnl",
   "version": "0.0.2",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "description": "A library for building web subsystems with TypeScript.",
   "type": "module",
   "scripts": {
