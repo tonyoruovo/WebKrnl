@@ -36,3 +36,4 @@ bin/
 
 # The documentation site (pnpm docs)
 docs-site/
+.api-extractor-temp/
