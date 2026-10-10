@@ -34,6 +34,18 @@
         "import": "./dist/processor/worker.js"
       },
       "./fixtures/*": "./fixtures/*"
-    }
+    },
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "author": "MathAid",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tonyoruovo/WebKrnl.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/tonyoruovo/WebKrnl/tree/master/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/tonyoruovo/WebKrnl/issues"
   }
 }

@@ -3,11 +3,16 @@
   "version": "0.0.2",
   "repository": {
     "type": "git",
-    "url": "https://github.com"
+    "url": "https://github.com/tonyoruovo/WebKrnl.git"
+  },
+  "homepage": "https://github.com/tonyoruovo/WebKrnl#readme",
+  "bugs": {
+    "url": "https://github.com/tonyoruovo/WebKrnl/issues"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
+  "author": "MathAid",
   "description": "A library for building web subsystems with TypeScript.",
   "type": "module",
   "scripts": {
