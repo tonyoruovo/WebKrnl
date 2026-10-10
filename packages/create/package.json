@@ -26,8 +26,20 @@
         "import": "./dist/index.js"
       }
     },
+    "access": "public",
+    "registry": "https://npm.pkg.github.com",
     "bin": {
       "create-webkrnl": "./dist/cli.js"
     }
+  },
+  "author": "MathAid",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tonyoruovo/WebKrnl.git",
+    "directory": "packages/create"
+  },
+  "homepage": "https://github.com/tonyoruovo/WebKrnl/tree/master/packages/create#readme",
+  "bugs": {
+    "url": "https://github.com/tonyoruovo/WebKrnl/issues"
   }
 }
