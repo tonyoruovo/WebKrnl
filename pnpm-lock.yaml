@@ -202,16 +202,16 @@ importers:
         version: 10.0.1(eslint@10.12.0(supports-color@8.1.1))
       '@microsoft/api-documenter':
         specifier: ^7.30.18
-        version: 7.30.18(@types/node@26.6.4)
+        version: 7.30.18(@types/node@26.6.5)
       '@microsoft/api-extractor':
         specifier: ^7.59.4
-        version: 7.59.4(@types/node@26.6.4)
+        version: 7.59.4(@types/node@26.6.5)
       '@microsoft/tsdoc-config':
         specifier: ^0.18.3
         version: 0.18.3
       '@types/node':
-        specifier: 26.6.4
-        version: 26.6.4
+        specifier: 26.6.5
+        version: 26.6.5
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.71.1
         version: 8.71.1(@typescript-eslint/parser@8.71.1(@typescript/typescript6@6.0.2)(eslint@10.12.0(supports-color@8.1.1))(supports-color@8.1.1))(@typescript/typescript6@6.0.2)(eslint@10.12.0(supports-color@8.1.1))(supports-color@8.1.1)
@@ -223,7 +223,7 @@ importers:
         version: typescript@7.0.2
       '@vitest/browser-playwright':
         specifier: 5.0.3
-        version: 5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)
+        version: 5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)
       '@vitest/coverage-v8':
         specifier: 5.0.3
         version: 5.0.3(@vitest/browser@5.0.3)(vitest@5.0.3)
@@ -313,13 +313,13 @@ importers:
         version: 8.71.1(@typescript/typescript6@6.0.2)(eslint@10.12.0(supports-color@8.1.1))(supports-color@8.1.1)
       vitest:
         specifier: 5.0.3
-        version: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+        version: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       vue:
         specifier: ^3.5.43
         version: 3.5.43(@typescript/typescript6@6.0.2)
       vue-router:
         specifier: ^5.4.0
-        version: 5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vue@3.5.43(@typescript/typescript6@6.0.2))
+        version: 5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vue@3.5.43(@typescript/typescript6@6.0.2))
 
   packages/analytics:
     devDependencies:
@@ -650,7 +650,7 @@ importers:
         version: 3.5.43(typescript@6.0.3)
       vue-router:
         specifier: ^5.4.0
-        version: 5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vue@3.5.43(typescript@6.0.3))
+        version: 5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vue@3.5.43(typescript@6.0.3))
 
 packages:
 
@@ -1114,8 +1114,8 @@ packages:
   '@types/mdurl@2.0.0':
     resolution: {integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==}
 
-  '@types/node@26.6.4':
-    resolution: {integrity: sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==}
+  '@types/node@26.6.5':
+    resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -2701,35 +2701,35 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@microsoft/api-documenter@7.30.18(@types/node@26.6.4)':
+  '@microsoft/api-documenter@7.30.18(@types/node@26.6.5)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.33.15(@types/node@26.6.4)
+      '@microsoft/api-extractor-model': 7.33.15(@types/node@26.6.5)
       '@microsoft/tsdoc': 0.17.1
-      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.4)
-      '@rushstack/terminal': 0.24.7(@types/node@26.6.4)
-      '@rushstack/ts-command-line': 5.3.17(@types/node@26.6.4)
+      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.5)
+      '@rushstack/terminal': 0.24.7(@types/node@26.6.5)
+      '@rushstack/ts-command-line': 5.3.17(@types/node@26.6.5)
       js-yaml: 4.3.2
       resolve: 1.22.13
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor-model@7.33.15(@types/node@26.6.4)':
+  '@microsoft/api-extractor-model@7.33.15(@types/node@26.6.5)':
     dependencies:
       '@microsoft/tsdoc': 0.17.1
       '@microsoft/tsdoc-config': 0.18.3
-      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.4)
+      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.5)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.59.4(@types/node@26.6.4)':
+  '@microsoft/api-extractor@7.59.4(@types/node@26.6.5)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.33.15(@types/node@26.6.4)
+      '@microsoft/api-extractor-model': 7.33.15(@types/node@26.6.5)
       '@microsoft/tsdoc': 0.17.1
       '@microsoft/tsdoc-config': 0.18.3
-      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.4)
+      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.5)
       '@rushstack/rig-package': 0.7.4
-      '@rushstack/terminal': 0.24.7(@types/node@26.6.4)
-      '@rushstack/ts-command-line': 5.3.17(@types/node@26.6.4)
+      '@rushstack/terminal': 0.24.7(@types/node@26.6.5)
+      '@rushstack/ts-command-line': 5.3.17(@types/node@26.6.5)
       diff: 8.0.4
       minimatch: 10.2.3
       resolve: 1.22.13
@@ -2853,7 +2853,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@rushstack/node-core-library@5.25.1(@types/node@26.6.4)':
+  '@rushstack/node-core-library@5.25.1(@types/node@26.6.5)':
     dependencies:
       ajv: 8.20.0
       ajv-draft-04: 1.0.0(ajv@8.20.0)
@@ -2864,28 +2864,28 @@ snapshots:
       resolve: 1.22.13
       semver: 7.7.4
     optionalDependencies:
-      '@types/node': 26.6.4
+      '@types/node': 26.6.5
 
-  '@rushstack/problem-matcher@0.2.1(@types/node@26.6.4)':
+  '@rushstack/problem-matcher@0.2.1(@types/node@26.6.5)':
     optionalDependencies:
-      '@types/node': 26.6.4
+      '@types/node': 26.6.5
 
   '@rushstack/rig-package@0.7.4':
     dependencies:
       jju: 1.4.0
       resolve: 1.22.13
 
-  '@rushstack/terminal@0.24.7(@types/node@26.6.4)':
+  '@rushstack/terminal@0.24.7(@types/node@26.6.5)':
     dependencies:
-      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.4)
-      '@rushstack/problem-matcher': 0.2.1(@types/node@26.6.4)
+      '@rushstack/node-core-library': 5.25.1(@types/node@26.6.5)
+      '@rushstack/problem-matcher': 0.2.1(@types/node@26.6.5)
       supports-color: 8.1.1
     optionalDependencies:
-      '@types/node': 26.6.4
+      '@types/node': 26.6.5
 
-  '@rushstack/ts-command-line@5.3.17(@types/node@26.6.4)':
+  '@rushstack/ts-command-line@5.3.17(@types/node@26.6.5)':
     dependencies:
-      '@rushstack/terminal': 0.24.7(@types/node@26.6.4)
+      '@rushstack/terminal': 0.24.7(@types/node@26.6.5)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -2945,7 +2945,7 @@ snapshots:
 
   '@types/mdurl@2.0.0': {}
 
-  '@types/node@26.6.4':
+  '@types/node@26.6.5':
     dependencies:
       undici-types: 8.9.0
 
@@ -3178,30 +3178,30 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@vitest/browser-playwright@5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)':
+  '@vitest/browser-playwright@5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)':
     dependencies:
-      '@vitest/browser': 5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)
-      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      '@vitest/browser': 5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)
+      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       playwright: 1.63.0
       tinyrainbow: 3.1.1
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
     transitivePeerDependencies:
       - bufferutil
       - msw
       - utf-8-validate
       - vite
 
-  '@vitest/browser@5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)':
+  '@vitest/browser@5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)':
     dependencies:
       '@blazediff/core': 1.10.0
-      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       '@vitest/ui': 5.0.3(vitest@5.0.3)
       '@vitest/utils': 5.0.3
       magic-string: 1.4.3
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.1
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       ws: 8.22.0
     transitivePeerDependencies:
       - bufferutil
@@ -3219,9 +3219,9 @@ snapshots:
       obug: 2.2.1
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
     optionalDependencies:
-      '@vitest/browser': 5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)
+      '@vitest/browser': 5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)
 
   '@vitest/istanbul-lib-coverage@1.0.2': {}
 
@@ -3229,14 +3229,14 @@ snapshots:
     dependencies:
       '@vitest/istanbul-lib-coverage': 1.0.2
 
-  '@vitest/mocker@5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))':
+  '@vitest/mocker@5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.3
       estree-walker: 3.0.3
       magic-string: 1.4.3
     optionalDependencies:
-      vite: 8.3.1(@types/node@26.6.4)(yaml@2.9.1)
+      vite: 8.3.1(@types/node@26.6.5)(yaml@2.9.1)
 
   '@vitest/pretty-format@5.0.3':
     dependencies:
@@ -3252,7 +3252,7 @@ snapshots:
       pathe: 2.0.3
       sirv: 3.0.2
       tinyrainbow: 3.1.1
-      vitest: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      vitest: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
 
   '@vitest/utils@5.0.3':
     dependencies:
@@ -4132,14 +4132,14 @@ snapshots:
       pathe: 2.0.3
       picomatch: 4.0.7
 
-  unplugin@3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1)):
+  unplugin@3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1)):
     dependencies:
       '@jridgewell/remapping': 2.3.5
       picomatch: 4.0.7
       webpack-virtual-modules: 0.6.2
     optionalDependencies:
       rolldown: 1.2.13
-      vite: 8.3.1(@types/node@26.6.4)(yaml@2.9.1)
+      vite: 8.3.1(@types/node@26.6.5)(yaml@2.9.1)
 
   unrs-resolver@1.12.2:
     dependencies:
@@ -4178,7 +4178,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1):
+  vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -4186,14 +4186,14 @@ snapshots:
       rolldown: 1.2.11
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.6.4
+      '@types/node': 26.6.5
       fsevents: 2.3.3
       yaml: 2.9.1
 
-  vitest@5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1)):
+  vitest@5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      '@vitest/mocker': 5.0.3(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -4204,17 +4204,17 @@ snapshots:
       tinybench: 6.2.1
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
-      vite: 8.3.1(@types/node@26.6.4)(yaml@2.9.1)
+      vite: 8.3.1(@types/node@26.6.5)(yaml@2.9.1)
       why-is-node-running: 3.2.1
     optionalDependencies:
-      '@types/node': 26.6.4
-      '@vitest/browser-playwright': 5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vitest@5.0.3)
+      '@types/node': 26.6.5
+      '@vitest/browser-playwright': 5.0.3(playwright@1.63.0)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vitest@5.0.3)
       '@vitest/coverage-v8': 5.0.3(@vitest/browser@5.0.3)(vitest@5.0.3)
       '@vitest/ui': 5.0.3(vitest@5.0.3)
     transitivePeerDependencies:
       - msw
 
-  vue-router@5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vue@3.5.43(@typescript/typescript6@6.0.2)):
+  vue-router@5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vue@3.5.43(@typescript/typescript6@6.0.2)):
     dependencies:
       '@vue-macros/common': 3.1.4(vue@3.5.43(@typescript/typescript6@6.0.2))
       '@vue/devtools-api': 8.2.1
@@ -4230,12 +4230,12 @@ snapshots:
       picomatch: 4.0.7
       scule: 1.3.0
       tinyglobby: 0.2.17
-      unplugin: 3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      unplugin: 3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       unplugin-utils: 0.3.2
       vue: 3.5.43(@typescript/typescript6@6.0.2)
     optionalDependencies:
       '@vue/compiler-sfc': 3.5.43
-      vite: 8.3.1(@types/node@26.6.4)(yaml@2.9.1)
+      vite: 8.3.1(@types/node@26.6.5)(yaml@2.9.1)
     transitivePeerDependencies:
       - '@farmfe/core'
       - '@rsbuild/core'
@@ -4247,7 +4247,7 @@ snapshots:
       - unloader
       - webpack
 
-  vue-router@5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))(vue@3.5.43(typescript@6.0.3)):
+  vue-router@5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))(vue@3.5.43(typescript@6.0.3)):
     dependencies:
       '@vue-macros/common': 3.1.4(vue@3.5.43(typescript@6.0.3))
       '@vue/devtools-api': 8.2.1
@@ -4263,12 +4263,12 @@ snapshots:
       picomatch: 4.0.7
       scule: 1.3.0
       tinyglobby: 0.2.17
-      unplugin: 3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.4)(yaml@2.9.1))
+      unplugin: 3.4.0(rolldown@1.2.13)(vite@8.3.1(@types/node@26.6.5)(yaml@2.9.1))
       unplugin-utils: 0.3.2
       vue: 3.5.43(typescript@6.0.3)
     optionalDependencies:
       '@vue/compiler-sfc': 3.5.43
-      vite: 8.3.1(@types/node@26.6.4)(yaml@2.9.1)
+      vite: 8.3.1(@types/node@26.6.5)(yaml@2.9.1)
     transitivePeerDependencies:
       - '@farmfe/core'
       - '@rsbuild/core'
