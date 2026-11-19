@@ -16,7 +16,7 @@
     "@webkrnl/core": "workspace:*",
     "@webkrnl/platform": "workspace:*",
     "vue": "^3.5.0",
-    "vue-router": "^5.4.0"
+    "vue-router": "^5.5.1"
   },
   "peerDependenciesMeta": {
     "vue-router": {
@@ -26,8 +26,8 @@
   "devDependencies": {
     "@webkrnl/core": "workspace:*",
     "@webkrnl/platform": "workspace:*",
-    "vue": "^3.5.43",
-    "vue-router": "^5.4.0"
+    "vue": "^3.5.45",
+    "vue-router": "^5.5.1"
   },
   "license": "ISC",
   "publishConfig": {
